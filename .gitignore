@@ -1,0 +1,13 @@
+# IntelliJ files
+/.idea/
+
+# Eclipse files
+/.settings/
+.classpath
+.project
+
+# Maven files
+/target/
+
+# Other
+*.log
