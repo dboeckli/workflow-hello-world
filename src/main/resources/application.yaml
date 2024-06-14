@@ -1,0 +1,11 @@
+camunda.bpm.admin-user:
+  id: admin
+  password: admin
+
+camunda.bpm.metrics:
+  enabled: false
+  db-reporter-activate: false
+
+camunda.bpm:
+  generic-properties.properties:
+    telemetry-reporter-activate: false
