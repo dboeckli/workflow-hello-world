@@ -1,8 +1,4 @@
 ###
-GET {{host}}/{{context}}/restapi/ping
-Accept: application/json
-
-###
 GET {{host}}/{{context}}/engine-rest/engine
 Accept: application/json
 

@@ -1,6 +1,6 @@
 package ch.swissperform.workflow.example.controller;
 
-import ch.swissperform.workflow.example.controller.response.PingResponse;
+import lombok.Builder;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -35,4 +35,14 @@ public class PingRestController {
                 .gitCommitId(buildProperties.get("commit-id"))
                 .build();
     }
+
+    @Builder
+    public record PingResponse (String mavenGroupdId,
+                                 String mavenArtifactId,
+                                 String version,
+                                 String vendor,
+                                 String javaVersion,
+                                 String mavenUser,
+                                 String mavenTimeStamp,
+                                 String gitCommitId) {}
 }
