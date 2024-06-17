@@ -1,0 +1,7 @@
+###
+GET {{host}}/{{context}}/restapi/ping
+Accept: application/json
+
+###
+POST {{host}}/{{context}}/restapi/workflow
+Accept: application/json

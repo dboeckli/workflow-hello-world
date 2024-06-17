@@ -1,0 +1,55 @@
+### actuator
+GET {{host}}/actuator/
+Accept: application/json
+
+### actuator info
+GET {{host}}/actuator/info
+Accept: application/json
+
+### actuator health
+GET {{host}}/actuator/health
+Accept: application/json
+
+### actuator metrics
+GET {{host}}/actuator/metrics/
+Accept: application/json
+
+### actuator env
+GET {{host}}/actuator/env/
+Accept: application/json
+
+### actuator env
+GET {{host}}/actuator/configprops/
+Accept: application/json
+
+### actuator beans
+GET {{host}}/actuator/beans/
+Accept: application/json
+
+### actuator caches
+GET {{host}}/actuator/caches/
+Accept: application/json
+
+### actuator get loggers
+GET {{host}}/actuator/loggers
+
+### actuator set loggers ("OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE")
+POST {{host}}/actuator/loggers/org.springframework.security
+Authorization: Basic {{username}} {{password}}
+Accept: application/json
+Content-Type: application/json; charset=utf-8
+
+{ "configuredLevel" : "DEBUG" }
+
+### actuator set loggers ("OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE")
+POST {{host}}/actuator/loggers/org.springframework.security
+Accept: application/json
+Content-Type: application/json; charset=utf-8
+
+{ "configuredLevel" : "DEBUG" }
+
+### actuator restart
+POST {{host}}/actuator/restart
+Authorization: Basic {{username}} {{password}}
+Accept: application/json
+
