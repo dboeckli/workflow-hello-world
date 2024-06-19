@@ -1,0 +1,42 @@
+server:
+  servlet:
+    context-path: /bpm
+  port: 8081
+
+camunda:
+  bpm:
+    admin-user:
+      id: admin
+      password: admin
+    metrics:
+      enabled: false
+      db-reporter-activate: false
+    generic-properties:
+      properties:
+        telemetry-reporter-activate: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  config: "classpath:logging/log4j2.xml"
+
+springdoc:
+
+  show-actuator: true
+  api-docs:
+    path: /swagger/v3/api-docs
+    groups:
+      enabled: true
+  swagger-ui:
+    show-extensions: true
+
+applicaion:
+  jtt:
+    url: "http://localhost:8080/swp-jtt"

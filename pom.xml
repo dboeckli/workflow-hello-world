@@ -31,6 +31,7 @@
         <spring.boot.version>3.3.0</spring.boot.version>
         <camunda.spring.boot.starter.version>7.21.0</camunda.spring.boot.starter.version>
         <springdoc-openapi-starter-webmvc-ui.version>2.5.0</springdoc-openapi-starter-webmvc-ui.version>
+        <swp-jtt.version>1.0.33</swp-jtt.version>
 
         <!-- Plugin Versions -->
         <maven-jar-plugin.version>3.4.1</maven-jar-plugin.version>
@@ -116,7 +117,6 @@
             </exclusions>
         </dependency>
 
-
         <dependency>
             <groupId>org.camunda.bpm.springboot</groupId>
             <artifactId>camunda-bpm-spring-boot-starter-test</artifactId>
@@ -186,6 +186,17 @@
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>${springdoc-openapi-starter-webmvc-ui.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.swp.jtt</groupId>
+            <artifactId>openapi-generator</artifactId>
+            <version>${swp-jtt.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
         </dependency>
 
         <dependency>
@@ -347,6 +358,13 @@
                         </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <executable>true</executable>
+                    <jvmArguments>
+                        -Xms256m
+                        -Xmx2g
+                    </jvmArguments>
+                </configuration>
             </plugin>
 
             <plugin>
