@@ -9,4 +9,7 @@ logging:
 
 applicaion:
   jtt:
-    url: "http://localhost:8080/swp-jtt"
+    protocol: "http"
+    host: "localhost"
+    port: "8080"
+    context: "swp-jtt"
