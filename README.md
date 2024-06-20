@@ -12,11 +12,11 @@ Write your own description here
 
 ### URLS
 
-- Camunda: http://localhost:8080/bpm/camunda/app/welcome/default/#!/welcome
-- Actuator: http://localhost:8080/bpm/actuator
-- Openapi: http://localhost:8080/bpm/swagger/v3/api-docs
-           http://localhost:8080/bpm/swagger/v3/api-docs.yaml
--          http://localhost:8080/bpm/swagger-ui/index.html
+- Camunda: http://localhost:8081/bpm/camunda/app/welcome/default/#!/welcome
+- Actuator: http://localhost:8081/bpm/actuator
+- Openapi: http://localhost:8081/bpm/swagger/v3/api-docs
+           http://localhost:8081/bpm/swagger/v3/api-docs.yaml
+-          http://localhost:8081/bpm/swagger-ui/index.html
 
 
 ## Prerequisites

@@ -25,24 +25,27 @@ public class PingRestController {
 
     private PingResponse createResponse() {
         return PingResponse.builder()
-                .mavenGroupdId(buildProperties.getGroup())
-                .mavenArtifactId(buildProperties.getArtifact())
-                .version(buildProperties.getVersion())
-                .vendor(buildProperties.get("javaVendor"))
-                .mavenTimeStamp(buildProperties.getTime().toString())
-                .mavenUser(buildProperties.get("mavenUser"))
-                .javaVersion(buildProperties.get("javaVersion"))
-                .gitCommitId(buildProperties.get("commit-id"))
-                .build();
+                           .mavenGroupdId(buildProperties.getGroup())
+                           .mavenArtifactId(buildProperties.getArtifact())
+                           .version(buildProperties.getVersion())
+                           .vendor(buildProperties.get("javaVendor"))
+                           .mavenTimeStamp(buildProperties.getTime().toString())
+                           .mavenUser(buildProperties.get("mavenUser"))
+                           .javaVersion(buildProperties.get("javaVersion"))
+                           .gitCommitId(buildProperties.get("commit-id"))
+                           .build();
     }
 
     @Builder
-    public record PingResponse (String mavenGroupdId,
-                                 String mavenArtifactId,
-                                 String version,
-                                 String vendor,
-                                 String javaVersion,
-                                 String mavenUser,
-                                 String mavenTimeStamp,
-                                 String gitCommitId) {}
+    public record PingResponse(String mavenGroupdId,
+                               String mavenArtifactId,
+                               String version,
+                               String vendor,
+                               String javaVersion,
+                               String mavenUser,
+                               String mavenTimeStamp,
+                               String gitCommitId) {
+
+    }
+
 }

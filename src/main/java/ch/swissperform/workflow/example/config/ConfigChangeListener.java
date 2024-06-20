@@ -19,20 +19,18 @@ public class ConfigChangeListener {
 
     @EventListener
     public void handleContextRefresh(ContextRefreshedEvent event) {
-        final Environment env = event.getApplicationContext().getEnvironment();
+        final Environment env = event.getApplicationContext()
+                                     .getEnvironment();
         log.info(LogMessage.RECEIVED_CONTEXT_REFRESH_EVENT.getMessage());
         log.info("Active profiles: {}", Arrays.toString(env.getActiveProfiles()));
         final MutablePropertySources sources = ((AbstractEnvironment) env).getPropertySources();
         StreamSupport.stream(sources.spliterator(), false)
-                .filter(EnumerablePropertySource.class::isInstance)
-                .map(ps -> ((EnumerablePropertySource<?>) ps).getPropertyNames())
-                .flatMap(Arrays::stream)
-                .distinct()
-                .filter(prop ->
-                        !(prop.contains("credentials") ||
-                                StringUtils.containsIgnoreCase(prop,"jwt.key-value") ||
-                                StringUtils.containsIgnoreCase(prop,"password")))
-                .forEach(prop -> log.info("{}: {}", prop, env.getProperty(prop)));
+                     .filter(EnumerablePropertySource.class::isInstance)
+                     .map(ps -> ((EnumerablePropertySource<?>) ps).getPropertyNames())
+                     .flatMap(Arrays::stream)
+                     .distinct()
+                     .filter(prop -> !(prop.contains("credentials") || StringUtils.containsIgnoreCase(prop, "jwt.key-value") || StringUtils.containsIgnoreCase(prop, "password")))
+                     .forEach(prop -> log.info("{}: {}", prop, env.getProperty(prop)));
     }
 
 }

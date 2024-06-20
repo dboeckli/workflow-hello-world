@@ -23,25 +23,24 @@ public class WorkflowController {
         String processDefinitionKey = "hello-world-process";
         // when
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(processDefinitionKey);
-        return ResponseEntity.ok().body(createResponse(processInstance));
+        return ResponseEntity.ok()
+                             .body(createResponse(processInstance));
 
     }
 
     private HelloWorldWorklfowResponse createResponse(ProcessInstance processInstance) {
         return HelloWorldWorklfowResponse.builder()
-                .caseInstanceId(processInstance.getCaseInstanceId())
-                .processInstanceId(processInstance.getProcessDefinitionId())
-                .id(processInstance.getId())
-                .rootProcessInstanceId(processInstance.getRootProcessInstanceId())
-                .processDefinitionId(processInstance.getProcessDefinitionId())
-                .build();
+                                         .caseInstanceId(processInstance.getCaseInstanceId())
+                                         .processInstanceId(processInstance.getProcessDefinitionId())
+                                         .id(processInstance.getId())
+                                         .rootProcessInstanceId(processInstance.getRootProcessInstanceId())
+                                         .processDefinitionId(processInstance.getProcessDefinitionId())
+                                         .build();
     }
 
     @Builder
-    public record HelloWorldWorklfowResponse (String caseInstanceId,
-                                       String processDefinitionId,
-                                       String rootProcessInstanceId,
-                                       String id,
-                                       String processInstanceId) {}
+    public record HelloWorldWorklfowResponse(String caseInstanceId, String processDefinitionId, String rootProcessInstanceId, String id, String processInstanceId) {
+
+    }
 
 }
