@@ -41,10 +41,10 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - name: Set up java 17
+      - name: Set up java 21
         uses: actions/setup-java@v4
         with:
-          java-version: 17
+          java-version: 21
           distribution: 'temurin'
           cache: 'maven'
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml.
@@ -79,10 +79,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: 17
+          java-version: 21
           distribution: 'temurin'
           cache: 'maven'
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml.
@@ -161,10 +161,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: 17
+          java-version: 21
           distribution: 'temurin'
           cache: 'maven'
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml.
@@ -231,15 +231,6 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: 17
-          distribution: 'temurin'
-          cache: 'maven'
-          server-id: github # Value of the distributionManagement/repository/id field of the pom.xml.
-          settings-path: ${{ github.workspace }} # location for the settings.xml file . 
-
       - name: Setup Maven settings.xml
         uses: whelk-io/maven-settings-xml-action@v21
         env:
@@ -269,6 +260,15 @@ jobs:
             ]
           output_file: ${{ github.workspace }}/.github/.m2/artifactory/settings.xml
 
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'temurin'
+          cache: 'maven'
+          server-id: github # Value of the distributionManagement/repository/id field of the pom.xml.
+          settings-path: ${{ github.workspace }} # location for the settings.xml file     
+      
       - name: Run with Jacoco
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -292,15 +292,6 @@ jobs:
           mvn -B clean verify \
           -P 'artifactory,coverage' \
           -s $GITHUB_WORKSPACE/.github/.m2/artifactory/settings.xml \
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: 17
-          distribution: 'temurin'
-          cache: 'maven'
-          server-id: github # Value of the distributionManagement/repository/id field of the pom.xml.
-          settings-path: ${{ github.workspace }} # location for the settings.xml file     
 
       - name: sonar
         env:
