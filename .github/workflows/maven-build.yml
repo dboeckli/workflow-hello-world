@@ -108,6 +108,10 @@ jobs:
           set -o pipefail    # don't hide errors within pipes
           set -o nounset     # abort on unbound variable
           set -o errexit     # abort on nonzero exit status
+          
+          echo "::notice:: ### Build of Feature Branch ${BRANCH_NAME}. Version: ${{needs.setup.outputs.BRANCH_MVN_VERSION}}"
+          echo "::notice:: ### Build of Feature Branch ${BRANCH_NAME}. Version: ${{needs.setup.outputs}}"
+          
           if [[ "${BRANCH_NAME}" == "main" ]]; then
             echo "::notice:: ### Build of Main. Version: $BRANCH_MVN_VERSION"
           else
