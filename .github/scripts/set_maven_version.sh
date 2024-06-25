@@ -1,13 +1,11 @@
 #!/bin/bash
 
+# https://web.archive.org/web/20190329060125/https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
 set -o pipefail    # don't hide errors within pipes
 set -o nounset     # abort on unbound variable
 set -o errexit     # abort on nonzero exit status
 
-echo "### Will change the version in pom.xml files..."
-
-branch=$(git rev-parse --abbrev-ref HEAD)
-echo "### Current git branch is $branch"
+echo 'Will change the version in pom.xml files...'
 
 # get current branch name
 BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
@@ -37,8 +35,6 @@ then
 else
     NEW_MAVEN_VERSION=$MVN_VERSION
 fi
-
 echo "BRANCH_MVN_VERSION=$NEW_MAVEN_VERSION" >> "$GITHUB_OUTPUT"
+
 echo "### Changed version in pom.xml files $NEW_MAVEN_VERSION"
-
-

@@ -14,57 +14,57 @@ on:
     branches: [ "main", "master", "feature/**", "release/**" ]
   schedule:
     - cron: 5 5 * * MON-FRI # daily at 5:05 am (Except on Weekends)
-
 jobs:
-
+  
   setup:
+    
+    runs-on: ubuntu-latest
 
     permissions:
       contents: read
       packages: write
-
-    name: Setup
-
-    runs-on: ubuntu-latest
-
+    
     outputs:
-      BRANCH_MAVEN_VERSION: ${{ steps.set_version.outputs.BRANCH_MAVEN_VERSION }}
-      BRANCH_NAME: ${{ steps.set_version.outputs.GIT_BRANCH }}
+      BRANCH_MVN_VERSION: ${{ steps.set_version.outputs.BRANCH_MVN_VERSION }}
+      BRANCH_NAME: ${{ steps.set_version.outputs.BRANCH_NAME }}
       MVN_VERSION: ${{ steps.set_version.outputs.MVN_VERSION }}
-
+    
+    
     steps:
-      - name: Checkout project
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - name: Validate
+        id: validate
+        run: |
+          if [[ "${BRANCH_NAME}" == "master" ]]; then 
+            echo "::error:: ### Build for master has been deprecated. Use branch main instead!"
+            exit 1
+          fi
 
-      - name: Set up java 17
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 8
         uses: actions/setup-java@v4
         with:
-          java-version: 17
+          java-version: '8'
           distribution: 'temurin'
           cache: 'maven'
-
-      - name: Cache maven packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
+          server-id: github # Value of the distributionManagement/repository/id field of the pom.xml.
+          settings-path: ${{ github.workspace }} # location for the settings.xml file
 
       - name: Set Maven Versions
         id: set_version
-        run: './.github/scripts/set_maven_version.sh'
-
+        run: |
+          "${GITHUB_WORKSPACE}/.github/workflows/scripts/set_maven_version.sh"    
+  
+  
   build:
-    runs-on: ubuntu-latest
-
+    runs-on: [self-hosted, dex-ci]
+    
     needs: [ setup ]
-
+    
     permissions:
       contents: read
       packages: write
-
+    
     steps:
       - uses: actions/checkout@v4
 
@@ -108,10 +108,6 @@ jobs:
           set -o pipefail    # don't hide errors within pipes
           set -o nounset     # abort on unbound variable
           set -o errexit     # abort on nonzero exit status
-          
-          echo "::notice:: ### Build of Feature Branch ${BRANCH_NAME}. Version: ${{needs.setup.outputs.BRANCH_MVN_VERSION}}"
-          echo "::notice:: ### Build of Feature Branch ${BRANCH_NAME}. Version: ${{needs.setup.outputs}}"
-          
           if [[ "${BRANCH_NAME}" == "main" ]]; then
             echo "::notice:: ### Build of Main. Version: $BRANCH_MVN_VERSION"
           else
@@ -123,12 +119,12 @@ jobs:
           else
             mvn -B install -Partifactory -s $GITHUB_WORKSPACE/.github/.m2/artifactory/settings.xml
           fi
-
+  
   deploy:
-    runs-on: [ camunda-ci ]
+    runs-on: [self-hosted, dex-ci]
 
     needs: [ setup,build ]
-
+    
     steps:
       - uses: actions/checkout@v4
 
@@ -157,7 +153,7 @@ jobs:
                 "password": "${env.GITHUB_TOKEN}"
               }
             ]
-          output_file: ${{ github.workspace }}/.github/.m2/artifactory/settings.xml # by default it goes to ~/.m2/settings.xml
+          output_file: ${{ github.workspace }}/.github/.m2/artifactory/settings.xml # by default it goes to ~/.m2/settings.xml  
 
       - name: Deploy
         env:
@@ -177,18 +173,18 @@ jobs:
           TOMCAT_USER: tomcat
         run: |
           # run deploy script
-          "${GITHUB_WORKSPACE}/.github/workflows/scripts/deploy.sh"
-
+          "${GITHUB_WORKSPACE}/.github/workflows/scripts/deploy.sh"    
+  
   sonar-scan:
-
-    needs: [ setup,build ]
-
+    
+    needs: [setup,build]
+    
     permissions:
       actions: read
       contents: write
-
+    
     runs-on: ubuntu-latest
-
+    
     steps:
 
       - uses: actions/checkout@v4
@@ -200,7 +196,7 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml.
-          settings-path: ${{ github.workspace }} # location for the settings.xml file
+          settings-path: ${{ github.workspace }} # location for the settings.xml file  
 
       - name: Setup Maven settings.xml
         uses: whelk-io/maven-settings-xml-action@v21
@@ -244,7 +240,7 @@ jobs:
           set -o pipefail    # don't hide errors within pipes
           set -o nounset     # abort on unbound variable
           set -o errexit     # abort on nonzero exit status
-          
+
           if [[ "${BRANCH_NAME}" == "main" ]]; then
             echo "::notice:: ### Build of Main. Version: $BRANCH_MVN_VERSION"
           else
@@ -262,7 +258,7 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml.
-          settings-path: ${{ github.workspace }} # location for the settings.xml file
+          settings-path: ${{ github.workspace }} # location for the settings.xml file     
 
       - name: sonar
         env:
@@ -283,7 +279,7 @@ jobs:
                 -Dsonar.host.url=https://sonarcloud.io \
                 -Dsonar.sourceEncoding=UTF-8 \
                 -Dsonar.organization=swissperform \
-                -Dsonar.projectKey=ch.swp.dex.auslandtausch \
+                -Dsonar.projectKey=ch.swissperform.workflow.hello-world \
                 -Dsonar.branch.name=main
           else
             echo "::notice:: ### Build of Feature Branch ${BRANCH_NAME}. Version: $BRANCH_MVN_VERSION"
@@ -295,8 +291,8 @@ jobs:
                 -Dsonar.host.url=https://sonarcloud.io \
                 -Dsonar.sourceEncoding=UTF-8 \
                 -Dsonar.organization=swissperform \
-                -Dsonar.projectKey=ch.swp.dex.auslandtausch \
+                -Dsonar.projectKey=ch.swissperform.workflow.hello-world \
                 -Dsonar.branch.name=${BRANCH_NAME} \
                 -Dsonar.branch.target=main
           fi
-          echo "https://sonarcloud.io/summary/overall?id=ch.swp.dex.auslandtausch" >> $GITHUB_STEP_SUMMARY
+          echo "https://sonarcloud.io/summary/overall?id=ch.swissperform.workflow.hello-world" >> $GITHUB_STEP_SUMMARY
