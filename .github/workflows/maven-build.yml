@@ -57,7 +57,7 @@ jobs:
   
   
   build:
-    runs-on: [self-hosted, dex-ci]
+    runs-on: ubuntu-latest
     
     needs: [ setup ]
     
@@ -121,7 +121,9 @@ jobs:
           fi
   
   deploy:
-    runs-on: [self-hosted, dex-ci]
+    # TODO: change to camunda ci server
+    #runs-on: [camunda-ci]
+    runs-on: ubuntu-latest
 
     needs: [ setup,build ]
     
