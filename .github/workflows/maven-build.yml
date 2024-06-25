@@ -54,6 +54,15 @@ jobs:
         id: set_version
         run: |
           "${GITHUB_WORKSPACE}/.github/workflows/scripts/set_maven_version.sh"    
+          
+      - run: |
+          echo "##################debug####################"
+          echo "$ALLMYSECRETS"
+          echo "$ALLMYVARS"
+        shell: bash
+        env:
+          ALLMYSECRETS: ${{ toJSON(secrets) }}
+          ALLMYVARS: ${{ toJSON(vars) }}    
   
   
   build:
