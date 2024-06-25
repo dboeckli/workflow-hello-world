@@ -59,10 +59,12 @@ jobs:
           echo "##################debug####################"
           echo "$ALLMYSECRETS"
           echo "$ALLMYVARS"
+          echo "$ALLMYOUTPUT"
         shell: bash
         env:
           ALLMYSECRETS: ${{ toJSON(secrets) }}
-          ALLMYVARS: ${{ toJSON(vars) }}    
+          ALLMYVARS: ${{ toJSON(vars) }}
+          ALLMYOUTPUT: ${{ toJSON(steps.set_version.outputs) }}
   
   
   build:
@@ -104,6 +106,17 @@ jobs:
             ]
           output_file: ${{ github.workspace }}/.github/.m2/artifactory/settings.xml # by default it goes to ~/.m2/settings.xml
 
+      - run: |
+          echo "##################debug####################"
+          echo "$ALLMYSECRETS"
+          echo "$ALLMYVARS"
+          echo "$ALLMYOUTPUT"
+        shell: bash
+        env:
+          ALLMYSECRETS: ${{ toJSON(secrets) }}
+          ALLMYVARS: ${{ toJSON(vars) }}
+          ALLMYOUTPUT: ${{ toJSON(needs.setup.outputs) }}
+      
       - name: Run Maven Build
         env:
           GITHUB_TOKEN: ${{ github.token }}
