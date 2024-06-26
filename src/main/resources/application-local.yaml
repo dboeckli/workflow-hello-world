@@ -44,7 +44,7 @@ springdoc:
   swagger-ui:
     show-extensions: true
 
-applicaion:
+application:
   jtt:
     protocol: "http"
     host: "localhost"

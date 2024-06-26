@@ -9,7 +9,7 @@ camunda.bpm.admin-user:
 logging:
   config: "classpath:logging/log4j2.xml"
 
-applicaion:
+application:
   jtt:
     protocol: "http"
     host: "localhost"
