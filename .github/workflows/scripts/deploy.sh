@@ -126,12 +126,15 @@ function deploy() {
       sudo cp "${RUNTIME_DIR}/${ARTIFACT_ID}-${BRANCH_MVN_VERSION}".jar "${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}/${BACKUP_DIR}/"
     fi  
 
+    sudo systemctl stop workflow-hello-world.service
+    sleep 5
     echo "[INFO] ### deploying ${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.jar to ${RUNTIME_DIR}/${ARTIFACT_ID}.jar"
     sudo cp "${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}/${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.jar" "${RUNTIME_DIR}/${ARTIFACT_ID}.jar"
     
     sudo chown "${RUNTIME_USER}:${RUNTIME_USER}" "${RUNTIME_DIR}/${ARTIFACT_ID}.jar"
-    sudo chmod 500 "${RUNTIME_DIR}/${ARTIFACT_ID}.jar"
+    sudo chmod 770 "${RUNTIME_DIR}/${ARTIFACT_ID}.jar"
 
+    sudo systemctl start workflow-hello-world.service
     sleep 15
   else
     echo "::notice:: ### Deployment skipped for ${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.jar"
