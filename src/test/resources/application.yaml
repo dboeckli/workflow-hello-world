@@ -6,3 +6,10 @@ camunda.bpm.admin-user:
 
 logging:
   config: "classpath:logging/log4j2.xml"
+
+applicaion:
+  jtt:
+    protocol: "http"
+    host: "localhost"
+    port: "8080"
+    context: "swp-jtt"

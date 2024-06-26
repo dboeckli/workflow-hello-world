@@ -19,8 +19,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
 
         <!--suppress UnresolvedMavenProperty -->
         <buildNumber>${git.commit.id.abbrev}</buildNumber>
@@ -31,14 +31,17 @@
         <spring.boot.version>3.3.0</spring.boot.version>
         <camunda.spring.boot.starter.version>7.21.0</camunda.spring.boot.starter.version>
         <springdoc-openapi-starter-webmvc-ui.version>2.5.0</springdoc-openapi-starter-webmvc-ui.version>
+        <swp-jtt.version>1.0.33</swp-jtt.version>
+        <mock-server.version>5.14.0</mock-server.version>
 
         <!-- Plugin Versions -->
         <maven-jar-plugin.version>3.4.1</maven-jar-plugin.version>
         <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
         <git-commit-id-maven-plugin.version>9.0.0</git-commit-id-maven-plugin.version>
         <build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>
-    </properties>
+        <maven-surefire-plugin.version>3.3.0</maven-surefire-plugin.version>
 
+    </properties>
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -116,7 +119,6 @@
             </exclusions>
         </dependency>
 
-
         <dependency>
             <groupId>org.camunda.bpm.springboot</groupId>
             <artifactId>camunda-bpm-spring-boot-starter-test</artifactId>
@@ -189,14 +191,64 @@
         </dependency>
 
         <dependency>
+            <groupId>ch.swp.jtt</groupId>
+            <artifactId>openapi-generator</artifactId>
+            <version>${swp-jtt.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <scope>test</scope>
         </dependency>
 
         <dependency>
+            <groupId>org.mock-server</groupId>
+            <artifactId>mockserver-junit-jupiter-no-dependencies</artifactId>
+            <version>${mock-server.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mock-server</groupId>
+            <artifactId>mockserver-spring-test-listener-no-dependencies</artifactId>
+            <version>${mock-server.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>mockserver</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.camunda.bpm</groupId>
             <artifactId>camunda-bpm-assert</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.camunda.bpm</groupId>
+            <artifactId>camunda-bpm-junit5</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -291,6 +343,63 @@
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>default-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <skipTests>true</skipTests>
+                            <skip>true</skip>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>perform-unit-test</id>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <!--suppress UnresolvedMavenProperty -->
+                            <argLine>${argLine}</argLine>
+                            <includes>
+                                <include>**/*Tests.java</include>
+                                <include>**/*Test.java</include>
+                                <include>**/*Spec.java</include>
+                            </includes>
+                            <excludes>
+                                <exclude>**/*IT.java</exclude>
+                                <exclude>**/*BPM.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>perform-bpmaware-integration-test</id>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <!--suppress UnresolvedMavenProperty -->
+                            <argLine>${argLine}</argLine>
+                            <includes>
+                                <include>**/*BPM.java</include>
+                            </includes>
+                            <excludes>
+                                <exclude>**/*Tests.java</exclude>
+                                <exclude>**/*Test.java</exclude>
+                                <exclude>**/*Spec.java</exclude>
+                                <exclude>**/*IT.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>${maven-jar-plugin.version}</version>
                 <configuration>
@@ -347,6 +456,13 @@
                         </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <executable>true</executable>
+                    <jvmArguments>
+                        -Xms256m
+                        -Xmx2g
+                    </jvmArguments>
+                </configuration>
             </plugin>
 
             <plugin>
