@@ -82,15 +82,66 @@ function verifyParameter() {
   fi
 }
 
+function getArtefacts() {
+  if [[ "${FORCE_DEPLOY}" == "true" ]] || [[ "${BRANCH_NAME}" == "main" ]]; then
+    set -x
+    mvn org.apache.maven.plugins:maven-dependency-plugin:3.6.1:purge-local-repository \
+      -DmanualInclude=${GROUP_ID}:"${ARTIFACT_ID}" \
+      -DreResolve=false \
+      -X \
+      -s "${GITHUB_WORKSPACE}/.github/.m2/artifactory/settings.xml" \
+      -Partifactory \
+      -e
+    mvn org.apache.maven.plugins:maven-dependency-plugin:2.10:get \
+      -X \
+      -s "${GITHUB_WORKSPACE}/.github/.m2/artifactory/settings.xml" \
+      -Partifactory \
+      -e \
+      -U \
+      -DgroupId="${GROUP_ID}" \
+      -DartifactId="${ARTIFACT_ID}" \
+      -Dversion="${BRANCH_MVN_VERSION}" \
+      -Dpackaging=jar \
+      -Dtransitive=false \
+      -DrepositoryId=artifactory \
+      -Ddest="${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}/${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.jar"
+    set +x    
+    
+    if [ -f "${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}/${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.war" ]; then
+      echo "[INFO] artifact successfully downloaded: ${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}/${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.jar"
+    else
+      echo "[ERROR] Missing deployment artifact: ${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}/${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.jar"
+      exit 1
+    fi  
+  else
+    echo "[INFO] No need to retrieve artifacts when no deployment on the way."
+  fi  
+}
+
+function deploy() {
+  if [[ "${FORCE_DEPLOY}" == "true" ]] || [[ "${BRANCH_NAME}" == "main" ]]; then
+
+    mkdir -p "${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}"/"$BACKUP_DIR"
+    sudo cp "${RUNTIME_DIR}/${ARTIFACT_ID}*".jar "${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}/${BACKUP_DIR}/
+
+    echo "[INFO] ### deploying ${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.war to ${TOMCAT_DIR}/webapps/${APP_NAME}.war"
+    sudo cp "${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}/${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.jar" "${RUNTIME_DIR}/"
+
+    sleep 15
+  else
+    echo "::notice:: ### Deployment skipped for ${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.war"
+  fi
+}
+
 function main() {
   verifyParameter
 
   echo "[INFO] All good. Starting deployment with user: $(whoami) and version ${BRANCH_MVN_VERSION}. Deployment enforced: ${FORCE_DEPLOY}"
   
   echo "[INFO] not implemented yet"
-  #getArtefacts
+  getArtefacts
 
-  #deploy
+  deploy
 }
 
 main "$@"
