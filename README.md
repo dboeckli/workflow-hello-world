@@ -17,7 +17,7 @@ Write your own description here
 - Openapi: http://localhost:8081/bpm/swagger/v3/api-docs
            http://localhost:8081/bpm/swagger/v3/api-docs.yaml
            http://localhost:8081/bpm/swagger-ui/index.html
-- H2 Console: http://localhost:8081/bpm/h2-console
+- H2 Console: http://localhost:8081/bpm/h2-console (in the connection jdbc url use: jdbc:h2:mem:workflow-hello-world)
 
 
 ## Prerequisites

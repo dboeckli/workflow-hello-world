@@ -121,8 +121,10 @@ function getArtefacts() {
 function deploy() {
   if [[ "${FORCE_DEPLOY}" == "true" ]] || [[ "${BRANCH_NAME}" == "main" ]]; then
 
-    mkdir -p "${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}"/"$BACKUP_DIR"
-    sudo cp "${RUNTIME_DIR}/${ARTIFACT_ID}-${BRANCH_MVN_VERSION}".jar "${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}/${BACKUP_DIR}/
+    if [[ -f "${RUNTIME_DIR}/${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.jar" ]]; then
+      mkdir -p "${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}"/"$BACKUP_DIR"
+      sudo cp "${RUNTIME_DIR}/${ARTIFACT_ID}-${BRANCH_MVN_VERSION}".jar "${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}/${BACKUP_DIR}/"
+    fi  
 
     echo "[INFO] ### deploying ${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.jar to ${RUNTIME_DIR}/${ARTIFACT_ID}.jar"
     sudo cp "${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}/${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.jar" "${RUNTIME_DIR}/${ARTIFACT_ID}.jar"
@@ -141,7 +143,6 @@ function main() {
 
   echo "[INFO] All good. Starting deployment with user: $(whoami) and version ${BRANCH_MVN_VERSION}. Deployment enforced: ${FORCE_DEPLOY}"
   
-  echo "[INFO] not implemented yet"
   getArtefacts
 
   deploy
