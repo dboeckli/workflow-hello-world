@@ -129,7 +129,7 @@ function deploy() {
     echo "[INFO] ### deploying ${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.jar to ${RUNTIME_DIR}/${ARTIFACT_ID}.jar"
     sudo cp "${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}/${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.jar" "${RUNTIME_DIR}/${ARTIFACT_ID}.jar"
     
-    sudo chown "${RUNTIME_USER}:${RUNTIME_USER} ${RUNTIME_DIR}/${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.jar"
+    sudo chown "${RUNTIME_USER}:${RUNTIME_USER}" "${RUNTIME_DIR}/${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.jar"
     sudo chmod 500 "${RUNTIME_DIR}/${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.jar"
 
     sleep 15
