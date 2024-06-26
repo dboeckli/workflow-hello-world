@@ -1,16 +1,22 @@
-server.servlet.context-path: /bpm
+spring:
+  h2:
+    console.enabled: true
 
-camunda.bpm.admin-user:
-  id: admin
-  password: admin
+server:
+  servlet:
+    context-path: /bpm
 
-camunda.bpm.metrics:
-  enabled: false
-  db-reporter-activate: false
-
-camunda.bpm:
-  generic-properties.properties:
-    telemetry-reporter-activate: false
+camunda:
+  bpm:
+    admin-user:
+      id: admin
+      password: admin
+    metrics:
+      enabled: false
+      db-reporter-activate: false
+    generic-properties:
+      properties:
+        telemetry-reporter-activate: false
 
 management:
   endpoints:

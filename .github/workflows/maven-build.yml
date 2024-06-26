@@ -28,6 +28,8 @@ jobs:
       BRANCH_MVN_VERSION: ${{ steps.set_version.outputs.BRANCH_MVN_VERSION }}
       BRANCH_NAME: ${{ steps.set_version.outputs.BRANCH_NAME }}
       MVN_VERSION: ${{ steps.set_version.outputs.MVN_VERSION }}
+      ARTIFACT_ID: ${{ steps.set_version.outputs.ARTIFACT_ID }}
+      GROUP_ID: ${{ steps.set_version.outputs.GROUP_ID }}
     
     
     steps:
@@ -54,8 +56,10 @@ jobs:
         id: set_version
         run: |
           "${GITHUB_WORKSPACE}/.github/workflows/scripts/set_maven_version.sh"    
-          
-      - run: |
+
+      - name: show variables
+        id: show_variables
+        run: |
           echo "##################debug####################"
           echo "$ALLMYSECRETS"
           echo "$ALLMYVARS"
@@ -78,7 +82,7 @@ jobs:
     
     steps:
       - uses: actions/checkout@v4
-        
+
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
@@ -115,8 +119,9 @@ jobs:
             ]
           output_file: ${{ github.workspace }}/.github/.m2/artifactory/settings.xml # by default it goes to ~/.m2/settings.xml
 
-      - run: |
-          echo "##################debug####################"
+      - name: show variables
+        id: show_build_variables
+        run: |
           echo "$ALLMYSECRETS"
           echo "$ALLMYVARS"
           echo "$ALLMYOUTPUT"
@@ -125,7 +130,7 @@ jobs:
           ALLMYSECRETS: ${{ toJSON(secrets) }}
           ALLMYVARS: ${{ toJSON(vars) }}
           ALLMYOUTPUT: ${{ toJSON(needs.setup.outputs) }}
-      
+
       - name: Run Maven Build
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -160,7 +165,7 @@ jobs:
     
     steps:
       - uses: actions/checkout@v4
-        
+
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
@@ -208,18 +213,17 @@ jobs:
           MVN_VERSION: ${{needs.setup.outputs.MVN_VERSION}}
           BRANCH_MVN_VERSION: ${{needs.setup.outputs.BRANCH_MVN_VERSION}}
           FORCE_DEPLOY: ${{ github.event.inputs.deploy }}
-          TOMCAT_NAME: tomcat
-          TOMCAT_DIR: /opt/tomcat/updated
+          RUNTIME_DIR: /opt/camunda/
           DB_SECRET: ${{ secrets.CI_JTT_DB_PASSWORD }}
           ENVIRONMENT: ci
-          TOMCAT_USER: tomcat
+          RUNTIME_USER: camunda
         run: |
           # run deploy script
           "${GITHUB_WORKSPACE}/.github/workflows/scripts/deploy.sh"    
   
   sonar-scan:
     
-    needs: [setup,build]
+    needs: [ setup,build ]
     
     permissions:
       actions: read
@@ -268,7 +272,7 @@ jobs:
           cache: 'maven'
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml.
           settings-path: ${{ github.workspace }} # location for the settings.xml file     
-      
+
       - name: Run with Jacoco
         env:
           GITHUB_TOKEN: ${{ github.token }}

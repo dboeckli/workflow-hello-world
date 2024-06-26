@@ -1,4 +1,6 @@
-server.servlet.context-path: /bpm
+server:
+  servlet:
+    context-path: /bpm
 
 camunda.bpm.admin-user:
   id: admin
