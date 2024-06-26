@@ -122,7 +122,7 @@ function deploy() {
   if [[ "${FORCE_DEPLOY}" == "true" ]] || [[ "${BRANCH_NAME}" == "main" ]]; then
 
     mkdir -p "${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}"/"$BACKUP_DIR"
-    sudo cp "${RUNTIME_DIR}/${ARTIFACT_ID}*".jar "${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}/${BACKUP_DIR}/
+    sudo cp "${RUNTIME_DIR}/${ARTIFACT_ID}-${BRANCH_MVN_VERSION}".jar "${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}/${BACKUP_DIR}/
 
     echo "[INFO] ### deploying ${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.jar to ${RUNTIME_DIR}/${ARTIFACT_ID}.jar"
     sudo cp "${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}/${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.jar" "${RUNTIME_DIR}/"
