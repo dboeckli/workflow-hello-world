@@ -33,7 +33,7 @@ management:
       show-details: always
 
 logging:
-  config: "classpath:logging/log4j2.xml"
+  config: "classpath:logging/log4j2-sit.xml"
 
 springdoc:
   show-actuator: true
