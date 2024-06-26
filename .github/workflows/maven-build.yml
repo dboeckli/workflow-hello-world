@@ -59,16 +59,15 @@ jobs:
 
       - name: show variables
         id: show_variables
-        run: |
-          echo "::notice:: ### ALLMYSECRETS: $ALLMYSECRETS"
-          echo "::notice:: ### $ALLMYVARS: $ALLMYVARS"
-          echo "::notice:: ### $ALLMYOUTPUT: $ALLMYOUTPUT"
         shell: bash
         env:
           ALLMYSECRETS: ${{ toJSON(secrets) }}
           ALLMYVARS: ${{ toJSON(vars) }}
           ALLMYOUTPUT: ${{ toJSON(steps.set_version.outputs) }}
-  
+        run: |
+          echo "::notice:: ### ALLMYSECRETS: $ALLMYSECRETS"
+          echo "::notice:: ### ALLMYVARS: $ALLMYVARS"
+          echo "::notice:: ### ALLMYOUTPUT: $ALLMYOUTPUT"
   
   build:
     runs-on: ubuntu-latest
@@ -120,15 +119,15 @@ jobs:
 
       - name: show variables
         id: show_build_variables
-        run: |
-          echo "::notice:: ### ALLMYSECRETS: $ALLMYSECRETS"
-          echo "::notice:: ### $ALLMYVARS: $ALLMYVARS"
-          echo "::notice:: ### $ALLMYOUTPUT: $ALLMYOUTPUT"
         shell: bash
         env:
           ALLMYSECRETS: ${{ toJSON(secrets) }}
           ALLMYVARS: ${{ toJSON(vars) }}
           ALLMYOUTPUT: ${{ toJSON(needs.setup.outputs) }}
+        run: |
+          echo "::notice:: ### ALLMYSECRETS: $ALLMYSECRETS"
+          echo "::notice:: ### ALLMYVARS: $ALLMYVARS"
+          echo "::notice:: ### ALLMYOUTPUT: $ALLMYOUTPUT"
 
       - name: Run Maven Build
         env:

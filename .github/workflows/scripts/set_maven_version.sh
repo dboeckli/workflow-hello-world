@@ -18,8 +18,8 @@ echo "BRANCH_NAME=$branch" >>"$GITHUB_OUTPUT"
 # TODO: for future we want to use the default artifactory profile. here it is deactivated by intention, needs some research.
 mvn help:evaluate -e -P '!artifactory' -Dexpression=project.version
 MVN_VERSION=$(mvn help:evaluate -P '!artifactory' -Dexpression=project.version -q -DforceStdout)
-ARTIFACT_ID=$(mvn help:evaluate -P '!artifactory' -Dexpression=project.groupId -q -DforceStdout)
-GROUP_ID=$(mvn help:evaluate -P '!artifactory' -Dexpression=project.artifactId -q -DforceStdout)
+ARTIFACT_ID=$(mvn help:evaluate -P '!artifactory' -Dexpression=project.artifactId -q -DforceStdout)
+GROUP_ID=$(mvn help:evaluate -P '!artifactory' -Dexpression=project.groupId -q -DforceStdout)
 echo "MVN_VERSION=$MVN_VERSION" >>"$GITHUB_OUTPUT"
 echo "ARTIFACT_ID=$ARTIFACT_ID" >>"$GITHUB_OUTPUT"
 echo "GROUP_ID=$GROUP_ID" >>"$GITHUB_OUTPUT"
