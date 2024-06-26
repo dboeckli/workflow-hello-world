@@ -300,6 +300,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           BRANCH_MVN_VERSION: ${{needs.setup.outputs.BRANCH_MVN_VERSION}}
           BRANCH_NAME: ${{needs.setup.outputs.BRANCH_NAME}}
+          ARTIFACT_ID: ${{needs.setup.outputs.ARTIFACT_ID}}
           ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_CI_SWP_URL }}
           ARTIFACTORY_USERNAME: ${{ vars.ARTIFACTORY_CI_SWP_USERNAME }}
           ARTIFACTORY_TOKEN: ${{ secrets.ARTIFACTORY_CI_SWP_TOKEN }}
@@ -314,7 +315,7 @@ jobs:
                 -Dsonar.host.url=https://sonarcloud.io \
                 -Dsonar.sourceEncoding=UTF-8 \
                 -Dsonar.organization=swissperform \
-                -Dsonar.projectKey=SWISSPERFORM_workflow-hello-world \
+                -Dsonar.projectKey=SWISSPERFORM_$ARTIFACT_ID \
                 -Dsonar.branch.name=main
           else
             echo "::notice:: ### Build of Feature Branch ${BRANCH_NAME}. Version: $BRANCH_MVN_VERSION"
@@ -326,7 +327,7 @@ jobs:
                 -Dsonar.host.url=https://sonarcloud.io \
                 -Dsonar.sourceEncoding=UTF-8 \
                 -Dsonar.organization=swissperform \
-                -Dsonar.projectKey=SWISSPERFORM_workflow-hello-world \
+                -Dsonar.projectKey=SWISSPERFORM_$ARTIFACT_ID \
                 -Dsonar.branch.name=${BRANCH_NAME} \
                 -Dsonar.branch.target=main
           fi
