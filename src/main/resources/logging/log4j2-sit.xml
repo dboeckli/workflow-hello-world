@@ -28,23 +28,23 @@
 
     <Loggers>
         <logger name="ch.swissperform" level="INFO" additivity="false">
-            <AppenderRef ref="Console"/>
+            <AppenderRef ref="rollingFile"/>
         </logger>
 
         <logger name="org.springframework" level="INFO" additivity="false">
-            <AppenderRef ref="Console"/>
+            <AppenderRef ref="rollingFile"/>
         </logger>
 
         <logger name="org.hibernate" level="INFO" additivity="false">
-            <AppenderRef ref="Console"/>
+            <AppenderRef ref="rollingFile"/>
         </logger>
 
         <logger name="org.camunda" level="INFO" additivity="false">
-            <AppenderRef ref="Console"/>
+            <AppenderRef ref="rollingFile"/>
         </logger>
 
         <Root level="INFO">
-            <AppenderRef ref="console"/>
+            <AppenderRef ref="rollingFile"/>
         </Root>
     </Loggers>
 
