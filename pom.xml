@@ -478,7 +478,17 @@
                             </additionalProperties>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>create-spring-boot-jar</id>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                        <configuration>
+                            <executable>true</executable>
+                        </configuration>
+                    </execution>
                 </executions>
+                
                 <configuration>
                     <executable>true</executable>
                     <jvmArguments>
