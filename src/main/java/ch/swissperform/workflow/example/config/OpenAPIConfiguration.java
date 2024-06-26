@@ -23,6 +23,8 @@ public class OpenAPIConfiguration {
 
     @Bean
     public OpenAPI openAPI() {
+        return new OpenAPI();
+        /*
         try {
             OpenAPI openAPI = new OpenAPI();
             openAPI.setExtensions(camundaExtensions());
@@ -30,7 +32,7 @@ public class OpenAPIConfiguration {
         } catch (JsonProcessingException ex) {
             throw new RuntimeException("Failed to parse Camunda OpenAPI yaml", ex);
         }
-
+        */
     }
 
     private Map<String, Object> camundaExtensions() throws JsonProcessingException {
