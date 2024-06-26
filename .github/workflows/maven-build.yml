@@ -60,10 +60,9 @@ jobs:
       - name: show variables
         id: show_variables
         run: |
-          echo "##################debug####################"
-          echo "$ALLMYSECRETS"
-          echo "$ALLMYVARS"
-          echo "$ALLMYOUTPUT"
+          echo "::notice:: ### ALLMYSECRETS: $ALLMYSECRETS"
+          echo "::notice:: ### $ALLMYVARS: $ALLMYVARS"
+          echo "::notice:: ### $ALLMYOUTPUT: $ALLMYOUTPUT"
         shell: bash
         env:
           ALLMYSECRETS: ${{ toJSON(secrets) }}
@@ -122,9 +121,9 @@ jobs:
       - name: show variables
         id: show_build_variables
         run: |
-          echo "$ALLMYSECRETS"
-          echo "$ALLMYVARS"
-          echo "$ALLMYOUTPUT"
+          echo "::notice:: ### ALLMYSECRETS: $ALLMYSECRETS"
+          echo "::notice:: ### $ALLMYVARS: $ALLMYVARS"
+          echo "::notice:: ### $ALLMYOUTPUT: $ALLMYOUTPUT"
         shell: bash
         env:
           ALLMYSECRETS: ${{ toJSON(secrets) }}
@@ -316,7 +315,7 @@ jobs:
                 -Dsonar.host.url=https://sonarcloud.io \
                 -Dsonar.sourceEncoding=UTF-8 \
                 -Dsonar.organization=swissperform \
-                -Dsonar.projectKey=ch.swissperform.workflow.hello-world \
+                -Dsonar.projectKey=SWISSPERFORM_workflow-hello-world \
                 -Dsonar.branch.name=main
           else
             echo "::notice:: ### Build of Feature Branch ${BRANCH_NAME}. Version: $BRANCH_MVN_VERSION"
@@ -328,7 +327,7 @@ jobs:
                 -Dsonar.host.url=https://sonarcloud.io \
                 -Dsonar.sourceEncoding=UTF-8 \
                 -Dsonar.organization=swissperform \
-                -Dsonar.projectKey=ch.swissperform.workflow.hello-world \
+                -Dsonar.projectKey=SWISSPERFORM_workflow-hello-world \
                 -Dsonar.branch.name=${BRANCH_NAME} \
                 -Dsonar.branch.target=main
           fi
