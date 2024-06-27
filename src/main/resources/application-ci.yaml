@@ -36,6 +36,8 @@ management:
   endpoint:
     health:
       show-details: always
+      probes:
+        enabled: true
 
 logging:
   config: "classpath:logging/log4j2-sit.xml"
