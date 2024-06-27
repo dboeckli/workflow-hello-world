@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/restapi/workflow", produces = "application/json")
-public class WorkflowController {
+public class WorkflowRestController {
 
     @Autowired
     public RuntimeService runtimeService;
