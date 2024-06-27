@@ -1,0 +1,48 @@
+package ch.swissperform.workflow.example.controller;
+
+import org.camunda.bpm.engine.impl.RuntimeServiceImpl;
+import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+
+@ExtendWith(MockitoExtension.class)
+class WorkflowRestControllerTest {
+
+    @InjectMocks
+    WorkflowRestController workflowRestController;
+
+    @Mock
+    RuntimeServiceImpl runtimeServiceMock = new RuntimeServiceImpl();
+
+    @Test
+    void getInfo() {
+        ExecutionEntity givenExecution = new ExecutionEntity();
+        givenExecution.setId("id");
+        givenExecution.setCaseInstanceId("caseInstanceId");
+        givenExecution.setProcessInstanceId("processInstanceId");
+        givenExecution.setRootProcessInstanceId("rootProcessInstanceId");
+        givenExecution.setProcessDefinitionId("processDefinitionId");
+        
+        Mockito.when(runtimeServiceMock.startProcessInstanceByKey(any())).thenReturn(givenExecution);
+
+        ResponseEntity<WorkflowRestController.HelloWorldWorklfowResponse> entity = workflowRestController.getInfo();
+
+        assertAll(
+                () -> assertEquals(givenExecution.getId(), entity.getBody().id()),
+                () -> assertEquals(givenExecution.getCaseInstanceId(), entity.getBody().caseInstanceId()),
+                () -> assertEquals(givenExecution.getProcessInstanceId(), entity.getBody().processInstanceId()),
+                () -> assertEquals(givenExecution.getRootProcessInstanceId(), entity.getBody().rootProcessInstanceId()),
+                () -> assertEquals(givenExecution.getProcessDefinitionId(), entity.getBody().processDefinitionId())
+        );
+
+    }
+}

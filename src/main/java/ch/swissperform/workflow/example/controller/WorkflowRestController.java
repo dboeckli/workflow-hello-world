@@ -13,9 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/restapi/workflow", produces = "application/json")
 public class WorkflowRestController {
+    
+    private final RuntimeService runtimeService;
 
     @Autowired
-    public RuntimeService runtimeService;
+    public WorkflowRestController(RuntimeService runtimeService) {
+        this.runtimeService = runtimeService;
+    }
 
     @PostMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<HelloWorldWorklfowResponse> getInfo() {
@@ -24,13 +28,12 @@ public class WorkflowRestController {
         // when
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(processDefinitionKey);
         return ResponseEntity.ok().body(createResponse(processInstance));
-
     }
 
     private HelloWorldWorklfowResponse createResponse(ProcessInstance processInstance) {
         return HelloWorldWorklfowResponse.builder()
                                          .caseInstanceId(processInstance.getCaseInstanceId())
-                                         .processInstanceId(processInstance.getProcessDefinitionId())
+                                         .processInstanceId(processInstance.getProcessInstanceId())
                                          .id(processInstance.getId())
                                          .rootProcessInstanceId(processInstance.getRootProcessInstanceId())
                                          .processDefinitionId(processInstance.getProcessDefinitionId())
