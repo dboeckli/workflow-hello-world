@@ -12,7 +12,7 @@
                 filePattern="${LOG_DIR}/application.%i.log.gz"
                 ignoreExceptions="false">
             <PatternLayout>
-                <Pattern>%d{DEFAULT} [%t] %-5level %X - %logger{36} - %msg%</Pattern>
+                <Pattern>%d{DEFAULT} [%t] %-5level %X - %logger{36} - %msg%nfix logging</Pattern>
             </PatternLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="10MB" />

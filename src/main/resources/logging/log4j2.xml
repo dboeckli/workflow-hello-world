@@ -5,8 +5,7 @@
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout>
-                <!--<Pattern>%d{DEFAULT} [%t] %-5level %X - %logger{36} - %msg%n</Pattern>-->
-                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %m%n</Pattern>
+                <Pattern>%d{DEFAULT} [%t] %-5level %X - %logger{36} - %msg%n</Pattern>
             </PatternLayout>
         </Console>
     </Appenders>
