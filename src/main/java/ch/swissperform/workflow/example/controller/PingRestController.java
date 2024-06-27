@@ -37,13 +37,7 @@ public class PingRestController {
     }
 
     @Builder
-    public record PingResponse(String mavenGroupdId,
-                               String mavenArtifactId,
-                               String version,
-                               String vendor,
-                               String javaVersion,
-                               String mavenUser,
-                               String mavenTimeStamp,
+    public record PingResponse(String mavenGroupdId, String mavenArtifactId, String version, String vendor, String javaVersion, String mavenUser, String mavenTimeStamp,
                                String gitCommitId) {
 
     }

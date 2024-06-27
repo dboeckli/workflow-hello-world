@@ -24,14 +24,14 @@ function verifyParameter() {
     echo "[ERROR] Missing mandatory environment variable. ARTIFACTORY_URL was empty"
     exit 1
   fi
-  
+
   if [[ ${ARTIFACT_ID} && ${ARTIFACT_ID-x} ]]; then
     echo "[INFO] ARTIFACTORY_URL: ${ARTIFACT_ID}"
   else
     echo "[ERROR] Missing mandatory environment variable. ARTIFACT_ID was empty"
     exit 1
   fi
-  
+
   if [[ ${GROUP_ID} && ${GROUP_ID-x} ]]; then
     echo "[INFO] ARTIFACTORY_URL: ${GROUP_ID}"
   else
@@ -59,21 +59,21 @@ function verifyParameter() {
     echo "[ERROR] Missing mandatory environment variable. RUNTIME_DIR was empty"
     exit 1
   fi
-  
+
   if [[ ${RUNTIME_USER} && ${RUNTIME_USER-x} ]]; then
     echo "[INFO] RUNTIME_DIR: ${RUNTIME_USER}"
   else
     echo "[ERROR] Missing mandatory environment variable. RUNTIME_USER was empty"
     exit 1
   fi
-  
+
   if [[ ${DB_SECRET} && ${DB_SECRET-x} ]]; then
     echo "[INFO] DB_SECRET has been set"
   else
     echo "[ERROR] Missing mandatory environment variable. DB_SECRET was empty"
     exit 1
   fi
-  
+
   if [[ ${ENVIRONMENT} && ${ENVIRONMENT-x} ]]; then
     echo "[INFO] TOMCAT_NAME: ${ENVIRONMENT}"
   else
@@ -105,17 +105,17 @@ function getArtefacts() {
       -Dtransitive=false \
       -DrepositoryId=artifactory \
       -Ddest="${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}/${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.jar"
-    set +x    
-    
+    set +x
+
     if [ -f "${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}/${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.jar" ]; then
       echo "[INFO] artifact successfully downloaded: ${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}/${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.jar"
     else
       echo "[ERROR] Missing deployment artifact: ${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}/${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.jar"
       exit 1
-    fi  
+    fi
   else
     echo "[INFO] No need to retrieve artifacts when no deployment on the way."
-  fi  
+  fi
 }
 
 function deploy() {
@@ -124,13 +124,13 @@ function deploy() {
     if [[ -f "${RUNTIME_DIR}/${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.jar" ]]; then
       mkdir -p "${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}"/"$BACKUP_DIR"
       sudo cp "${RUNTIME_DIR}/${ARTIFACT_ID}-${BRANCH_MVN_VERSION}".jar "${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}/${BACKUP_DIR}/"
-    fi  
+    fi
 
     sudo systemctl stop workflow-hello-world.service
     sleep 5
     echo "[INFO] ### deploying ${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.jar to ${RUNTIME_DIR}/${ARTIFACT_ID}.jar"
     sudo cp "${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}/${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.jar" "${RUNTIME_DIR}/${ARTIFACT_ID}.jar"
-    
+
     sudo chown "${RUNTIME_USER}:${RUNTIME_USER}" "${RUNTIME_DIR}/${ARTIFACT_ID}.jar"
     sudo chmod 770 "${RUNTIME_DIR}/${ARTIFACT_ID}.jar"
 
@@ -145,12 +145,10 @@ function main() {
   verifyParameter
 
   echo "[INFO] All good. Starting deployment with user: $(whoami) and version ${BRANCH_MVN_VERSION}. Deployment enforced: ${FORCE_DEPLOY}"
-  
+
   getArtefacts
 
   deploy
 }
 
 main "$@"
-
-

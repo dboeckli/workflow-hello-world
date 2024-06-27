@@ -1,4 +1,9 @@
 root = true
+
+# Ignore paths
+[{**/*.bpmn,**/*.run.xml}]
+ij_formatter_enabled = false
+
 [*]
 charset = utf-8
 end_of_line = lf

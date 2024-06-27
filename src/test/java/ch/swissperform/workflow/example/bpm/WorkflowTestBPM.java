@@ -16,16 +16,11 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
-import static org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests.assertThat;
-import static org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests.complete;
-import static org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests.task;
+import static org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests.*;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
-@SpringBootTest(args = {
-        "--spring.datasource.url=jdbc:h2:mem:WorkflowTestBPM;DB_CLOSE_ON_EXIT=FALSE",
-        "--camunda.bpm.job-execution.enabled=false"
-})
+@SpringBootTest(args = {"--spring.datasource.url=jdbc:h2:mem:WorkflowTestBPM;DB_CLOSE_ON_EXIT=FALSE", "--camunda.bpm.job-execution.enabled=false"})
 @Testcontainers
 @Log4j2
 class WorkflowTestBPM {
@@ -36,18 +31,19 @@ class WorkflowTestBPM {
     @Container
     public MockServerContainer mockServer = new MockServerContainer(DockerImageName.parse("mockserver/mockserver:5.14.0"));
 
-    private MockServerClient mockServerClient;
-
     @Autowired
     DefaultApi defaultApi;
 
     @Autowired
     RestApiConfiguration restApiConfiguration;
 
+    private MockServerClient mockServerClient;
+
     @BeforeEach
     public void setup() {
         mockServerClient = new MockServerClient(mockServer.getHost(), mockServer.getServerPort());
-        defaultApi.getApiClient().setBasePath(restApiConfiguration.getProtocol() + "://" + mockServer.getHost() + ":" + mockServer.getServerPort() + "/" + restApiConfiguration.getContext());
+        defaultApi.getApiClient()
+                  .setBasePath(restApiConfiguration.getProtocol() + "://" + mockServer.getHost() + ":" + mockServer.getServerPort() + "/" + restApiConfiguration.getContext());
     }
 
     @Test
@@ -61,11 +57,7 @@ class WorkflowTestBPM {
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(processDefinitionKey);
 
         // then
-        assertThat(processInstance).isStarted()
-                                   .task()
-                                   .hasDefinitionKey("say-hello")
-                                   .hasCandidateUser("admin")
-                                   .isNotAssigned();
+        assertThat(processInstance).isStarted().task().hasDefinitionKey("say-hello").hasCandidateUser("admin").isNotAssigned();
 
         assertThat(processInstance).isWaitingAt("say-hello");
 
@@ -81,15 +73,7 @@ class WorkflowTestBPM {
         givenVersionInfo.setApplicationVersion("applicationVersion");
         givenVersionInfo.setWildflyProductVersion("wildflyProductVersion");
         givenVersionInfo.setWildflyReleaseVersion("wildflyReleaseVersion");
-        mockServerClient.when(
-                request()
-                        .withMethod("GET")
-                        .withPath("/swp-jtt/rest/info/version")
-        ).respond(
-                response()
-                        .withStatusCode(200)
-                        .withBody(givenVersionInfo.toJson())
-        );
+        mockServerClient.when(request().withMethod("GET").withPath("/swp-jtt/rest/info/version")).respond(response().withStatusCode(200).withBody(givenVersionInfo.toJson()));
     }
 
 }
