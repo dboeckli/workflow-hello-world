@@ -4,7 +4,6 @@ spring:
       enabled: true
       settings:
         web-allow-others: true
-      path: h2-console  
   jpa:
     defer-datasource-initialization: true
   datasource:
