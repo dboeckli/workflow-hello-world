@@ -146,8 +146,7 @@ jobs:
           fi
   
   deploy:
-    # TODO: change to camunda ci server
-    #runs-on: [camunda-ci]
+
     runs-on: camunda-ci
 
     needs: [ setup,build ]
