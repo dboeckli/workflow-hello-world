@@ -1,4 +1,4 @@
-# Template Java Maven
+# Camunda Hello World Template
 
 - [Description](#description)
 - [Prerequisites](#prerequisites)
