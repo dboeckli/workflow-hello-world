@@ -23,8 +23,7 @@ public class WorkflowController {
         String processDefinitionKey = "hello-world-process";
         // when
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(processDefinitionKey);
-        return ResponseEntity.ok()
-                             .body(createResponse(processInstance));
+        return ResponseEntity.ok().body(createResponse(processInstance));
 
     }
 

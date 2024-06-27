@@ -13,16 +13,16 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 public class RestApiConfiguration {
 
-    @Value("${applicaion.jtt.protocol}")
+    @Value("${application.jtt.protocol}")
     private String protocol;
 
-    @Value("${applicaion.jtt.host}")
+    @Value("${application.jtt.host}")
     private String host;
 
-    @Value("${applicaion.jtt.port}")
+    @Value("${application.jtt.port}")
     private String port;
 
-    @Value("${applicaion.jtt.context}")
+    @Value("${application.jtt.context}")
     private String context;
 
     @Bean

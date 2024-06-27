@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="debug" strict="true" name="XMLConfigTest" packages="org.apache.logging.log4j.test" monitorInterval="30">
+
+    <Properties>
+        <Property name="LOG_DIR">/opt/camunda/logs</Property>
+    </Properties>
+
+    <!-- see https://howtodoinjava.com/log4j2/log4j2-rollingfileappender-example/ -->
+    <Appenders>
+        <RollingFile
+                name="rollingFile"
+                fileName="${LOG_DIR}/application.log"
+                filePattern="${LOG_DIR}/application.%d{dd-MMM}.log.gz"
+                ignoreExceptions="false">
+            <PatternLayout>
+                <Pattern>%d{DEFAULT} [%t] %-5level %X - %logger{36} - %msg%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+            <DefaultRolloverStrategy max="5">
+                <Delete basePath="${LOG_DIR}" maxDepth="2">
+                    <IfFileName glob="*/app-*.log.gz"/>
+                    <IfLastModified age="P30D"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <logger name="ch.swissperform" level="INFO" additivity="false">
+            <AppenderRef ref="rollingFile"/>
+        </logger>
+
+        <logger name="org.springframework" level="INFO" additivity="false">
+            <AppenderRef ref="rollingFile"/>
+        </logger>
+
+        <logger name="org.hibernate" level="INFO" additivity="false">
+            <AppenderRef ref="rollingFile"/>
+        </logger>
+
+        <logger name="org.camunda" level="INFO" additivity="false">
+            <AppenderRef ref="rollingFile"/>
+        </logger>
+
+        <Root level="INFO">
+            <AppenderRef ref="rollingFile"/>
+        </Root>
+    </Loggers>
+
+</Configuration>

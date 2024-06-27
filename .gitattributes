@@ -14,4 +14,7 @@
 *.gz binary
 *.sh binary
 *.tgz binary
+*.tar.gz binary
+*.zip binary
+*.jar binary
 *.node binary

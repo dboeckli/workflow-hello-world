@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ch.swissperform.workflow</groupId>
-    <artifactId>hello-world</artifactId>
+    <artifactId>workflow-hello-world</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
     <name>${project.artifactId}</name>
@@ -19,8 +20,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
 
         <!--suppress UnresolvedMavenProperty -->
         <buildNumber>${git.commit.id.abbrev}</buildNumber>
@@ -28,7 +29,7 @@
         <sonar.organization>swissperform</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
 
-        <spring.boot.version>3.3.0</spring.boot.version>
+        <spring.boot.version>3.3.1</spring.boot.version>
         <camunda.spring.boot.starter.version>7.21.0</camunda.spring.boot.starter.version>
         <springdoc-openapi-starter-webmvc-ui.version>2.5.0</springdoc-openapi-starter-webmvc-ui.version>
         <swp-jtt.version>1.0.33</swp-jtt.version>
@@ -40,7 +41,9 @@
         <git-commit-id-maven-plugin.version>9.0.0</git-commit-id-maven-plugin.version>
         <build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>
         <maven-surefire-plugin.version>3.3.0</maven-surefire-plugin.version>
+        <maven-site-plugin.version>4.0.0-M15</maven-site-plugin.version>
 
+        <maven-site-plugin.version>4.0.0-M15</maven-site-plugin.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -377,6 +380,27 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>perform-integration-test</id>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <skipAfterFailureCount>1</skipAfterFailureCount>
+                            <!--suppress UnresolvedMavenProperty -->
+                            <argLine>${argLine}</argLine>
+                            <parallel>none</parallel>
+                            <includes>
+                                <include>**/*IT.java</include>
+                            </includes>
+                            <excludes>
+                                <exclude>**/*Tests.java</exclude>
+                                <exclude>**/*Test.java</exclude>
+                                <exclude>**/*Spec.java</exclude>
+                                <exclude>**/*BPM.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>perform-bpmaware-integration-test</id>
                         <goals>
                             <goal>test</goal>
@@ -430,7 +454,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>4.0.0-M15</version>
+                <version>${maven-site-plugin.version}</version>
                 <configuration>
                     <skip>true</skip>
                 </configuration>
@@ -455,7 +479,17 @@
                             </additionalProperties>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>create-spring-boot-jar</id>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                        <configuration>
+                            <executable>true</executable>
+                        </configuration>
+                    </execution>
                 </executions>
+
                 <configuration>
                     <executable>true</executable>
                     <jvmArguments>
@@ -481,6 +515,11 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
+                        <configuration>
+                            <formats>
+                                <format>XML</format>
+                            </formats>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -506,7 +545,7 @@
                     </snapshots>
                 </repository>
                 <repository>
-                    <snapshots />
+                    <snapshots/>
                     <id>snapshots</id>
                     <name>swissperform-virtual</name>
                     <url>https://swissperform.jfrog.io/artifactory/virtual-maven-repo/</url>
@@ -522,7 +561,7 @@
                     <url>https://swissperform.jfrog.io/artifactory/virtual-maven-repo</url>
                 </pluginRepository>
                 <pluginRepository>
-                    <snapshots />
+                    <snapshots/>
                     <id>snapshots</id>
                     <name>swissperform-virtual</name>
                     <url>https://swissperform.jfrog.io/artifactory/virtual-maven-repo</url>

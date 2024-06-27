@@ -1,5 +1,6 @@
 # IntelliJ files
 /.idea/
+.metadata
 
 # Eclipse files
 /.settings/
@@ -11,3 +12,4 @@
 
 # Other
 *.log
+*.dmp

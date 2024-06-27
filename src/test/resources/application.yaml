@@ -1,4 +1,6 @@
-server.servlet.context-path: /bpm
+server:
+  servlet:
+    context-path: /bpm
 
 camunda.bpm.admin-user:
   id: admin
@@ -7,7 +9,7 @@ camunda.bpm.admin-user:
 logging:
   config: "classpath:logging/log4j2.xml"
 
-applicaion:
+application:
   jtt:
     protocol: "http"
     host: "localhost"
