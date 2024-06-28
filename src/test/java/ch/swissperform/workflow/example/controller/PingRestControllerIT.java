@@ -10,7 +10,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -27,7 +26,7 @@ class PingRestControllerIT {
 
     @Test
     void testGetInfo() throws Exception {
-        this.mockMvc.perform(get("/restapi/ping")).andDo(print()).andExpect(status().isOk()).andExpect(content().json(new Gson().toJson(createResponse())));
+        this.mockMvc.perform(get("/restapi/ping")).andExpect(status().isOk()).andExpect(content().json(new Gson().toJson(createResponse())));
     }
 
     private PingRestController.PingResponse createResponse() {
