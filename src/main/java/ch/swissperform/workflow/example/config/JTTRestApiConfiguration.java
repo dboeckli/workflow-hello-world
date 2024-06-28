@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @Log4j2
 @Getter
-public class RestApiConfiguration {
+public class JTTRestApiConfiguration {
 
     @Value("${application.jtt.protocol}")
     private String protocol;

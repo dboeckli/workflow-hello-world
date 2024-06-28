@@ -12,7 +12,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -26,7 +25,7 @@ class CamundaApiRestControllerIT {
 
     @Test
     void getFile() throws Exception {
-        this.mockMvc.perform(get("/restapi/camunda")).andDo(print()).andExpect(status().isOk()).andExpect(content().json(createResponse()));
+        this.mockMvc.perform(get("/restapi/camunda")).andExpect(status().isOk()).andExpect(content().json(createResponse()));
     }
 
     private String createResponse() throws IOException {

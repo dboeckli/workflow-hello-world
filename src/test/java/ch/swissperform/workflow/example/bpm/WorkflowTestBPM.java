@@ -2,7 +2,7 @@ package ch.swissperform.workflow.example.bpm;
 
 import ch.swissperform.jtt.generated.openapi.api.DefaultApi;
 import ch.swissperform.jtt.generated.openapi.model.VersionInfo;
-import ch.swissperform.workflow.example.config.RestApiConfiguration;
+import ch.swissperform.workflow.example.config.JTTRestApiConfiguration;
 import lombok.extern.log4j.Log4j2;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
@@ -35,7 +35,7 @@ class WorkflowTestBPM {
     DefaultApi defaultApi;
 
     @Autowired
-    RestApiConfiguration restApiConfiguration;
+    JTTRestApiConfiguration JTTRestApiConfiguration;
 
     private MockServerClient mockServerClient;
 
@@ -43,7 +43,7 @@ class WorkflowTestBPM {
     public void setup() {
         mockServerClient = new MockServerClient(mockServer.getHost(), mockServer.getServerPort());
         defaultApi.getApiClient()
-                  .setBasePath(restApiConfiguration.getProtocol() + "://" + mockServer.getHost() + ":" + mockServer.getServerPort() + "/" + restApiConfiguration.getContext());
+                  .setBasePath(JTTRestApiConfiguration.getProtocol() + "://" + mockServer.getHost() + ":" + mockServer.getServerPort() + "/" + JTTRestApiConfiguration.getContext());
     }
 
     @Test
