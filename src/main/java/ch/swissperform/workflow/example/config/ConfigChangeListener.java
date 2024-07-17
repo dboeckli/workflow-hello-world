@@ -2,9 +2,10 @@ package ch.swissperform.workflow.example.config;
 
 import ch.swissperform.workflow.example.common.LogMessage;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.StreamSupport;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.env.AbstractEnvironment;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Component;
 @Log4j2
 public class ConfigChangeListener {
 
+    private static final List<String> PASSWORD_KEY_LIST  = Arrays.asList("jwt.key-value", "password", "credentials", "secret");
+
     @EventListener
     public void handleContextRefresh(ContextRefreshedEvent event) {
         final Environment env = event.getApplicationContext().getEnvironment();
@@ -28,10 +31,15 @@ public class ConfigChangeListener {
                      .map(ps -> ((EnumerablePropertySource<?>) ps).getPropertyNames())
                      .flatMap(Arrays::stream)
                      .distinct()
-                     .filter(prop -> !(prop.contains("credentials") || StringUtils.containsIgnoreCase(prop, "jwt.key-value") || StringUtils.containsIgnoreCase(prop, "password")))
-                     .forEach(prop -> log.info("{}: {}", prop, env.getProperty(prop)));
+                     .forEach(prop -> {
+                         if (PASSWORD_KEY_LIST.stream().anyMatch(prop.toLowerCase()::contains) ||
+                             PASSWORD_KEY_LIST.stream().anyMatch(Objects.requireNonNull(env.getProperty(prop)).toLowerCase()::contains)) {
+                             log.info("{}: {}", prop, "**************************");
+                         } else {
+                             log.info("{}: {}", prop, env.getProperty(prop));
+                         }
+                     });
     }
-
 }
 
 

@@ -1,6 +1,6 @@
 name: Maven Build
 run-name: >
-  ${{ github.workflow }}: ${{ github.event_name }} for ${{ github.ref_name }} by @${{ github.actor }} 
+  ${{ github.workflow }}: ${{ github.event_name }} for ${{ github.ref_name }} by @${{ github.actor }}
 
 on:
   workflow_dispatch:
@@ -15,28 +15,28 @@ on:
   schedule:
     - cron: 5 5 * * MON-FRI # daily at 5:05 am (Except on Weekends)
 jobs:
-  
+
   setup:
-    
+
     runs-on: ubuntu-latest
 
     permissions:
       contents: read
       packages: write
-    
+
     outputs:
       BRANCH_MVN_VERSION: ${{ steps.set_version.outputs.BRANCH_MVN_VERSION }}
       BRANCH_NAME: ${{ steps.set_version.outputs.BRANCH_NAME }}
       MVN_VERSION: ${{ steps.set_version.outputs.MVN_VERSION }}
       ARTIFACT_ID: ${{ steps.set_version.outputs.ARTIFACT_ID }}
       GROUP_ID: ${{ steps.set_version.outputs.GROUP_ID }}
-    
-    
+
+
     steps:
       - name: Validate
         id: validate
         run: |
-          if [[ "${BRANCH_NAME}" == "master" ]]; then 
+          if [[ "${BRANCH_NAME}" == "master" ]]; then
             echo "::error:: ### Build for master has been deprecated. Use branch main instead!"
             exit 1
           fi
@@ -55,7 +55,7 @@ jobs:
       - name: Set Maven Versions
         id: set_version
         run: |
-          "${GITHUB_WORKSPACE}/.github/workflows/scripts/set_maven_version.sh"    
+          "${GITHUB_WORKSPACE}/.github/workflows/scripts/set_maven_version.sh"
 
       - name: show variables
         id: show_variables
@@ -68,16 +68,16 @@ jobs:
           echo "### ALLMYSECRETS: $ALLMYSECRETS"
           echo "### ALLMYVARS: $ALLMYVARS"
           echo "### ALLMYOUTPUT: $ALLMYOUTPUT"
-  
+
   build:
     runs-on: camunda-ci
-    
+
     needs: [ setup ]
-    
+
     permissions:
       contents: read
       packages: write
-    
+
     steps:
       - uses: actions/checkout@v4
 
@@ -140,17 +140,17 @@ jobs:
             mvn -B versions:set -Partifactory -e -DnewVersion="$BRANCH_MVN_VERSION" -s $GITHUB_WORKSPACE/.github/.m2/artifactory/settings.xml
           fi
           if [[ "${BRANCH_NAME}" == "main" ]] || [[ "${FORCE_DEPLOY}" == "true" ]]; then
-            mvn -B deploy -Partifactory -s $GITHUB_WORKSPACE/.github/.m2/artifactory/settings.xml
+            mvn -B deploy -Partifactory,ci,!local -s $GITHUB_WORKSPACE/.github/.m2/artifactory/settings.xml
           else
-            mvn -B install -Partifactory -s $GITHUB_WORKSPACE/.github/.m2/artifactory/settings.xml
+            mvn -B install -Partifactory,ci,!local -s $GITHUB_WORKSPACE/.github/.m2/artifactory/settings.xml
           fi
-  
+
   deploy:
 
     runs-on: camunda-ci
 
     needs: [ setup,build ]
-    
+
     steps:
       - uses: actions/checkout@v4
 
@@ -179,7 +179,7 @@ jobs:
                 "password": "${env.GITHUB_TOKEN}"
               }
             ]
-          output_file: ${{ github.workspace }}/.github/.m2/artifactory/settings.xml # by default it goes to ~/.m2/settings.xml  
+          output_file: ${{ github.workspace }}/.github/.m2/artifactory/settings.xml # by default it goes to ~/.m2/settings.xml
 
       - name: Deploy
         env:
@@ -193,25 +193,25 @@ jobs:
           BRANCH_MVN_VERSION: ${{needs.setup.outputs.BRANCH_MVN_VERSION}}
           FORCE_DEPLOY: ${{ github.event.inputs.deploy }}
           RUNTIME_DIR: /opt/camunda/
-          DB_SECRET: ${{ secrets.CI_JTT_DB_PASSWORD }}
+          CAMUNDA_DB_SECRET: ${{ secrets.CI_CAMUNDA_DB_PASSWORD }}
           ENVIRONMENT: ci
           RUNTIME_USER: camunda
           ARTIFACT_ID: ${{needs.setup.outputs.ARTIFACT_ID}}
           GROUP_ID: ${{needs.setup.outputs.GROUP_ID}}
         run: |
           # run deploy script
-          "${GITHUB_WORKSPACE}/.github/workflows/scripts/deploy.sh"    
-  
+          "${GITHUB_WORKSPACE}/.github/workflows/scripts/deploy.sh"
+
   sonar-scan:
-    
+
     needs: [ setup,build ]
-    
+
     permissions:
       actions: read
       contents: write
-    
+
     runs-on: ubuntu-latest
-    
+
     steps:
 
       - uses: actions/checkout@v4
@@ -252,7 +252,7 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml.
-          settings-path: ${{ github.workspace }} # location for the settings.xml file     
+          settings-path: ${{ github.workspace }} # location for the settings.xml file
 
       - name: Run with Jacoco
         env:
@@ -275,7 +275,7 @@ jobs:
             mvn -B versions:set -Partifactory -e -DnewVersion="$BRANCH_MVN_VERSION" -s $GITHUB_WORKSPACE/.github/.m2/artifactory/settings.xml
           fi
           mvn -B clean verify \
-          -P 'artifactory,coverage' \
+          -P 'artifactory,coverage,local' \
           -s $GITHUB_WORKSPACE/.github/.m2/artifactory/settings.xml \
 
       - name: sonar
@@ -292,7 +292,7 @@ jobs:
           if [[ "${BRANCH_NAME}" == "main" ]]; then
             echo "::notice:: ### Build of Main. Version: $BRANCH_MVN_VERSION"
             mvn -B sonar:sonar \
-                -P 'artifactory,coverage' \
+                -P 'artifactory,coverage,local' \
                 -s $GITHUB_WORKSPACE/.github/.m2/artifactory/settings.xml \
                 -Dsonar.token=${SONAR_TOKEN} \
                 -Dsonar.host.url=https://sonarcloud.io \
@@ -304,7 +304,7 @@ jobs:
             echo "::notice:: ### Build of Feature Branch ${BRANCH_NAME}. Version: $BRANCH_MVN_VERSION"
             mvn -B versions:set -Partifactory -e -DnewVersion="$BRANCH_MVN_VERSION" -s $GITHUB_WORKSPACE/.github/.m2/artifactory/settings.xml
             mvn -B sonar:sonar \
-                -P 'artifactory,coverage' \
+                -P 'artifactory,coverage,local' \
                 -s $GITHUB_WORKSPACE/.github/.m2/artifactory/settings.xml \
                 -Dsonar.token=${SONAR_TOKEN} \
                 -Dsonar.host.url=https://sonarcloud.io \

@@ -14,11 +14,17 @@ Write your own description here
 
 - Camunda: http://localhost:8081/bpm/camunda/app/welcome/default/#!/welcome
 - Actuator: http://localhost:8081/bpm/actuator
-- Openapi: 
+- Openapi:
   - http://localhost:8081/bpm/swagger/v3/api-docs
   - http://localhost:8081/bpm/swagger/v3/api-docs.yaml
   - http://localhost:8081/bpm/swagger-ui/index.html
 - H2 Console: http://localhost:8081/bpm/h2-console (in the connection jdbc url use: jdbc:h2:mem:workflow-hello-world)
+
+### Servers
+
+- local: localhost, database on h2 locally
+- ci: swp71.swissperform.ch (192.168.3.71), postgres swp74.swissperform.ch
+
 
 ## Prerequisites
 

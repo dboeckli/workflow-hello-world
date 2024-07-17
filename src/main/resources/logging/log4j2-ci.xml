@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="debug" strict="true" name="XMLConfigTest" packages="org.apache.logging.log4j.test" monitorInterval="30">
+<Configuration status="debug" strict="true" name="XMLConfigTest"
+               packages="org.apache.logging.log4j.test"
+               monitorInterval="30">
 
     <Properties>
         <Property name="LOG_DIR">/opt/camunda/logs</Property>

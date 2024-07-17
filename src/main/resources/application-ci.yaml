@@ -1,15 +1,16 @@
 spring:
-  h2:
-    console:
-      enabled: true
-      settings:
-        web-allow-others: true
   jpa:
     defer-datasource-initialization: true
   datasource:
-    url: jdbc:h2:mem:workflow-hello-world
-    
-    
+    hikari:
+      username: camunda_ci
+      password: ${camunda.db.password}
+      registerMbeans: true
+      schema: workflow_hello_world
+      connectionTimeout: 30000
+      idleTimeout: 600000
+      maxLifetime: 1800000
+    url: jdbc:postgresql://swp74.swissperform.ch:5432/camunda_ci
 
 server:
   servlet:
@@ -21,9 +22,11 @@ camunda:
     admin-user:
       id: admin
       password: admin
+    filter:
+      create: All Tasks
     metrics:
-      enabled: false
-      db-reporter-activate: false
+      enabled: true
+      db-reporter-activate: true
     generic-properties:
       properties:
         telemetry-reporter-activate: false
@@ -40,7 +43,7 @@ management:
         enabled: true
 
 logging:
-  config: "classpath:logging/log4j2-sit.xml"
+  config: "classpath:logging/log4j2-ci.xml"
 
 springdoc:
   show-actuator: true

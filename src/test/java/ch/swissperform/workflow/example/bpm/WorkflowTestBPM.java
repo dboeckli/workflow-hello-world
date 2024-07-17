@@ -6,6 +6,7 @@ import ch.swissperform.workflow.example.config.JTTRestApiConfiguration;
 import lombok.extern.log4j.Log4j2;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.camunda.bpm.engine.test.Deployment;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockserver.client.MockServerClient;
@@ -22,6 +23,7 @@ import static org.mockserver.model.HttpResponse.response;
 
 @SpringBootTest(args = {"--spring.datasource.url=jdbc:h2:mem:WorkflowTestBPM;DB_CLOSE_ON_EXIT=FALSE", "--camunda.bpm.job-execution.enabled=false"})
 @Testcontainers
+@Deployment(resources = "process.bpmn")
 @Log4j2
 class WorkflowTestBPM {
 

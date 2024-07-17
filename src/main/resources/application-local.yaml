@@ -19,9 +19,11 @@ camunda:
     admin-user:
       id: admin
       password: admin
+    filter:
+      create: All Tasks
     metrics:
-      enabled: false
-      db-reporter-activate: false
+      enabled: true
+      db-reporter-activate: true
     generic-properties:
       properties:
         telemetry-reporter-activate: false

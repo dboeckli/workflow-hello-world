@@ -12,7 +12,7 @@ if [ -z "${FORCE_DEPLOY}" ]; then
   FORCE_DEPLOY="false"
 fi
 
-readonly RUNTIME_DIR RUNTIME_USER BRANCH_MVN_VERSION BRANCH_NAME DB_SECRET ENVIRONMENT ARTIFACT_ID ARTIFACTORY_URL GROUP_ID
+readonly RUNTIME_DIR RUNTIME_USER BRANCH_MVN_VERSION BRANCH_NAME CAMUNDA_DB_SECRET ENVIRONMENT ARTIFACT_ID ARTIFACTORY_URL GROUP_ID
 
 function verifyParameter() {
   echo "Environment Variables are:"
@@ -67,10 +67,10 @@ function verifyParameter() {
     exit 1
   fi
 
-  if [[ ${DB_SECRET} && ${DB_SECRET-x} ]]; then
-    echo "[INFO] DB_SECRET has been set"
+  if [[ ${CAMUNDA_DB_SECRET} && ${CAMUNDA_DB_SECRET-x} ]]; then
+    echo "[INFO] CAMUNDA_DB_SECRET has been set"
   else
-    echo "[ERROR] Missing mandatory environment variable. DB_SECRET was empty"
+    echo "[ERROR] Missing mandatory environment variable. CAMUNDA_DB_SECRET was empty"
     exit 1
   fi
 
@@ -121,20 +121,34 @@ function getArtefacts() {
 function deploy() {
   if [[ "${FORCE_DEPLOY}" == "true" ]] || [[ "${BRANCH_NAME}" == "main" ]]; then
 
-    if [[ -f "${RUNTIME_DIR}/${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.jar" ]]; then
+    if [[ -f "${RUNTIME_DIR}/${ARTIFACT_ID}.jar" ]]; then
       mkdir -p "${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}"/"$BACKUP_DIR"
-      sudo cp "${RUNTIME_DIR}/${ARTIFACT_ID}-${BRANCH_MVN_VERSION}".jar "${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}/${BACKUP_DIR}/"
+      sudo cp "${RUNTIME_DIR}/${ARTIFACT_ID}.jar" "${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}/${BACKUP_DIR}/"
+      sudo cp "${RUNTIME_DIR}/${ARTIFACT_ID}".conf "${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}/${BACKUP_DIR}/"
     fi
 
-    sudo systemctl stop workflow-hello-world.service
+    if [[ -f "${RUNTIME_DIR}/${ARTIFACT_ID}.conf" ]]; then
+      mkdir -p "${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}"/"$BACKUP_DIR"
+      sudo cp "${RUNTIME_DIR}/${ARTIFACT_ID}".conf "${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}/${BACKUP_DIR}/"
+    fi
+
+    sudo service workflow-hello-world stop
     sleep 5
+    echo "[INFO] ### deploying ${ARTIFACT_ID}.conf to ${RUNTIME_DIR}/${ARTIFACT_ID}.conf"
+    sudo cp "${GITHUB_WORKSPACE}/src/main/conf/${ARTIFACT_ID}.conf" "${RUNTIME_DIR}/${ARTIFACT_ID}.conf"
     echo "[INFO] ### deploying ${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.jar to ${RUNTIME_DIR}/${ARTIFACT_ID}.jar"
     sudo cp "${ACTION_RUNNER_DEPLOYMENT_WORKING_DIR}/${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.jar" "${RUNTIME_DIR}/${ARTIFACT_ID}.jar"
 
+    sudo chown "${RUNTIME_USER}:${RUNTIME_USER}" "${RUNTIME_DIR}/${ARTIFACT_ID}.conf"
+    sudo chmod 664 "${RUNTIME_DIR}/${ARTIFACT_ID}.conf"
+    sudo sed -i "s/@@profile@@/${ENVIRONMENT}/g" "${RUNTIME_DIR}/${ARTIFACT_ID}.conf"
+    sudo sed -i "s/@@db_secret@@/${CAMUNDA_DB_SECRET}/g" "${RUNTIME_DIR}/${ARTIFACT_ID}.conf"
     sudo chown "${RUNTIME_USER}:${RUNTIME_USER}" "${RUNTIME_DIR}/${ARTIFACT_ID}.jar"
     sudo chmod 770 "${RUNTIME_DIR}/${ARTIFACT_ID}.jar"
 
-    sudo systemctl start workflow-hello-world.service
+    sudo systemctl daemon-reload
+
+    sudo service workflow-hello-world start
     sleep 15
   else
     echo "::notice:: ### Deployment skipped for ${ARTIFACT_ID}-${BRANCH_MVN_VERSION}.jar"

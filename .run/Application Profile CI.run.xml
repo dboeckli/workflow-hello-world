@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Application Profile CI" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" show_console_on_std_err="true" show_console_on_std_out="true">
+    <option name="ACTIVE_PROFILES" value="ci" />
+    <log_file alias="application Log" path="$PROJECT_DIR$/../../../camunda/logs/application.log" />
+    <module name="workflow-hello-world" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="ch.swissperform.workflow.example.Application" />
+    <option name="VM_PARAMETERS" value="-Dcamunda.db.password=Bie3;racu-Va=3dies8+ha_h?yaeG7t" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

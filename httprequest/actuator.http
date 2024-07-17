@@ -11,39 +11,42 @@ GET {{host}}/{{context}}/actuator/health
 Accept: application/json
 
 ### actuator diskSpace
-GET {{host}}/{{context}}/actuator/health/diskSpace/
+GET {{host}}/{{context}}/actuator/health/diskSpace
 Accept: application/json
 
 ### actuator ping
-GET {{host}}/{{context}}/actuator/health/ping/
+GET {{host}}/{{context}}/actuator/health/ping
 Accept: application/json
 
 ### actuator health
-GET {{host}}/{{context}}/actuator/health/liveness/
+GET {{host}}/{{context}}/actuator/health/liveness
 Accept: application/json
 
 ### actuator readiness
-GET {{host}}/{{context}}/actuator/health/readiness/
+GET {{host}}/{{context}}/actuator/health/readiness
 Accept: application/json
 
 ### actuator metrics
-GET {{host}}/{{context}}/actuator/metrics/
+GET {{host}}/{{context}}/actuator/metrics
+Accept: application/json
+
+### actuator prometheus
+GET {{host}}/{{context}}/actuator/prometheus
+
+### actuator env
+GET {{host}}/{{context}}/actuator/env
 Accept: application/json
 
 ### actuator env
-GET {{host}}/{{context}}/actuator/env/
-Accept: application/json
-
-### actuator env
-GET {{host}}/{{context}}/actuator/configprops/
+GET {{host}}/{{context}}/actuator/configprops
 Accept: application/json
 
 ### actuator beans
-GET {{host}}/{{context}}/actuator/beans/
+GET {{host}}/{{context}}/actuator/beans
 Accept: application/json
 
 ### actuator caches
-GET {{host}}/{{context}}/actuator/caches/
+GET {{host}}/{{context}}/actuator/caches
 Accept: application/json
 
 ### actuator get loggers
