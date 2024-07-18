@@ -9,12 +9,14 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
+@ActiveProfiles(value = "test")
 class WorkflowRestControllerTest {
 
     @InjectMocks
@@ -31,7 +33,7 @@ class WorkflowRestControllerTest {
         givenExecution.setProcessInstanceId("processInstanceId");
         givenExecution.setRootProcessInstanceId("rootProcessInstanceId");
         givenExecution.setProcessDefinitionId("processDefinitionId");
-        
+
         Mockito.when(runtimeServiceMock.startProcessInstanceByKey(any())).thenReturn(givenExecution);
 
         ResponseEntity<WorkflowRestController.HelloWorldWorklfowResponse> entity = workflowRestController.getInfo();
