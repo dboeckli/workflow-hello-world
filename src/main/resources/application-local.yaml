@@ -17,8 +17,8 @@ server:
 camunda:
   bpm:
     admin-user:
-      id: admin
-      password: admin
+      id: ldapbind-dev
+      password: ${ldap.password}
     filter:
       create: All Tasks
     metrics:
@@ -27,6 +27,29 @@ camunda:
     generic-properties:
       properties:
         telemetry-reporter-activate: false
+
+camunda-ldap-plugin:
+  url: ldaps://ldaps.swpds.ch
+  user: "CN=ldapbind-dev,OU=AADDC Users,DC=swpds,DC=ch"
+  password: ${ldap.password}
+  base-dn: "dc=swpds,dc=ch"
+  users:
+    user-search-base: "OU=AADDC Users"
+    user-search-filter: "(&(objectClass=person)(objectClass=user)(!(cn=*EXT))(!(cn=adm*))(!(cn=zoom*))(!(cn=test*))(!(cn=zoom*))(!(cn=test*))(sAMAccountName=*))"
+    user-id-attribute: sAMAccountName
+    user-firstname-attribute: givenName
+    user-lastname-attribute: sn
+    user-email-attribute: mail
+    user-password-attribute: userpassword
+  groups:
+    group-search-base: "OU=AADDC Users"
+    group-search-filter: "(&(objectclass=group)(!(cn=SAG*)))"
+    group-id-attribute: "cn"
+    group-name-attribute: "name"
+    group-member-attribute: "memberOf"
+camunda-authorization-plugin:
+  admin-group: "SWP-IT"
+  admin-user: "ldapbind-dev"
 
 management:
   endpoints:
@@ -40,7 +63,7 @@ management:
         enabled: true
 
 logging:
-  config: "classpath:logging/log4j2.xml"
+  config: "classpath:logging/log4j2-local.xml"
 
 springdoc:
   show-actuator: true

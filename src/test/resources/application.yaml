@@ -2,12 +2,14 @@ server:
   servlet:
     context-path: /bpm
 
-camunda.bpm.admin-user:
-  id: admin
-  password: admin
+camunda:
+  bpm:
+    admin-user:
+      id: admin
+      password: admin
 
 logging:
-  config: "classpath:logging/log4j2.xml"
+  config: "classpath:logging/log4j2-test.xml"
 
 application:
   jtt:

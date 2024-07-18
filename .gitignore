@@ -13,3 +13,5 @@
 # Other
 *.log
 *.dmp
+/src/main/conf/ci.conf
+/src/main/conf/local.conf

@@ -27,6 +27,12 @@
             <AppenderRef ref="Console"/>
         </logger>
 
+        <logger name="org.camunda.bpm.identity" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+        </logger>
+
+
+
         <Root level="INFO">
             <AppenderRef ref="console"/>
         </Root>

@@ -194,6 +194,7 @@ jobs:
           FORCE_DEPLOY: ${{ github.event.inputs.deploy }}
           RUNTIME_DIR: /opt/camunda/
           CAMUNDA_DB_SECRET: ${{ secrets.CI_CAMUNDA_DB_PASSWORD }}
+          LDAP_SECRET: ${{ secrets.CI_LDAP_PASSWORD }}
           ENVIRONMENT: ci
           RUNTIME_USER: camunda
           ARTIFACT_ID: ${{needs.setup.outputs.ARTIFACT_ID}}

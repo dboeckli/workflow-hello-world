@@ -34,6 +34,7 @@ Write your own description here
 - Maven 3.6.3 (Older versions might cause build problems)
 - *_/home/$username/.m2/settings.xml_* is set
   up [Help](https://swp-confluence.atlassian.net/wiki/spaces/SWPIT/pages/411173348/How+to+Install+and+setup+maven#Setting-up-the-maven-settings)
+- there are two run configs which requires passwords (ldap, postgres). therefore you need to edit/rename in the src/main/conf folder the changeme-local.conf and changeme-ci.conf to ci.conf and local.conf.
 
 ## Build
 

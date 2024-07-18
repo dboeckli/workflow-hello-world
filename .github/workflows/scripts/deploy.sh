@@ -12,7 +12,7 @@ if [ -z "${FORCE_DEPLOY}" ]; then
   FORCE_DEPLOY="false"
 fi
 
-readonly RUNTIME_DIR RUNTIME_USER BRANCH_MVN_VERSION BRANCH_NAME CAMUNDA_DB_SECRET ENVIRONMENT ARTIFACT_ID ARTIFACTORY_URL GROUP_ID
+readonly RUNTIME_DIR RUNTIME_USER BRANCH_MVN_VERSION BRANCH_NAME CAMUNDA_DB_SECRET LDAP_SECRET ENVIRONMENT ARTIFACT_ID ARTIFACTORY_URL GROUP_ID
 
 function verifyParameter() {
   echo "Environment Variables are:"
@@ -71,6 +71,13 @@ function verifyParameter() {
     echo "[INFO] CAMUNDA_DB_SECRET has been set"
   else
     echo "[ERROR] Missing mandatory environment variable. CAMUNDA_DB_SECRET was empty"
+    exit 1
+  fi
+
+  if [[ ${LDAP_SECRET} && ${LDAP_SECRET-x} ]]; then
+    echo "[INFO] LDAP_SECRET has been set"
+  else
+    echo "[ERROR] Missing mandatory environment variable. LDAP_SECRET was empty"
     exit 1
   fi
 
@@ -141,8 +148,11 @@ function deploy() {
 
     sudo chown "${RUNTIME_USER}:${RUNTIME_USER}" "${RUNTIME_DIR}/${ARTIFACT_ID}.conf"
     sudo chmod 664 "${RUNTIME_DIR}/${ARTIFACT_ID}.conf"
+
     sudo sed -i "s/@@profile@@/${ENVIRONMENT}/g" "${RUNTIME_DIR}/${ARTIFACT_ID}.conf"
     sudo sed -i "s/@@db_secret@@/${CAMUNDA_DB_SECRET}/g" "${RUNTIME_DIR}/${ARTIFACT_ID}.conf"
+    sudo sed -i "s/@@ldap_secret@@/${LDAP_SECRET}/g" "${RUNTIME_DIR}/${ARTIFACT_ID}.conf"
+
     sudo chown "${RUNTIME_USER}:${RUNTIME_USER}" "${RUNTIME_DIR}/${ARTIFACT_ID}.jar"
     sudo chmod 770 "${RUNTIME_DIR}/${ARTIFACT_ID}.jar"
 
