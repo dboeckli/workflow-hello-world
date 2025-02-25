@@ -19,6 +19,9 @@ public class CamundaLdapConfiguration {
     @Value("${camunda-ldap-plugin.url}")
     private String ldapUrl;
 
+    @Value("${camunda-ldap-plugin.sslEnabled}")
+    private Boolean useSsl;
+
     @Value("${camunda-ldap-plugin.user}")
     private String ldapUserName;
 
@@ -77,7 +80,7 @@ public class CamundaLdapConfiguration {
         ldapIdentityProviderPlugin.setServerUrl(ldapUrl);
         ldapIdentityProviderPlugin.setManagerDn(ldapUserName);
         ldapIdentityProviderPlugin.setManagerPassword(ldapUserPassword);
-        ldapIdentityProviderPlugin.setUseSsl(true);
+        ldapIdentityProviderPlugin.setUseSsl(useSsl);
         ldapIdentityProviderPlugin.setSecurityAuthentication("simple");
         ldapIdentityProviderPlugin.setBaseDn(baseDn);
 
