@@ -3,17 +3,12 @@ run-name: >
   ${{ github.workflow }}: ${{ github.event_name }} for ${{ github.ref_name }} by @${{ github.actor }}
 
 on:
-  workflow_dispatch:
-    inputs:
-      deploy:
-        description: "By default feature branches are not deployed. Enable to enforce"
-        required: true
-        type: boolean
-        default: false
   push:
     branches: [ "main", "master", "feature/**", "release/**" ]
+  pull_request:
+    branches: [ "main", "master" ]
   schedule:
-    - cron: 5 5 * * MON-FRI # daily at 5:05 am (Except on Weekends)
+    - cron: '5 2 * * *' # daily at 2:05
 jobs:
 
   setup:
@@ -30,17 +25,9 @@ jobs:
       MVN_VERSION: ${{ steps.set_version.outputs.MVN_VERSION }}
       ARTIFACT_ID: ${{ steps.set_version.outputs.ARTIFACT_ID }}
       GROUP_ID: ${{ steps.set_version.outputs.GROUP_ID }}
-
+      ORGANIZATION: ${{ steps.set_version.outputs.ORGANIZATION }}
 
     steps:
-      - name: Validate
-        id: validate
-        run: |
-          if [[ "${BRANCH_NAME}" == "master" ]]; then
-            echo "::error:: ### Build for master has been deprecated. Use branch main instead!"
-            exit 1
-          fi
-
       - uses: actions/checkout@v4
 
       - name: Set up java 21
@@ -54,6 +41,10 @@ jobs:
 
       - name: Set Maven Versions
         id: set_version
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          HEAD_REF: ${{ github.head_ref }}
+          BRANCH_NAME: ${{ github.ref_name }}
         run: |
           "${GITHUB_WORKSPACE}/.github/workflows/scripts/set_maven_version.sh"
 
@@ -68,45 +59,39 @@ jobs:
           echo "### ALLMYSECRETS: $ALLMYSECRETS"
           echo "### ALLMYVARS: $ALLMYVARS"
           echo "### ALLMYOUTPUT: $ALLMYOUTPUT"
-
+          echo ":sunflower: Cleaned Branch Name: ${{ steps.set_version.outputs.BRANCH_NAME }}" >> $GITHUB_STEP_SUMMARY
+          echo ":maple_leaf: ORGANIZATION: ${{ steps.set_version.outputs.ORGANIZATION }}" >> $GITHUB_STEP_SUMMARY
+          echo ":maple_leaf: GROUP ID: ${{ steps.set_version.outputs.GROUP_ID }}" >> $GITHUB_STEP_SUMMARY
+          echo ":maple_leaf: Artifact ID: ${{ steps.set_version.outputs.ARTIFACT_ID }}" >> $GITHUB_STEP_SUMMARY
+          echo ":maple_leaf: Original Maven version: ${{ steps.set_version.outputs.MVN_VERSION }}" >> $GITHUB_STEP_SUMMARY
+          echo ":cactus: Calculated Maven Version: ${{ steps.set_version.outputs.BRANCH_MVN_VERSION }}" >> $GITHUB_STEP_SUMMARY
+  
+  
   build:
-    runs-on: camunda-ci
+    runs-on: ubuntu-latest
 
     needs: [ setup ]
+    if: endsWith(needs.setup.outputs.MVN_VERSION, '-SNAPSHOT')
 
     permissions:
       contents: read
       packages: write
+      id-token: write
+      checks: write
+      pull-requests: write
+      actions: read
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Maven settings.xml
-        uses: whelk-io/maven-settings-xml-action@v21
-        env:
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ github.token }}
-          ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_CI_SWP_URL }}
+      - name: Set up java 21
+        uses: actions/setup-java@v4
         with:
-          servers: >
-            [
-              {
-                "id": "central",
-                "username": "${ARTIFACTORY_USERNAME}",
-                "password": "${env.ARTIFACTORY_TOKEN}"
-              },
-              {
-                "id": "snapshots",
-                "username": "${ARTIFACTORY_USERNAME}",
-                "password": "${env.ARTIFACTORY_TOKEN}"
-              },
-              {
-                "id": "github",
-                "username": "${env.GITHUB_ACTOR}",
-                "password": "${env.GITHUB_TOKEN}"
-              }
-            ]
-          output_file: ${{ github.workspace }}/.github/.m2/artifactory/settings.xml # by default it goes to ~/.m2/settings.xml
+          java-version: 21
+          distribution: 'temurin'
+          cache: 'maven'
+          server-id: github # Value of the distributionManagement/repository/id field of the pom.xml.
+          settings-path: ${{ github.workspace }} # location for the settings.xml file  
 
       - name: show variables
         id: show_build_variables
@@ -122,197 +107,143 @@ jobs:
 
       - name: Run Maven Build
         env:
+          GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ github.token }}
           BRANCH_MVN_VERSION: ${{needs.setup.outputs.BRANCH_MVN_VERSION}}
           BRANCH_NAME: ${{needs.setup.outputs.BRANCH_NAME}}
-          ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_CI_SWP_URL }}
-          ARTIFACTORY_USERNAME: ${{ vars.ARTIFACTORY_CI_SWP_USERNAME }}
-          ARTIFACTORY_TOKEN: ${{ secrets.ARTIFACTORY_CI_SWP_TOKEN }}
-          FORCE_DEPLOY: ${{ github.event.inputs.deploy }}
+          DOCKER_USER: ${{ vars.DOCKER_USER }}
+          DOCKER_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
         run: |
           set -o pipefail    # don't hide errors within pipes
           set -o nounset     # abort on unbound variable
           set -o errexit     # abort on nonzero exit status
-          if [[ "${BRANCH_NAME}" == "main" ]]; then
-            echo "::notice:: ### Build of Main. Version: $BRANCH_MVN_VERSION"
+          
+          # Check if required parameters are set
+          required_params=("GITHUB_ACTOR" "GITHUB_TOKEN" "BRANCH_MVN_VERSION" "BRANCH_NAME" "DOCKER_USER" "DOCKER_TOKEN")
+          for param in "${required_params[@]}"; do
+            if [ -z "${!param}" ]; then
+              echo "::error::Required parameter $param is not set"
+              exit 1
+            fi
+          done
+          
+          if [[ "${BRANCH_NAME}" == "master" ||  "${BRANCH_NAME}" == "main" ]]; then
+            echo "::notice:: ### Build of Master. Version: $BRANCH_MVN_VERSION"
           else
             echo "::notice:: ### Build of Feature Branch ${BRANCH_NAME}. Version: $BRANCH_MVN_VERSION"
-            mvn -B versions:set -Partifactory -e -DnewVersion="$BRANCH_MVN_VERSION" -s $GITHUB_WORKSPACE/.github/.m2/artifactory/settings.xml
+            mvn -B versions:set -e -DnewVersion="$BRANCH_MVN_VERSION"
           fi
-          if [[ "${BRANCH_NAME}" == "main" ]] || [[ "${FORCE_DEPLOY}" == "true" ]]; then
-            mvn -B deploy -Partifactory,ci,!local -s $GITHUB_WORKSPACE/.github/.m2/artifactory/settings.xml
-          else
-            mvn -B install -Partifactory,ci,!local -s $GITHUB_WORKSPACE/.github/.m2/artifactory/settings.xml
-          fi
-
-  deploy:
-
-    runs-on: camunda-ci
-
-    needs: [ setup,build ]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Maven settings.xml
-        uses: whelk-io/maven-settings-xml-action@v21
-        env:
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ github.token }}
-          ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_CI_SWP_URL }}
-        with:
-          servers: >
-            [
-              {
-                "id": "central",
-                "username": "${ARTIFACTORY_USERNAME}",
-                "password": "${env.ARTIFACTORY_TOKEN}"
-              },
-              {
-                "id": "snapshots",
-                "username": "${ARTIFACTORY_USERNAME}",
-                "password": "${env.ARTIFACTORY_TOKEN}"
-              },
-              {
-                "id": "github",
-                "username": "${env.GITHUB_ACTOR}",
-                "password": "${env.GITHUB_TOKEN}"
-              }
-            ]
-          output_file: ${{ github.workspace }}/.github/.m2/artifactory/settings.xml # by default it goes to ~/.m2/settings.xml
-
-      - name: Deploy
-        env:
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ github.token }}
-          ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_CI_SWP_URL }}
-          ARTIFACTORY_USERNAME: ${{ vars.ARTIFACTORY_CI_SWP_USERNAME }}
-          ARTIFACTORY_TOKEN: ${{ secrets.ARTIFACTORY_CI_SWP_TOKEN }}
-          BRANCH_NAME: ${{needs.setup.outputs.BRANCH_NAME}}
-          MVN_VERSION: ${{needs.setup.outputs.MVN_VERSION}}
-          BRANCH_MVN_VERSION: ${{needs.setup.outputs.BRANCH_MVN_VERSION}}
-          FORCE_DEPLOY: ${{ github.event.inputs.deploy }}
-          RUNTIME_DIR: /opt/camunda/
-          CAMUNDA_DB_SECRET: ${{ secrets.CI_CAMUNDA_DB_PASSWORD }}
-          LDAP_SECRET: ${{ secrets.CI_LDAP_PASSWORD }}
-          ENVIRONMENT: ci
-          RUNTIME_USER: camunda
-          ARTIFACT_ID: ${{needs.setup.outputs.ARTIFACT_ID}}
-          GROUP_ID: ${{needs.setup.outputs.GROUP_ID}}
-        run: |
-          # run deploy script
-          "${GITHUB_WORKSPACE}/.github/workflows/scripts/deploy.sh"
-
-  sonar-scan:
-
-    needs: [ setup,build ]
-
-    permissions:
-      actions: read
-      contents: write
-
+          mvn -B -e deploy -s $GITHUB_WORKSPACE/settings.xml
+  
+  analyze:
     runs-on: ubuntu-latest
+    needs: [ setup ]
+    
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      checks: write
+      pull-requests: write
+      actions: read
 
     steps:
-
       - uses: actions/checkout@v4
-
-      - name: Setup Maven settings.xml
-        uses: whelk-io/maven-settings-xml-action@v21
-        env:
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ github.token }}
-          ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_CI_SWP_URL }}
-          ARTIFACTORY_USERNAME: ${{ vars.ARTIFACTORY_CI_SWP_USERNAME }}
-          ARTIFACTORY_TOKEN: ${{ secrets.ARTIFACTORY_CI_SWP_TOKEN }}
         with:
-          servers: >
-            [
-              {
-                "id": "central",
-                "username": "${ARTIFACTORY_USERNAME}",
-                "password": "${env.ARTIFACTORY_TOKEN}"
-              },
-              {
-                "id": "snapshots",
-                "username": "${ARTIFACTORY_USERNAME}",
-                "password": "${env.ARTIFACTORY_TOKEN}"
-              },
-              {
-                "id": "github",
-                "username": "${env.GITHUB_ACTOR}",
-                "password": "${env.GITHUB_TOKEN}"
-              }
-            ]
-          output_file: ${{ github.workspace }}/.github/.m2/artifactory/settings.xml
+          fetch-depth: 0
 
-      - name: Set up JDK 21
+      - name: Set up java 21
         uses: actions/setup-java@v4
         with:
           java-version: 21
           distribution: 'temurin'
           cache: 'maven'
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml.
-          settings-path: ${{ github.workspace }} # location for the settings.xml file
+          settings-path: ${{ github.workspace }} # location for the settings.xml file       
 
-      - name: Run with Jacoco
+      - name: Run Maven Build
         env:
+          GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ github.token }}
           BRANCH_MVN_VERSION: ${{needs.setup.outputs.BRANCH_MVN_VERSION}}
           BRANCH_NAME: ${{needs.setup.outputs.BRANCH_NAME}}
-          ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_CI_SWP_URL }}
-          ARTIFACTORY_USERNAME: ${{ vars.ARTIFACTORY_CI_SWP_USERNAME }}
-          ARTIFACTORY_TOKEN: ${{ secrets.ARTIFACTORY_CI_SWP_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          DOCKER_USER: ${{ vars.DOCKER_USER }}
+          DOCKER_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
         run: |
           set -o pipefail    # don't hide errors within pipes
           set -o nounset     # abort on unbound variable
           set -o errexit     # abort on nonzero exit status
 
-          if [[ "${BRANCH_NAME}" == "main" ]]; then
-            echo "::notice:: ### Build of Main. Version: $BRANCH_MVN_VERSION"
+          # Check if required parameters are set
+          required_params=("GITHUB_ACTOR" "GITHUB_TOKEN" "BRANCH_MVN_VERSION" "BRANCH_NAME" "DOCKER_USER" "DOCKER_TOKEN")
+          for param in "${required_params[@]}"; do
+            if [ -z "${!param}" ]; then
+              echo "::error::Required parameter $param is not set"
+              exit 1
+            fi
+          done
+
+          if [[ "${BRANCH_NAME}" == "master" ||  "${BRANCH_NAME}" == "main" ]]; then
+            echo "::notice:: ### Build of Master. Version: $BRANCH_MVN_VERSION"
           else
             echo "::notice:: ### Build of Feature Branch ${BRANCH_NAME}. Version: $BRANCH_MVN_VERSION"
-            mvn -B versions:set -Partifactory -e -DnewVersion="$BRANCH_MVN_VERSION" -s $GITHUB_WORKSPACE/.github/.m2/artifactory/settings.xml
+            mvn -B versions:set -e -DnewVersion="$BRANCH_MVN_VERSION"
           fi
-          mvn -B clean verify \
-          -P 'artifactory,coverage,local' \
-          -s $GITHUB_WORKSPACE/.github/.m2/artifactory/settings.xml \
+          mvn -B -e install -Dskip.start.stop.springboot=true -s $GITHUB_WORKSPACE/settings.xml	
 
-      - name: sonar
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: |
+            ./target/surefire-reports/TEST-*.xml
+            ./target/failsafe-reports/TEST-*.xml
+
+      - name: analyze
         env:
+          GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ github.token }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           BRANCH_MVN_VERSION: ${{needs.setup.outputs.BRANCH_MVN_VERSION}}
           BRANCH_NAME: ${{needs.setup.outputs.BRANCH_NAME}}
+          DOCKER_USER: ${{ vars.DOCKER_USER }}
+          DOCKER_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+          ORGANIZATION: ${{needs.setup.outputs.ORGANIZATION}}
           ARTIFACT_ID: ${{needs.setup.outputs.ARTIFACT_ID}}
-          ARTIFACTORY_URL: ${{ vars.ARTIFACTORY_CI_SWP_URL }}
-          ARTIFACTORY_USERNAME: ${{ vars.ARTIFACTORY_CI_SWP_USERNAME }}
-          ARTIFACTORY_TOKEN: ${{ secrets.ARTIFACTORY_CI_SWP_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        
         run: |
-          if [[ "${BRANCH_NAME}" == "main" ]]; then
-            echo "::notice:: ### Build of Main. Version: $BRANCH_MVN_VERSION"
-            mvn -B sonar:sonar \
-                -P 'artifactory,coverage,local' \
-                -s $GITHUB_WORKSPACE/.github/.m2/artifactory/settings.xml \
-                -Dsonar.token=${SONAR_TOKEN} \
-                -Dsonar.host.url=https://sonarcloud.io \
-                -Dsonar.sourceEncoding=UTF-8 \
-                -Dsonar.organization=swissperform \
-                -Dsonar.projectKey=SWISSPERFORM_$ARTIFACT_ID \
-                -Dsonar.branch.name=main
+          set -o pipefail    # don't hide errors within pipes
+          set -o nounset     # abort on unbound variable
+          set -o errexit     # abort on nonzero exit status
+          
+          # Check if required parameters are set
+          required_params=("SONAR_TOKEN")
+          for param in "${required_params[@]}"; do
+            if [ -z "${!param}" ]; then
+              echo "::error::Required parameter $param is not set"
+              exit 1
+            fi
+          done
+          
+          if [[ "${BRANCH_NAME}" == "master" ||  "${BRANCH_NAME}" == "main" ]]; then
+            mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+                  -s $GITHUB_WORKSPACE/settings.xml \
+                  -Dsonar.token=${SONAR_TOKEN} \
+                  -Dsonar.host.url=https://sonarcloud.io \
+                  -Dsonar.sourceEncoding=UTF-8 \
+                  -Dsonar.organization=${ORGANIZATION} \
+                  -Dsonar.projectKey="${ORGANIZATION}_${ARTIFACT_ID}" \
+                  -Dsonar.branch.name=master
           else
-            echo "::notice:: ### Build of Feature Branch ${BRANCH_NAME}. Version: $BRANCH_MVN_VERSION"
-            mvn -B versions:set -Partifactory -e -DnewVersion="$BRANCH_MVN_VERSION" -s $GITHUB_WORKSPACE/.github/.m2/artifactory/settings.xml
-            mvn -B sonar:sonar \
-                -P 'artifactory,coverage,local' \
-                -s $GITHUB_WORKSPACE/.github/.m2/artifactory/settings.xml \
-                -Dsonar.token=${SONAR_TOKEN} \
-                -Dsonar.host.url=https://sonarcloud.io \
-                -Dsonar.sourceEncoding=UTF-8 \
-                -Dsonar.organization=swissperform \
-                -Dsonar.projectKey=SWISSPERFORM_$ARTIFACT_ID \
-                -Dsonar.branch.name=${BRANCH_NAME} \
-                -Dsonar.branch.target=main
-          fi
-          echo "https://sonarcloud.io/summary/overall?id=ch.swissperform.workflow.hello-world" >> $GITHUB_STEP_SUMMARY
+            mvn -B versions:set -e -DnewVersion="$BRANCH_MVN_VERSION"
+            mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+                  -s $GITHUB_WORKSPACE/settings.xml \
+                  -Dsonar.token=${SONAR_TOKEN} \
+                  -Dsonar.host.url=https://sonarcloud.io \
+                  -Dsonar.sourceEncoding=UTF-8 \
+                  -Dsonar.organization=${ORGANIZATION} \
+                  -Dsonar.projectKey="${ORGANIZATION}_${ARTIFACT_ID}" \
+                  -Dsonar.branch.name=${BRANCH_NAME} \
+                  -Dsonar.branch.target=master
+          fi 
+        

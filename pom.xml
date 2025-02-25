@@ -50,105 +50,29 @@
     </properties>
 
     <profiles>
+        <!-- CI/CD profile for GitHub Actions -->
         <profile>
-            <id>local</id>
+            <id>ci-cd</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>env.GITHUB_ACTIONS</name>
+                    <value>true</value>
+                </property>
             </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>com.h2database</groupId>
-                    <artifactId>h2</artifactId>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>org.springframework.boot</groupId>
-                            <artifactId>spring-boot-starter-logging</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>ci</id>
-            <dependencies>
-                <dependency>
-                    <groupId>org.postgresql</groupId>
-                    <artifactId>postgresql</artifactId>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>org.springframework.boot</groupId>
-                            <artifactId>spring-boot-starter-logging</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-                <dependency>
-                    <groupId>com.h2database</groupId>
-                    <artifactId>h2</artifactId>
-                    <scope>test</scope>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>org.springframework.boot</groupId>
-                            <artifactId>spring-boot-starter-logging</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>artifactory</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <repositories>
-                <repository>
-                    <id>central</id>
-                    <name>swissperform-virtual</name>
-                    <url>https://swissperform.jfrog.io/artifactory/virtual-maven-repo/</url>
-                    <releases>
-                        <enabled>true</enabled>
-                    </releases>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                </repository>
-                <repository>
-                    <snapshots/>
-                    <id>snapshots</id>
-                    <name>swissperform-virtual</name>
-                    <url>https://swissperform.jfrog.io/artifactory/virtual-maven-repo/</url>
-                </repository>
-            </repositories>
-            <pluginRepositories>
-                <pluginRepository>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                    <id>central</id>
-                    <name>swissperform-virtual</name>
-                    <url>https://swissperform.jfrog.io/artifactory/virtual-maven-repo</url>
-                </pluginRepository>
-                <pluginRepository>
-                    <snapshots/>
-                    <id>snapshots</id>
-                    <name>swissperform-virtual</name>
-                    <url>https://swissperform.jfrog.io/artifactory/virtual-maven-repo</url>
-                </pluginRepository>
-            </pluginRepositories>
-            <distributionManagement>
-                <repository>
-                    <id>central</id>
-                    <name>local-maven-release-repo</name>
-                    <url>https://swissperform.jfrog.io/artifactory/local-maven-release-repo</url>
-                </repository>
-                <snapshotRepository>
-                    <id>snapshots</id>
-                    <name>local-maven-snapshot-repo</name>
-                    <url>https://swissperform.jfrog.io/artifactory/local-maven-snapshot-repo</url>
-                    <uniqueVersion>false</uniqueVersion>
-                </snapshotRepository>
-            </distributionManagement>
+            <properties>
+                <github.acions.build>true</github.acions.build>
+                <skip.docker.publish>false</skip.docker.publish>
+            </properties>
         </profile>
     </profiles>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub dboeckli Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/${project.organization.name}/${project.artifactId}</url>
+        </repository>
+    </distributionManagement>
 
     <dependencyManagement>
         <dependencies>
@@ -335,6 +259,18 @@
         </dependency>
 
         <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
             <groupId>jakarta.annotation</groupId>
             <artifactId>jakarta.annotation-api</artifactId>
         </dependency>
@@ -431,34 +367,44 @@
     </dependencies>
 
     <build>
-        <plugins>
-            <!--
-            this plugin generates some git properties. We use the git.commit.id.abbrev variable which we append
-            to the docker image id for builds in jenkins (docker.application.image.tag).
-            -->
-            <plugin>
-                <groupId>io.github.git-commit-id</groupId>
-                <artifactId>git-commit-id-maven-plugin</artifactId>
-                <version>${git-commit-id-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>get-the-git-infos</id>
-                        <goals>
-                            <goal>revision</goal>
-                        </goals>
-                        <phase>initialize</phase>
-                    </execution>
-                </executions>
-                <configuration>
-                    <verbose>true</verbose>
-                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
-                    <commitIdGenerationMode>full</commitIdGenerationMode>
-                    <runOnlyOnce>true</runOnlyOnce>
-                    <skipPoms>false</skipPoms>
-                </configuration>
-            </plugin>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <configuration>
+                        <archive>
+                            <manifest>
+                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                <addClasspath>true</addClasspath>
+                                <classpathPrefix>lib/</classpathPrefix>
+                                <!-- Force the use of '-SNAPSHOT' version naming -->
+                                <useUniqueVersions>false</useUniqueVersions>
+                            </manifest>
+                            <manifestEntries>
+                                <Implementation-Title>${project.name}</Implementation-Title>
+                                <groupId>${project.groupId}</groupId>
+                                <artifactId>${project.artifactId}</artifactId>
+                                <Implementation-Version>${project.version}</Implementation-Version>
+                                <git-SHA-1>${buildNumber}</git-SHA-1>
+                                <source-url>${project.scm.url}</source-url>
+                                <BuildDate>${maven.build.timestamp}</BuildDate>
+                                <Built-By>${user.name}</Built-By>
+                                <Build-Jdk>${java.version}</Build-Jdk>
+                                <packaging>${project.packaging}</packaging>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>${sonar-maven-plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
 
+        <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -511,6 +457,20 @@
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <version>${build-helper-maven-plugin.version}</version>
                 <executions>
+                    <execution>
+                        <id>reserve-tomcat-port</id>
+                        <goals>
+                            <goal>reserve-network-port</goal>
+                        </goals>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <portNames>
+                                <portName>jmx.server.port</portName>
+                                <portName>tomcat.http.port</portName>
+                            </portNames>
+                        </configuration>
+                    </execution>
+
                     <execution>
                         <id>add-resource</id>
                         <phase>generate-resources</phase>
@@ -613,35 +573,6 @@
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>${maven-jar-plugin.version}</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>
-                            <!-- Force the use of '-SNAPSHOT' version naming -->
-                            <useUniqueVersions>false</useUniqueVersions>
-                        </manifest>
-                        <manifestEntries>
-                            <Implementation-Title>${project.name}</Implementation-Title>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>${project.artifactId}</artifactId>
-                            <Implementation-Version>${project.version}</Implementation-Version>
-                            <git-SHA-1>${buildNumber}</git-SHA-1>
-                            <source-url>${project.scm.url}</source-url>
-                            <BuildDate>${maven.build.timestamp}</BuildDate>
-                            <Built-By>${user.name}</Built-By>
-                            <Build-Jdk>${java.version}</Build-Jdk>
-                            <packaging>${project.packaging}</packaging>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
                 <version>${maven-site-plugin.version}</version>
                 <configuration>
@@ -691,16 +622,19 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${jacoco-maven-plugin.version}</version>
+                <version>${jacoco.version}</version>
                 <executions>
                     <execution>
+                        <id>jacoco-prepare-agent</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
+                        <configuration>
+                            <append>true</append>
+                        </configuration>
                     </execution>
                     <execution>
-                        <id>report</id>
-                        <phase>prepare-package</phase>
+                        <id>jacoco-create-report</id>
                         <goals>
                             <goal>report</goal>
                         </goals>
@@ -708,9 +642,36 @@
                             <formats>
                                 <format>XML</format>
                             </formats>
+                            <outputDirectory>target/site/jacoco</outputDirectory> <!-- default -->
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+
+            <!--
+            this plugin generates some git properties. We use the "git.commit.id.abbrev" variable which we append
+            to the docker image id for builds in jenkins (docker.application.image.tag). See "jenkins" profile at the top.
+            -->
+            <plugin>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>get-the-git-infos</id>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <verbose>true</verbose>
+                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+                    <commitIdGenerationMode>full</commitIdGenerationMode>
+                    <runOnlyOnce>true</runOnlyOnce>
+                    <skipPoms>false</skipPoms>
+                </configuration>
             </plugin>
         </plugins>
     </build>
