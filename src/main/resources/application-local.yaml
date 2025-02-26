@@ -35,9 +35,6 @@ camunda:
     metrics:
       enabled: true
       db-reporter-activate: true
-    generic-properties:
-      properties:
-        telemetry-reporter-activate: false
 
 camunda-ldap-plugin:
   url: ldap://localhost:389
