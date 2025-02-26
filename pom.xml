@@ -38,8 +38,8 @@
 
         <apifirst.version>0.0.1-SNAPSHOT</apifirst.version>
 
+        <!-- When upgrading, set version in WorkflowTestWithMockServerBPM as well -->
         <mock-server.version>5.15.0</mock-server.version>
-        <git-commit-id-maven-plugin.version>9.0.1</git-commit-id-maven-plugin.version>
 
         <!-- Sonar -->
         <sonar-maven-plugin.version>5.0.0.4389</sonar-maven-plugin.version>
@@ -201,17 +201,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.camunda.bpm.springboot</groupId>
-            <artifactId>camunda-bpm-spring-boot-starter-test</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-logging</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
             <groupId>org.camunda.bpm.identity</groupId>
             <artifactId>camunda-identity-ldap</artifactId>
             <exclusions>
@@ -340,6 +329,18 @@
         </dependency>
 
         <!-- Test dependencies -->
+        <dependency>
+            <groupId>org.camunda.bpm.springboot</groupId>
+            <artifactId>camunda-bpm-spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
@@ -686,8 +687,6 @@
             <plugin>
                 <groupId>io.github.git-commit-id</groupId>
                 <artifactId>git-commit-id-maven-plugin</artifactId>
-                <!-- TODO: REMOVE ME WHEN UPGRADING SPRING BOOT -->
-                <version>${git-commit-id-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>get-the-git-infos</id>
