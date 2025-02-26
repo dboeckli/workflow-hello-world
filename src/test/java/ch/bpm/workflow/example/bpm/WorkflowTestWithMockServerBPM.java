@@ -1,10 +1,10 @@
 package ch.bpm.workflow.example.bpm;
 
+import ch.bpm.workflow.example.config.RestApiConfiguration;
 import ch.guru.springframework.apifirst.client.CustomerApi;
 import ch.guru.springframework.apifirst.model.AddressDto;
 import ch.guru.springframework.apifirst.model.CustomerDto;
 import ch.guru.springframework.apifirst.model.NameDto;
-import ch.bpm.workflow.example.config.RestApiConfiguration;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
@@ -12,24 +12,24 @@ import java.util.List;
 import java.util.UUID;
 import javax.sql.DataSource;
 import lombok.extern.log4j.Log4j2;
+import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.test.Deployment;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockserver.client.MockServerClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.containers.MockServerContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
+import static org.camunda.bpm.engine.test.assertions.bpmn.AbstractAssertions.init;
 import static org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests.assertThat;
 import static org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests.complete;
 import static org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests.task;
@@ -38,25 +38,32 @@ import static org.mockserver.model.HttpResponse.response;
 
 @SpringBootTest
 @TestPropertySource(properties = {
-        "spring.datasource.hikari.jdbc-url=jdbc:h2:mem:WorkflowTestWithMockServerBPM;DB_CLOSE_ON_EXIT=FALSE",
-        "spring.datasource.hikari.pool-name=WorkflowTestWithMockServerBPM",
-        "camunda.bpm.job-execution.enabled=false"
+        //"spring.datasource.hikari.jdbc-url=jdbc:h2:mem:WorkflowTestWithMockServerBPM;DB_CLOSE_ON_EXIT=FALSE",
+        //"spring.datasource.hikari.pool-name=WorkflowTestWithMockServerBPM",
+        "camunda.bpm.job-execution.enabled=false",
+        "camunda.bpm.generate-unique-process-engine-name=true",
+        "camunda.bpm.generate-unique-process-application-name=true",
+        "spring.datasource.generate-unique-name=true"
 })
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @Testcontainers
 @Deployment(resources = "process.bpmn")
 @Log4j2
-@Disabled("TODO: does not run with the other BPM Test")
+@ActiveProfiles(value = "local")
 class WorkflowTestWithMockServerBPM {
 
     @Autowired
     public RuntimeService runtimeService;
 
+    // See https://docs.camunda.org/manual/latest/user-guide/spring-boot-integration/develop-and-test/#using-assertions-with-context-caching
+    @Autowired
+    ProcessEngine processEngine;
+
     @Autowired
     private DataSource dataSource;
 
+    // this version should correspond to the client version defined int the pom.xml
     @Container
-    public MockServerContainer mockServer = new MockServerContainer(DockerImageName.parse("mockserver/mockserver:5.14.0"));
+    public MockServerContainer mockServer = new MockServerContainer(DockerImageName.parse("mockserver/mockserver:5.15.0"));
 
     @Autowired
     CustomerApi customerApi;
@@ -69,16 +76,17 @@ class WorkflowTestWithMockServerBPM {
 
     private MockServerClient mockServerClient;
 
+
     @BeforeEach
     public void setup() {
+        init(processEngine);
+        log.info("### ProcessEngine started: {}", processEngine.getName());
         mockServerClient = new MockServerClient(mockServer.getHost(), mockServer.getServerPort());
         customerApi.getApiClient()
                   .setBasePath(restApiConfiguration.getProtocol() + "://" +
                           mockServer.getHost() + ":" +
                           mockServer.getServerPort() + "/" +
                           restApiConfiguration.getContext());
-
-        log.info("DataSource before test: {}", dataSource);
     }
 
     @AfterEach
