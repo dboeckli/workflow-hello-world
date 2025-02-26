@@ -14,7 +14,7 @@
       <bpmn:incoming>Flow_0rp5bi3</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_0rp5bi3" sourceRef="Activity_say_hello-via_delegate" targetRef="Event_1sva7ey" />
-    <bpmn:serviceTask id="Activity_say_hello-via_delegate" name="Service-For-Delegate" camunda:class="delegate.ch.bpm.workflow.example.SayHelloDelegate">
+    <bpmn:serviceTask id="Activity_say_hello-via_delegate" name="Service-For-Delegate" camunda:class="ch.bpm.workflow.example.SayHelloDelegate">
       <bpmn:incoming>Flow_03vi6h2</bpmn:incoming>
       <bpmn:outgoing>Flow_0rp5bi3</bpmn:outgoing>
     </bpmn:serviceTask>
