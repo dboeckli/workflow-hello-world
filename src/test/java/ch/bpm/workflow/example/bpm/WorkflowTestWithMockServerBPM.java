@@ -62,7 +62,7 @@ class WorkflowTestWithMockServerBPM {
     private DataSource dataSource;
 
     @Container
-    public MockServerContainer mockServer = new MockServerContainer(DockerImageName.parse("mockserver/mockserver:5.14.0"));
+    public MockServerContainer mockServer = new MockServerContainer(DockerImageName.parse("mockserver/mockserver:5.15.0"));
 
     @Autowired
     CustomerApi customerApi;

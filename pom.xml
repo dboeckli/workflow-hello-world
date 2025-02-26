@@ -38,7 +38,7 @@
 
         <apifirst.version>0.0.1-SNAPSHOT</apifirst.version>
 
-        <mock-server.version>5.14.0</mock-server.version>
+        <mock-server.version>5.15.0</mock-server.version>
         <git-commit-id-maven-plugin.version>9.0.1</git-commit-id-maven-plugin.version>
 
         <!-- Sonar -->
