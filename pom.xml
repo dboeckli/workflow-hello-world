@@ -38,8 +38,8 @@
 
         <apifirst.version>0.0.1-SNAPSHOT</apifirst.version>
 
+        <!-- When upgrading, set version in WorkflowTestWithMockServerBPM as well -->
         <mock-server.version>5.15.0</mock-server.version>
-        <git-commit-id-maven-plugin.version>9.0.1</git-commit-id-maven-plugin.version>
 
         <!-- Sonar -->
         <sonar-maven-plugin.version>5.0.0.4389</sonar-maven-plugin.version>
@@ -686,8 +686,6 @@
             <plugin>
                 <groupId>io.github.git-commit-id</groupId>
                 <artifactId>git-commit-id-maven-plugin</artifactId>
-                <!-- TODO: REMOVE ME WHEN UPGRADING SPRING BOOT -->
-                <version>${git-commit-id-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>get-the-git-infos</id>
