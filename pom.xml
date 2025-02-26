@@ -28,6 +28,10 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
 
+        <github.acions.build>false</github.acions.build>
+        <skip.docker.publish>true</skip.docker.publish>
+        <skip.start.stop.springboot>false</skip.start.stop.springboot>
+
         <!--
         Spring Boot Version Compatibility
         https://docs.camunda.org/manual/latest/user-guide/spring-boot-integration/version-compatibility/
@@ -200,6 +204,9 @@
             </exclusions>
         </dependency>
 
+        <!--
+        https://docs.camunda.org/manual/latest/user-guide/spring-boot-integration/spring-security/
+        -->
         <dependency>
             <groupId>org.camunda.bpm.springboot</groupId>
             <artifactId>camunda-bpm-spring-boot-starter-security</artifactId>
@@ -643,6 +650,7 @@
                             </additionalProperties>
                         </configuration>
                     </execution>
+
                     <execution>
                         <id>create-spring-boot-jar</id>
                         <goals>
@@ -650,6 +658,102 @@
                         </goals>
                         <configuration>
                             <executable>true</executable>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>start-springboot-app</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>start</goal>
+                            <goal>stop</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skip.start.stop.springboot}</skip>
+                            <wait>1000</wait> <!-- 1000 milliseconds is default -->
+                            <maxAttempts>120</maxAttempts> <!-- 30 attempts is default, combined with wait it results to 30 sec. We wait 60 seconds. -->
+                            <profiles>docker</profiles>
+                            <arguments>
+                                <argument>-Xmx1024m</argument>
+                                <argument>--server.port=${tomcat.http.port}</argument>
+                                <argument>--spring.cloud.kubernetes.enabled=false</argument>
+                            </arguments>
+                            <jmxPort>${jmx.server.port}</jmxPort>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>build-docker-image</id>
+                        <goals>
+                            <goal>build-image-no-fork</goal>
+                        </goals>
+                        <phase>install</phase>
+                        <configuration>
+                            <image>
+                                <name>local/${project.artifactId}:latest</name>
+                                <tags>
+                                    local/${project.artifactId}:${project.version}
+                                </tags>
+                                <publish>false</publish>
+                            </image>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>publish-docker-image-to-github</id>
+                        <goals>
+                            <goal>build-image-no-fork</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                        <configuration>
+                            <skip>${skip.docker.publish}</skip>
+                            <image>
+                                <name>ghcr.io/${project.organization.name}/${project.artifactId}:latest</name>
+                                <tags>
+                                    ghcr.io/${project.organization.name}/${project.artifactId}:${project.version}
+                                </tags>
+                                <publish>true</publish>
+                            </image>
+                            <docker>
+                                <publishRegistry>
+                                    <!-- GITHUB_ACTOR and GITHUB_TOKEN are set by gitHub Actions -->
+                                    <!--suppress UnresolvedMavenProperty -->
+                                    <username>${env.GITHUB_ACTOR}</username>
+                                    <!--suppress UnresolvedMavenProperty -->
+                                    <password>${env.GITHUB_TOKEN}</password>
+                                    <url>https://ghcr.io</url><!-- gitHub packages -->
+                                </publishRegistry>
+                            </docker>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>publish-docker-image-to-docker-hub</id>
+                        <goals>
+                            <goal>build-image-no-fork</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                        <configuration>
+                            <skip>${skip.docker.publish}</skip>
+                            <image>
+                                <!--suppress UnresolvedMavenProperty -->
+                                <name>${env.DOCKER_USER}/${project.artifactId}:latest</name>
+                                <tags>
+                                    <!--suppress UnresolvedMavenProperty -->
+                                    ${env.DOCKER_USER}/${project.artifactId}:${project.version}
+                                </tags>
+                                <publish>true</publish>
+                            </image>
+                            <docker>
+                                <publishRegistry>
+                                    <!-- DOCKER_USER and DOCKER_TOKEN are set by gitHub Actions -->
+                                    <!--suppress UnresolvedMavenProperty -->
+                                    <username>${env.DOCKER_USER}</username>
+                                    <!--suppress UnresolvedMavenProperty -->
+                                    <password>${env.DOCKER_TOKEN}</password>
+                                    <url>https://index.docker.io/v1/</url>
+                                </publishRegistry>
+                            </docker>
                         </configuration>
                     </execution>
                 </executions>
