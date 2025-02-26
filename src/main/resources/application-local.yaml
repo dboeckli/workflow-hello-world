@@ -14,6 +14,8 @@ spring:
       enabled: true
       stop:
         command: down
+      skip:
+        in-tests: false
 
 server:
   servlet:
@@ -83,8 +85,8 @@ springdoc:
     show-extensions: true
 
 application:
-  jtt:
+  apifirst-server-jpa:
     protocol: "http"
     host: "localhost"
-    port: "8080"
-    context: "swp-jtt"
+    port: "8085"
+    context: "/"

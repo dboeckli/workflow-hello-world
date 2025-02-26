@@ -120,6 +120,18 @@
     </dependencyManagement>
 
     <dependencies>
+
+        <dependency>
+            <groupId>ch.guru.springframework.apifirst</groupId>
+            <artifactId>apifirst-api</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.guru.springframework.apifirst</groupId>
+            <artifactId>apifirst-client</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
         <dependency>
             <groupId>org.camunda.bpm.springboot</groupId>
             <artifactId>camunda-bpm-spring-boot-starter-rest</artifactId>
@@ -321,15 +333,6 @@
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>${springdoc-openapi-starter-webmvc-ui.version}</version>
         </dependency>
-
-        <!-- TODO. REMOVE ME -->
-        <!--
-        <dependency>
-            <groupId>ch.swp.jtt</groupId>
-            <artifactId>openapi-generator</artifactId>
-            <version>${swp-jtt.version}</version>
-        </dependency>
-        -->
 
         <dependency>
             <groupId>com.google.code.gson</groupId>

@@ -1,8 +1,15 @@
 package ch.swissperform.workflow.example.bpm;
 
-import ch.swissperform.jtt.generated.openapi.api.DefaultApi;
-import ch.swissperform.jtt.generated.openapi.model.VersionInfo;
-import ch.swissperform.workflow.example.config.JTTRestApiConfiguration;
+import ch.guru.springframework.apifirst.client.CustomerApi;
+import ch.guru.springframework.apifirst.model.AddressDto;
+import ch.guru.springframework.apifirst.model.CustomerDto;
+import ch.guru.springframework.apifirst.model.NameDto;
+import ch.swissperform.workflow.example.config.RestApiConfiguration;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import lombok.extern.log4j.Log4j2;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
@@ -18,7 +25,9 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
-import static org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests.*;
+import static org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests.assertThat;
+import static org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests.complete;
+import static org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests.task;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
@@ -26,7 +35,7 @@ import static org.mockserver.model.HttpResponse.response;
 @Testcontainers
 @Deployment(resources = "process.bpmn")
 @Log4j2
-@ActiveProfiles(value = "test")
+@ActiveProfiles(value = "local")
 class WorkflowTestBPM {
 
     @Autowired
@@ -36,18 +45,21 @@ class WorkflowTestBPM {
     public MockServerContainer mockServer = new MockServerContainer(DockerImageName.parse("mockserver/mockserver:5.14.0"));
 
     @Autowired
-    DefaultApi defaultApi;
+    CustomerApi customerApi;
 
     @Autowired
-    JTTRestApiConfiguration JTTRestApiConfiguration;
+    RestApiConfiguration restApiConfiguration;
+
+    @Autowired
+    ObjectMapper objectMapper;
 
     private MockServerClient mockServerClient;
 
     @BeforeEach
     public void setup() {
         mockServerClient = new MockServerClient(mockServer.getHost(), mockServer.getServerPort());
-        defaultApi.getApiClient()
-                  .setBasePath(JTTRestApiConfiguration.getProtocol() + "://" + mockServer.getHost() + ":" + mockServer.getServerPort() + "/" + JTTRestApiConfiguration.getContext());
+        customerApi.getApiClient()
+                  .setBasePath(restApiConfiguration.getProtocol() + "://" + mockServer.getHost() + ":" + mockServer.getServerPort() + "/" + restApiConfiguration.getContext());
     }
 
     @Test
@@ -73,11 +85,24 @@ class WorkflowTestBPM {
     }
 
     private void createExpectedMockserverResponse() {
-        VersionInfo givenVersionInfo = new VersionInfo();
-        givenVersionInfo.setApplicationVersion("applicationVersion");
-        givenVersionInfo.setWildflyProductVersion("wildflyProductVersion");
-        givenVersionInfo.setWildflyReleaseVersion("wildflyReleaseVersion");
-        mockServerClient.when(request().withMethod("GET").withPath("/swp-jtt/rest/info/version")).respond(response().withStatusCode(200).withBody(givenVersionInfo.toJson()));
+        List<CustomerDto> customers = new ArrayList<>();
+        CustomerDto customer1 = CustomerDto.builder()
+                .id(UUID.randomUUID())
+                .name(NameDto.builder().firstName("John").lastName("Doe").build())
+                .shipToAddress(AddressDto.builder().addressLine1("123 Main St").city("New York").city("NY").state("NY").zip("10001").build())
+                .billToAddress(AddressDto.builder().addressLine1("456 Elm St").city("Los Angeles").city("CA").state("CA").zip("90001").build())
+                .build();
+        customers.add(customer1);
+
+        String customersJson;
+        try {
+            customersJson = objectMapper.writeValueAsString(customers);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to convert customers to JSON", e);
+        }
+        mockServerClient.when(request().withMethod("GET").withPath("/v1/customers")).respond(response().withStatusCode(200).withBody(customersJson));
+
+        //mockServerClient.when(request().withMethod("GET").withPath("/swp-jtt/rest/info/version")).respond(response().withStatusCode(200).withBody(customersJson));
     }
 
 }
