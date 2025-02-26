@@ -40,7 +40,40 @@ services:
   apifirst-server-jpa:
     container_name: apifirst-server-jpa
     image: domboeckli/apifirst-server-jpa:0.0.1-SNAPSHOT
+    environment:
+      SERVER_PORT: 8085
     ports:
       - "8085:8085"
     expose:
       - 8085
+
+  busybox:
+    image: busybox:1.37.0
+    container_name: busybox
+    depends_on:
+      apifirst-server-jpa:
+        condition: service_started
+        required: true
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "
+            echo 'Checking BusyBox readiness...' &&
+            test -f /bin/sh &&
+            wget -qO- http://apifirst-server-jpa:8085/actuator/health/readiness | grep -q '\"status\":\"UP\"'
+          " ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: >
+      /bin/sh -c '
+      while true; do
+        apifirst_server_jpa_health=$$(wget -q -O - http://apifirst-server-jpa:8085/actuator/health/readiness 2>/dev/null)
+        echo "{
+          \"timestamp\": \"$$(date -Iseconds)\",
+          \"services\": {
+            \"apifirst-server-jpa\": $$apifirst_server_jpa_health
+          }
+        }"
+
+        sleep 30
+      done
+      '

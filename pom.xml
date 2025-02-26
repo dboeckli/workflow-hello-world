@@ -34,9 +34,9 @@
         <spring.boot.version>3.3.1</spring.boot.version>
         <camunda.spring.boot.starter.version>7.21.0</camunda.spring.boot.starter.version>
         <springdoc-openapi-starter-webmvc-ui.version>2.5.0</springdoc-openapi-starter-webmvc-ui.version>
-        <!-- TODO: REMOVE ME
-        <swp-jtt.version>1.0.33</swp-jtt.version>
-        -->
+
+        <apifirst.version>0.0.1-SNAPSHOT</apifirst.version>
+
         <mock-server.version>5.14.0</mock-server.version>
         <git-commit-id-maven-plugin.version>9.0.1</git-commit-id-maven-plugin.version>
 
@@ -80,7 +80,7 @@
             Configure maven settings of IntelliJ to use your personal settings.xml
             -->
             <id>github</id>
-            <url>https://maven.pkg.github.com/${project.organization.name}/${project.artifactId}</url>
+            <url>https://maven.pkg.github.com/${project.organization.name}</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
@@ -124,12 +124,12 @@
         <dependency>
             <groupId>ch.guru.springframework.apifirst</groupId>
             <artifactId>apifirst-api</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${apifirst.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.guru.springframework.apifirst</groupId>
             <artifactId>apifirst-client</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${apifirst.version}</version>
         </dependency>
 
         <dependency>
@@ -298,7 +298,6 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <scope>test</scope>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
@@ -427,6 +426,84 @@
                         </archive>
                     </configuration>
                 </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>default-test</id>
+                            <phase>test</phase>
+                            <goals>
+                                <goal>test</goal>
+                            </goals>
+                            <configuration>
+                                <skipTests>true</skipTests>
+                                <skip>true</skip>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>perform-unit-test</id>
+                            <goals>
+                                <goal>test</goal>
+                            </goals>
+                            <configuration>
+                                <!--suppress UnresolvedMavenProperty -->
+                                <argLine>${argLine} -XX:+EnableDynamicAgentLoading -Xshare:off</argLine>
+                                <includes>
+                                    <include>**/*Tests.java</include>
+                                    <include>**/*Test.java</include>
+                                    <include>**/*Spec.java</include>
+                                </includes>
+                                <excludes>
+                                    <exclude>**/*IT.java</exclude>
+                                    <exclude>**/*BPM.java</exclude>
+                                </excludes>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>perform-integration-test</id>
+                            <goals>
+                                <goal>test</goal>
+                            </goals>
+                            <configuration>
+                                <skipAfterFailureCount>1</skipAfterFailureCount>
+                                <!--suppress UnresolvedMavenProperty -->
+                                <argLine>${argLine} -XX:+EnableDynamicAgentLoading -Xshare:off</argLine>
+                                <parallel>none</parallel>
+                                <includes>
+                                    <include>**/*IT.java</include>
+                                </includes>
+                                <excludes>
+                                    <exclude>**/*Tests.java</exclude>
+                                    <exclude>**/*Test.java</exclude>
+                                    <exclude>**/*Spec.java</exclude>
+                                    <exclude>**/*BPM.java</exclude>
+                                </excludes>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>perform-bpmaware-integration-test</id>
+                            <goals>
+                                <goal>test</goal>
+                            </goals>
+                            <configuration>
+                                <!--suppress UnresolvedMavenProperty -->
+                                <argLine>${argLine} -XX:+EnableDynamicAgentLoading -Xshare:off</argLine>
+                                <includes>
+                                    <include>**/*BPM.java</include>
+                                </includes>
+                                <excludes>
+                                    <exclude>**/*Tests.java</exclude>
+                                    <exclude>**/*Test.java</exclude>
+                                    <exclude>**/*Spec.java</exclude>
+                                    <exclude>**/*IT.java</exclude>
+                                </excludes>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
                 <plugin>
                     <groupId>org.sonarsource.scanner.maven</groupId>
                     <artifactId>sonar-maven-plugin</artifactId>
@@ -523,82 +600,7 @@
                 </executions>
             </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-test</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <skipTests>true</skipTests>
-                            <skip>true</skip>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>perform-unit-test</id>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <!--suppress UnresolvedMavenProperty -->
-                            <argLine>${argLine} -XX:+EnableDynamicAgentLoading -Xshare:off</argLine>
-                            <includes>
-                                <include>**/*Tests.java</include>
-                                <include>**/*Test.java</include>
-                                <include>**/*Spec.java</include>
-                            </includes>
-                            <excludes>
-                                <exclude>**/*IT.java</exclude>
-                                <exclude>**/*BPM.java</exclude>
-                            </excludes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>perform-integration-test</id>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <skipAfterFailureCount>1</skipAfterFailureCount>
-                            <!--suppress UnresolvedMavenProperty -->
-                            <argLine>${argLine} -XX:+EnableDynamicAgentLoading -Xshare:off</argLine>
-                            <parallel>none</parallel>
-                            <includes>
-                                <include>**/*IT.java</include>
-                            </includes>
-                            <excludes>
-                                <exclude>**/*Tests.java</exclude>
-                                <exclude>**/*Test.java</exclude>
-                                <exclude>**/*Spec.java</exclude>
-                                <exclude>**/*BPM.java</exclude>
-                            </excludes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>perform-bpmaware-integration-test</id>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <!--suppress UnresolvedMavenProperty -->
-                            <argLine>${argLine} -XX:+EnableDynamicAgentLoading -Xshare:off</argLine>
-                            <includes>
-                                <include>**/*BPM.java</include>
-                            </includes>
-                            <excludes>
-                                <exclude>**/*Tests.java</exclude>
-                                <exclude>**/*Test.java</exclude>
-                                <exclude>**/*Spec.java</exclude>
-                                <exclude>**/*IT.java</exclude>
-                            </excludes>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
