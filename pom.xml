@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>ch.swissperform.workflow</groupId>
+    <groupId>ch.bpm.workflow</groupId>
     <artifactId>workflow-hello-world</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
@@ -27,9 +27,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-
-        <sonar.organization>swissperform</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
 
         <spring.boot.version>3.3.1</spring.boot.version>
         <camunda.spring.boot.starter.version>7.21.0</camunda.spring.boot.starter.version>

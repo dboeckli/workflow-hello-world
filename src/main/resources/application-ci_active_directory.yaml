@@ -10,7 +10,7 @@ spring:
       connectionTimeout: 30000
       idleTimeout: 600000
       maxLifetime: 1800000
-    url: jdbc:postgresql://swp74.swissperform.ch:5432/camunda_ci
+    url: jdbc:postgresql://swp74.xxx.ch:5432/camunda_ci
 
 server:
   servlet:

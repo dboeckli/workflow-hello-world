@@ -23,7 +23,7 @@ Write your own description here
 ### Servers
 
 - local: localhost, database on h2 locally
-- ci: swp71.swissperform.ch (192.168.3.71), postgres swp74.swissperform.ch
+- ci: swp71.xxx.ch (192.168.3.71), postgres swp74.swissperform.ch
 
 
 ## Prerequisites

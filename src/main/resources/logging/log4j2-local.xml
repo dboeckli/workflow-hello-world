@@ -11,7 +11,7 @@
     </Appenders>
 
     <Loggers>
-        <logger name="ch.swissperform" level="INFO" additivity="false">
+        <logger name="ch.bpm.workflow" level="INFO" additivity="false">
             <AppenderRef ref="Console"/>
         </logger>
 
