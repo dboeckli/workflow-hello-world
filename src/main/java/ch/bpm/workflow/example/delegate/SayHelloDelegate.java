@@ -4,12 +4,12 @@ import ch.guru.springframework.apifirst.client.CustomerApi;
 import ch.guru.springframework.apifirst.model.CustomerDto;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Component;
 
-@Log4j2
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class SayHelloDelegate implements JavaDelegate {

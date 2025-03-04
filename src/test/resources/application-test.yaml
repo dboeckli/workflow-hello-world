@@ -1,3 +1,15 @@
+spring:
+  application:
+    name: workflow-hello-world
+
+  docker:
+    compose:
+      enabled: false
+      stop:
+        command: down
+      skip:
+        in-tests: true
+
 server:
   servlet:
     context-path: /bpm
@@ -9,7 +21,24 @@ camunda:
       password: admin
 
 logging:
-  config: "classpath:logging/log4j2-test.xml"
+  level:
+    org.zalando.logbook: INFO
+
+logbook:
+  filter:
+    enabled: true
+  format:
+    style: http
+  obfuscate:
+    headers:
+      - Authorization
+      - X-Secret
+    parameters:
+      - access_token
+      - password
+  predicate:
+    exclude:
+      - path: /actuator/health/**
 
 application:
   apifirst-server-jpa:
