@@ -1,7 +1,7 @@
 package ch.bpm.workflow.example.config;
 
 import java.lang.reflect.Field;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.camunda.bpm.engine.impl.plugin.AdministratorAuthorizationPlugin;
@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 @Configuration
-@Log4j2
+@Slf4j
 @Profile({"local", "ci"})
 public class CamundaLdapConfiguration {
 

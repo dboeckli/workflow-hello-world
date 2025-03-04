@@ -1,7 +1,7 @@
 package ch.bpm.workflow.example.bpm;
 
 import javax.sql.DataSource;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
@@ -29,7 +29,7 @@ import static org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests.task;
         "spring.datasource.generate-unique-name=true"
 })
 @Deployment(resources = "process.bpmn")
-@Log4j2
+@Slf4j
 @ActiveProfiles(value = "local")
 class WorkflowTestBPM {
 

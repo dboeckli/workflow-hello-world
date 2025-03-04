@@ -65,8 +65,8 @@ jobs:
           echo ":maple_leaf: Artifact ID: ${{ steps.set_version.outputs.ARTIFACT_ID }}" >> $GITHUB_STEP_SUMMARY
           echo ":maple_leaf: Original Maven version: ${{ steps.set_version.outputs.MVN_VERSION }}" >> $GITHUB_STEP_SUMMARY
           echo ":cactus: Calculated Maven Version: ${{ steps.set_version.outputs.BRANCH_MVN_VERSION }}" >> $GITHUB_STEP_SUMMARY
-  
-  
+
+
   build:
     runs-on: ubuntu-latest
 
@@ -91,7 +91,7 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml.
-          settings-path: ${{ github.workspace }} # location for the settings.xml file  
+          settings-path: ${{ github.workspace }} # location for the settings.xml file
 
       - name: show variables
         id: show_build_variables
@@ -117,7 +117,7 @@ jobs:
           set -o pipefail    # don't hide errors within pipes
           set -o nounset     # abort on unbound variable
           set -o errexit     # abort on nonzero exit status
-          
+
           # Check if required parameters are set
           required_params=("GITHUB_ACTOR" "GITHUB_TOKEN" "BRANCH_MVN_VERSION" "BRANCH_NAME" "DOCKER_USER" "DOCKER_TOKEN")
           for param in "${required_params[@]}"; do
@@ -126,7 +126,7 @@ jobs:
               exit 1
             fi
           done
-          
+
           if [[ "${BRANCH_NAME}" == "master" ||  "${BRANCH_NAME}" == "main" ]]; then
             echo "::notice:: ### Build of Master. Version: $BRANCH_MVN_VERSION"
           else
@@ -134,11 +134,11 @@ jobs:
             mvn -B versions:set -e -DnewVersion="$BRANCH_MVN_VERSION"
           fi
           mvn -B -e deploy -s $GITHUB_WORKSPACE/settings.xml
-  
+
   analyze:
     runs-on: ubuntu-latest
     needs: [ setup ]
-    
+
     permissions:
       contents: read
       packages: write
@@ -159,7 +159,7 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml.
-          settings-path: ${{ github.workspace }} # location for the settings.xml file       
+          settings-path: ${{ github.workspace }} # location for the settings.xml file
 
       - name: Run Maven Build
         env:
@@ -189,7 +189,7 @@ jobs:
             echo "::notice:: ### Build of Feature Branch ${BRANCH_NAME}. Version: $BRANCH_MVN_VERSION"
             mvn -B versions:set -e -DnewVersion="$BRANCH_MVN_VERSION"
           fi
-          mvn -B -e install -Dskip.start.stop.springboot=true -s $GITHUB_WORKSPACE/settings.xml	
+          mvn -B -e verify -Dskip.start.stop.springboot=true -Dskip.docker.build=true -Dskip.docker.publish=true -s $GITHUB_WORKSPACE/settings.xml
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
@@ -210,12 +210,12 @@ jobs:
           DOCKER_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
           ORGANIZATION: ${{needs.setup.outputs.ORGANIZATION}}
           ARTIFACT_ID: ${{needs.setup.outputs.ARTIFACT_ID}}
-        
+
         run: |
           set -o pipefail    # don't hide errors within pipes
           set -o nounset     # abort on unbound variable
           set -o errexit     # abort on nonzero exit status
-          
+
           # Check if required parameters are set
           required_params=("SONAR_TOKEN")
           for param in "${required_params[@]}"; do
@@ -224,7 +224,7 @@ jobs:
               exit 1
             fi
           done
-          
+
           if [[ "${BRANCH_NAME}" == "master" ||  "${BRANCH_NAME}" == "main" ]]; then
             mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
                   -s $GITHUB_WORKSPACE/settings.xml \
@@ -245,5 +245,5 @@ jobs:
                   -Dsonar.projectKey="${ORGANIZATION}_${ARTIFACT_ID}" \
                   -Dsonar.branch.name=${BRANCH_NAME} \
                   -Dsonar.branch.target=master
-          fi 
-        
+          fi
+

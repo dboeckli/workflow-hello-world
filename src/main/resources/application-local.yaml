@@ -1,4 +1,7 @@
 spring:
+  application:
+    name: workflow-hello-world
+
   h2:
     console:
       enabled: true
@@ -71,9 +74,6 @@ management:
       probes:
         enabled: true
 
-logging:
-  config: "classpath:logging/log4j2-local.xml"
-
 springdoc:
   show-actuator: true
   api-docs:
@@ -82,6 +82,26 @@ springdoc:
       enabled: true
   swagger-ui:
     show-extensions: true
+
+logging:
+  level:
+    org.zalando.logbook: INFO
+
+logbook:
+  filter:
+    enabled: true
+  format:
+    style: http
+  obfuscate:
+    headers:
+      - Authorization
+      - X-Secret
+    parameters:
+      - access_token
+      - password
+  predicate:
+    exclude:
+      - path: /actuator/health/**
 
 application:
   apifirst-server-jpa:

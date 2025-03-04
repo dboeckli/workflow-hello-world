@@ -26,6 +26,14 @@ Accept: application/json
 GET {{host}}/{{context}}/actuator/health/readiness
 Accept: application/json
 
+### actuator sbom
+GET {{host}}/{{context}}/actuator/sbom
+Accept: application/json
+
+### actuator sbom application
+GET {{host}}/{{context}}/actuator/sbom/application
+Accept: application/octet-stream
+
 ### actuator metrics
 GET {{host}}/{{context}}/actuator/metrics
 Accept: application/json

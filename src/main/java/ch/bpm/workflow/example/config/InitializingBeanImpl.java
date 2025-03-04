@@ -1,6 +1,6 @@
 package ch.bpm.workflow.example.config;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.identity.impl.ldap.plugin.LdapIdentityProviderPlugin;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Profile;
@@ -10,7 +10,7 @@ import static ch.bpm.workflow.example.common.LogMessage.READING_CONFIG_CLASS;
 import static ch.bpm.workflow.example.config.CamundaLdapConfiguration.printLdapIdentityProviderPlugin;
 
 @Component
-@Log4j2
+@Slf4j
 @Profile({"local", "ci"})
 public class InitializingBeanImpl implements InitializingBean {
 
@@ -21,7 +21,7 @@ public class InitializingBeanImpl implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         log.info(READING_CONFIG_CLASS.getMessage(), this.getClass().getName(), printLdapIdentityProviderPlugin(ldapIdentityProviderPlugin));
     }
 }
