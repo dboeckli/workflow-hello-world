@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import javax.sql.DataSource;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
@@ -47,7 +47,7 @@ import static org.mockserver.model.HttpResponse.response;
 })
 @Testcontainers
 @Deployment(resources = "process.bpmn")
-@Log4j2
+@Slf4j
 @ActiveProfiles(value = "local")
 class WorkflowTestWithMockServerBPM {
 
@@ -78,7 +78,7 @@ class WorkflowTestWithMockServerBPM {
 
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         init(processEngine);
         log.info("### ProcessEngine started: {}", processEngine.getName());
         mockServerClient = new MockServerClient(mockServer.getHost(), mockServer.getServerPort());

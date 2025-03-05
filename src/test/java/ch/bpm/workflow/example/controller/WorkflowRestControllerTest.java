@@ -1,5 +1,6 @@
 package ch.bpm.workflow.example.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.impl.RuntimeServiceImpl;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles(value = "test")
+@Slf4j
 class WorkflowRestControllerTest {
 
     @InjectMocks
@@ -27,6 +29,8 @@ class WorkflowRestControllerTest {
 
     @Test
     void getInfo() {
+        log.info("Test started: WorkflowRestControllerTest - getInfo() method");
+
         ExecutionEntity givenExecution = new ExecutionEntity();
         givenExecution.setId("id");
         givenExecution.setCaseInstanceId("caseInstanceId");

@@ -4,14 +4,14 @@ package ch.bpm.workflow.example.config;
 import ch.guru.springframework.apifirst.ApiClient;
 import ch.guru.springframework.apifirst.client.CustomerApi;
 import lombok.Getter;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
-@Log4j2
+@Slf4j
 @Getter
 public class RestApiConfiguration {
 
