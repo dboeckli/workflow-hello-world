@@ -39,6 +39,35 @@ jobs:
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml.
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
+      - name: Verify Variables and Secrets
+        env:
+          DOCKER_USER: ${{ vars.DOCKER_USER }}
+          CI_USER: ${{ vars.CI_USER }}
+          CI_USER_EMAIL: ${{ vars.CI_USER_EMAIL }}
+          DOCKER_ACCESS_TOKEN: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          TRIGGER_WORKFLOW_TOKEN: ${{ secrets.TRIGGER_WORKFLOW_TOKEN }}
+          RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        run: |
+          required_vars=("DOCKER_USER" "CI_USER" "CI_USER_EMAIL")
+          required_secrets=("DOCKER_ACCESS_TOKEN" "SONAR_TOKEN" "TRIGGER_WORKFLOW_TOKEN" "RELEASE_TOKEN")
+
+          for param in "${required_vars[@]}"; do
+            if [ -z "${!param}" ]; then
+              echo "::error::Required parameter $param is not set"
+              exit 1
+            fi
+          done
+
+          for param in "${required_secrets[@]}"; do
+            if [ -z "${!param}" ]; then
+              echo "::error::Required parameter $param is not set"
+              exit 1
+            fi
+          done
+
+          echo "All required variables and secrets are set."
+
       - name: Set Maven Versions
         id: set_version
         env:
@@ -55,7 +84,23 @@ jobs:
           ALLMYSECRETS: ${{ toJSON(secrets) }}
           ALLMYVARS: ${{ toJSON(vars) }}
           ALLMYOUTPUT: ${{ toJSON(steps.set_version.outputs) }}
+          BRANCH_MVN_VERSION: ${{ steps.set_version.outputs.BRANCH_MVN_VERSION }}
+          BRANCH_NAME: ${{ steps.set_version.outputs.BRANCH_NAME }}
+          MVN_VERSION: ${{ steps.set_version.outputs.MVN_VERSION }}
+          ARTIFACT_ID: ${{ steps.set_version.outputs.ARTIFACT_ID }}
+          GROUP_ID: ${{ steps.set_version.outputs.GROUP_ID }}
+          ORGANIZATION: ${{ steps.set_version.outputs.ORGANIZATION }}
         run: |
+          # Verify required outputs from set_version step
+          required_outputs=("BRANCH_MVN_VERSION" "BRANCH_NAME" "MVN_VERSION" "ARTIFACT_ID" "GROUP_ID" "ORGANIZATION")
+
+          for param in "${required_outputs[@]}"; do
+            if [ -z "${!param}" ]; then
+              echo "::error::Required parameter $param is not set"
+              exit 1
+            fi
+          done
+
           echo "### ALLMYSECRETS: $ALLMYSECRETS"
           echo "### ALLMYVARS: $ALLMYVARS"
           echo "### ALLMYOUTPUT: $ALLMYOUTPUT"
@@ -118,15 +163,6 @@ jobs:
           set -o nounset     # abort on unbound variable
           set -o errexit     # abort on nonzero exit status
 
-          # Check if required parameters are set
-          required_params=("GITHUB_ACTOR" "GITHUB_TOKEN" "BRANCH_MVN_VERSION" "BRANCH_NAME" "DOCKER_USER" "DOCKER_TOKEN")
-          for param in "${required_params[@]}"; do
-            if [ -z "${!param}" ]; then
-              echo "::error::Required parameter $param is not set"
-              exit 1
-            fi
-          done
-
           if [[ "${BRANCH_NAME}" == "master" ||  "${BRANCH_NAME}" == "main" ]]; then
             echo "::notice:: ### Build of Master. Version: $BRANCH_MVN_VERSION"
           else
@@ -174,15 +210,6 @@ jobs:
           set -o nounset     # abort on unbound variable
           set -o errexit     # abort on nonzero exit status
 
-          # Check if required parameters are set
-          required_params=("GITHUB_ACTOR" "GITHUB_TOKEN" "BRANCH_MVN_VERSION" "BRANCH_NAME" "DOCKER_USER" "DOCKER_TOKEN")
-          for param in "${required_params[@]}"; do
-            if [ -z "${!param}" ]; then
-              echo "::error::Required parameter $param is not set"
-              exit 1
-            fi
-          done
-
           if [[ "${BRANCH_NAME}" == "master" ||  "${BRANCH_NAME}" == "main" ]]; then
             echo "::notice:: ### Build of Master. Version: $BRANCH_MVN_VERSION"
           else
@@ -215,15 +242,6 @@ jobs:
           set -o pipefail    # don't hide errors within pipes
           set -o nounset     # abort on unbound variable
           set -o errexit     # abort on nonzero exit status
-
-          # Check if required parameters are set
-          required_params=("SONAR_TOKEN")
-          for param in "${required_params[@]}"; do
-            if [ -z "${!param}" ]; then
-              echo "::error::Required parameter $param is not set"
-              exit 1
-            fi
-          done
 
           if [[ "${BRANCH_NAME}" == "master" ||  "${BRANCH_NAME}" == "main" ]]; then
             mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
