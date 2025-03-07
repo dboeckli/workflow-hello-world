@@ -12,6 +12,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -26,8 +27,16 @@ class CamundaOpenApiRestControllerIT {
     private MockMvc mockMvc;
 
     @Test
-    void getFile() throws Exception {
-        this.mockMvc.perform(get("/restapi/camunda")).andExpect(status().isOk()).andExpect(content().json(createResponse()));
+    void getOpenApiFile() throws Exception {
+        this.mockMvc.perform(get("/restapi/camunda")
+                .with(httpBasic("camunda-admin", "camunda-admin-password")))
+            .andExpect(status().isOk()).andExpect(content().json(createResponse()));
+    }
+
+    @Test
+    void getOpenApiUnauthorized() throws Exception {
+        this.mockMvc.perform(get("/restapi/camunda"))
+            .andExpect(status().isUnauthorized());
     }
 
     private String createResponse() throws IOException {
