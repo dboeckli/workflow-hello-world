@@ -28,9 +28,7 @@ class WorkflowRestControllerTest {
     RuntimeServiceImpl runtimeServiceMock = new RuntimeServiceImpl();
 
     @Test
-    void getInfo() {
-        log.info("Test started: WorkflowRestControllerTest - getInfo() method");
-
+    void startProcess() {
         ExecutionEntity givenExecution = new ExecutionEntity();
         givenExecution.setId("id");
         givenExecution.setCaseInstanceId("caseInstanceId");
@@ -40,7 +38,7 @@ class WorkflowRestControllerTest {
 
         Mockito.when(runtimeServiceMock.startProcessInstanceByKey(any())).thenReturn(givenExecution);
 
-        ResponseEntity<WorkflowRestController.HelloWorldWorklfowResponse> entity = workflowRestController.getInfo();
+        ResponseEntity<WorkflowRestController.HelloWorldWorklfowResponse> entity = workflowRestController.startProcess();
 
         assertAll(
                 () -> assertEquals(givenExecution.getId(), entity.getBody().id()),
