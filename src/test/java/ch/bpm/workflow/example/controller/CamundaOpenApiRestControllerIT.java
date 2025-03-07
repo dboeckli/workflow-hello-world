@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles(value = "test")
+@ActiveProfiles(value = "local")
 class CamundaOpenApiRestControllerIT {
 
     @Autowired
