@@ -1,26 +1,27 @@
 package ch.bpm.workflow.example.controller;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DirtiesContext
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles(value = "local")
+@Slf4j
 class CamundaOpenApiRestControllerIT {
 
     @Autowired
@@ -29,7 +30,7 @@ class CamundaOpenApiRestControllerIT {
     @Test
     void getOpenApiFile() throws Exception {
         this.mockMvc.perform(get("/restapi/camunda")
-                .with(httpBasic("camunda-admin", "camunda-admin-password")))
+            .with(httpBasic("camunda-admin", "camunda-admin-password")))
             .andExpect(status().isOk()).andExpect(content().json(createResponse()));
     }
 

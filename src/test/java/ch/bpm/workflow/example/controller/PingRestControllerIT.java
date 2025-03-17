@@ -31,7 +31,7 @@ class PingRestControllerIT {
     @Test
     void testGetInfo() throws Exception {
         this.mockMvc.perform(get("/restapi/ping")
-                .with(httpBasic("camunda-admin", "camunda-admin-password")))
+            .with(httpBasic("camunda-admin", "camunda-admin-password")))
             .andExpect(status().isOk()).andExpect(content().json(new Gson().toJson(createResponse())));
     }
 
