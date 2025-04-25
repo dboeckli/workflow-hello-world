@@ -21,6 +21,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_CLASS;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(properties = {
@@ -29,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
     "camunda.bpm.generate-unique-process-application-name=true",
     "spring.datasource.generate-unique-name=true"
 })
-@DirtiesContext
+@DirtiesContext(classMode = BEFORE_CLASS)
 @ActiveProfiles(value = "local")
 @Deployment(resources = "process.bpmn")
 @Slf4j

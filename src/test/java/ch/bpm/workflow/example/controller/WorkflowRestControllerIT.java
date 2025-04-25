@@ -17,9 +17,10 @@ import static org.hamcrest.Matchers.matchesPattern;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_CLASS;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-@DirtiesContext
+@DirtiesContext(classMode = BEFORE_CLASS)
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles(value = "local")
