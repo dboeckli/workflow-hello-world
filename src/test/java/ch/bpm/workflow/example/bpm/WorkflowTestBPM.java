@@ -43,7 +43,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
         "camunda.bpm.job-execution.enabled=false",
         "camunda.bpm.generate-unique-process-engine-name=true",
         "camunda.bpm.generate-unique-process-application-name=true",
-        "spring.datasource.generate-unique-name=true"
+        "spring.datasource.generate-unique-name=true",
+        "spring.datasource.hikari.jdbc-url=jdbc:h2:mem:WorkflowTestBPM;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"
 })
 @Deployment(resources = "process.bpmn")
 @Slf4j
