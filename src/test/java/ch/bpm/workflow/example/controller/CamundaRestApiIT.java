@@ -30,7 +30,7 @@ import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFOR
     "camunda.bpm.generate-unique-process-application-name=true",
     "spring.datasource.generate-unique-name=true"
 })
-@DirtiesContext(classMode = BEFORE_CLASS)
+//@DirtiesContext(classMode = BEFORE_CLASS)
 @ActiveProfiles(value = "local")
 @Deployment(resources = "process.bpmn")
 @Slf4j

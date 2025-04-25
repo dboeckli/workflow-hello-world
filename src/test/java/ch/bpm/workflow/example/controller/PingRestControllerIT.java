@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DirtiesContext(classMode = BEFORE_CLASS)
+//@DirtiesContext(classMode = BEFORE_CLASS)
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles(value = "local")

@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles(value = "local")
-@DirtiesContext(classMode = BEFORE_CLASS)
+//@DirtiesContext(classMode = BEFORE_CLASS)
 @Slf4j
 class CamundaOpenApiRestControllerIT {
 

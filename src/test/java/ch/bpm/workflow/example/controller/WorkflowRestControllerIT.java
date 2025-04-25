@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @DirtiesContext(classMode = BEFORE_CLASS)
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles(value = "local")
+//@ActiveProfiles(value = "local")
 @Slf4j
 class WorkflowRestControllerIT {
 
