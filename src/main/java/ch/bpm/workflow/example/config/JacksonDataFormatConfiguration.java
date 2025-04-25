@@ -34,6 +34,6 @@ public class JacksonDataFormatConfiguration {
         objectMapper.findAndRegisterModules().disable(SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS);
 
         List<Module> modules = ObjectMapper.findModules();
-        modules.forEach(module -> log.info(JACKSON_CONFIG_MODULES.getMessage(), module, module.version()));
+        modules.forEach(module -> log.debug(JACKSON_CONFIG_MODULES.getMessage(), module, module.version()));
     }
 }
