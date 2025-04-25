@@ -2,12 +2,14 @@ package ch.bpm.workflow.example.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.camunda.bpm.engine.test.Deployment;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.IOException;
@@ -23,7 +25,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles(value = "local")
+@TestPropertySource(properties = {
+    "camunda.bpm.job-execution.enabled=false",
+    "camunda.bpm.generate-unique-process-engine-name=true",
+    "camunda.bpm.generate-unique-process-application-name=true",
+    "spring.datasource.generate-unique-name=true"
+})
 //@DirtiesContext(classMode = BEFORE_CLASS)
+@Deployment(resources = "process.bpmn")
 @Slf4j
 class CamundaOpenApiRestControllerIT {
 

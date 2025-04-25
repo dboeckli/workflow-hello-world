@@ -2,6 +2,7 @@ package ch.bpm.workflow.example.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.camunda.bpm.engine.test.Deployment;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -9,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -22,8 +24,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @DirtiesContext(classMode = BEFORE_CLASS)
 @SpringBootTest
+@TestPropertySource(properties = {
+    "camunda.bpm.job-execution.enabled=false",
+    "camunda.bpm.generate-unique-process-engine-name=true",
+    "camunda.bpm.generate-unique-process-application-name=true",
+    "spring.datasource.generate-unique-name=true"
+})
 @AutoConfigureMockMvc
-//@ActiveProfiles(value = "local")
+@ActiveProfiles(value = "local")
+@Deployment(resources = "process.bpmn")
 @Slf4j
 class WorkflowRestControllerIT {
 
