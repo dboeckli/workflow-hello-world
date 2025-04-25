@@ -2,13 +2,14 @@ package ch.bpm.workflow.example.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.camunda.bpm.engine.test.Deployment;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -19,10 +20,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-@DirtiesContext
 @SpringBootTest
+@TestPropertySource(properties = {
+    "camunda.bpm.job-execution.enabled=false",
+    "spring.datasource.generate-unique-name=true",
+    "spring.datasource.hikari.jdbc-url=jdbc:h2:mem:WorkflowRestControllerIT;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"
+})
 @AutoConfigureMockMvc
 @ActiveProfiles(value = "local")
+@Deployment(resources = "process.bpmn")
 @Slf4j
 class WorkflowRestControllerIT {
 

@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(useMainMethod = SpringBootTest.UseMainMethod.ALWAYS)
 @ActiveProfiles(value = "test")
 @Slf4j
-class TestApplicationIT {
+class TestApplicationTest {
 
     @Autowired
     ProcessEngine processEngine;
