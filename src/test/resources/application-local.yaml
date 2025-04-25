@@ -12,7 +12,7 @@ spring:
     defer-datasource-initialization: true
   datasource:
     hikari:
-      jdbc-url: jdbc:h2:mem:workflow-hello-world
+      jdbc-url: jdbc:h2:mem:workflow-hello-world;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
 
   docker:
     compose:

@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -19,16 +18,13 @@ import static org.hamcrest.Matchers.matchesPattern;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_CLASS;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-@DirtiesContext(classMode = BEFORE_CLASS)
 @SpringBootTest
 @TestPropertySource(properties = {
     "camunda.bpm.job-execution.enabled=false",
-    "camunda.bpm.generate-unique-process-engine-name=true",
-    "camunda.bpm.generate-unique-process-application-name=true",
-    "spring.datasource.generate-unique-name=true"
+    "spring.datasource.generate-unique-name=true",
+    "spring.datasource.hikari.jdbc-url=jdbc:h2:mem:WorkflowRestControllerIT;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"
 })
 @AutoConfigureMockMvc
 @ActiveProfiles(value = "local")
