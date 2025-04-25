@@ -1,14 +1,15 @@
 package ch.bpm.workflow.example.controller;
 
 import com.google.gson.Gson;
+import org.camunda.bpm.engine.test.Deployment;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
@@ -16,9 +17,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DirtiesContext
+//@DirtiesContext(classMode = BEFORE_CLASS)
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestPropertySource(properties = {
+    "camunda.bpm.job-execution.enabled=false",
+    "spring.datasource.generate-unique-name=true",
+    "spring.datasource.hikari.jdbc-url=jdbc:h2:mem:PingRestControllerIT;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"
+})
+@Deployment(resources = "process.bpmn")
 @ActiveProfiles(value = "local")
 class PingRestControllerIT {
 

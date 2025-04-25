@@ -1,0 +1,126 @@
+spring:
+  application:
+    name: workflow-hello-world
+
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
+
+  jpa:
+    defer-datasource-initialization: true
+  datasource:
+    hikari:
+      jdbc-url: jdbc:h2:mem:workflow-hello-world;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+
+  docker:
+    compose:
+      enabled: true
+      stop:
+        command: down
+      skip:
+        in-tests: false
+
+server:
+  servlet:
+    context-path: /bpm
+  port: 8081
+  error:
+    include-message: always
+    include-binding-errors: always
+
+camunda:
+  bpm:
+    authorization:
+      enabled: true
+    admin-user:
+      id: camunda-admin
+    filter:
+      create: All Tasks
+    client:
+      base-url: http://localhost:8081/${server.servlet.context-path}/engine-rest
+      worker-id: spring-boot-worker
+      basic-auth:
+        username: camunda-admin
+        password: camunda-admin-password
+    metrics:
+      enabled: true
+      db-reporter-activate: true
+    generic-properties:
+      ignore-unknown-fields: false
+      properties:
+        javaSerializationFormatEnabled: true
+        historyTimeToLive: 5
+        enableExceptionsAfterUnhandledBpmnError: true
+
+camunda-ldap-plugin:
+  url: ldap://localhost:389
+  sslEnabled: false
+  user: cn=admin,dc=example,dc=ch
+  password: password
+  base-dn: dc=example,dc=ch
+  users:
+    user-search-base: "ou=users"
+    user-search-filter: "(objectClass=inetOrgPerson)"
+    user-id-attribute: uid
+    user-firstname-attribute: givenName
+    user-lastname-attribute: sn
+    user-email-attribute: mail
+    user-password-attribute: userPassword
+  groups:
+    group-search-base: "ou=groups"
+    group-search-filter: "(objectClass=groupOfNames)"
+    group-id-attribute: cn
+    group-name-attribute: cn
+    group-member-attribute: member
+camunda-authorization-plugin:
+  admin-group: "camunda-admins"
+  admin-user: "camunda-admin"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*,prometheus"
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+
+springdoc:
+  show-actuator: true
+  api-docs:
+    path: /swagger/v3/api-docs
+    groups:
+      enabled: true
+  swagger-ui:
+    show-extensions: true
+
+logging:
+  level:
+    org.zalando.logbook: INFO
+
+logbook:
+  filter:
+    enabled: true
+  format:
+    style: http
+  obfuscate:
+    headers:
+      - Authorization
+      - X-Secret
+    parameters:
+      - access_token
+      - password
+  predicate:
+    exclude:
+      - path: /actuator/health/**
+
+application:
+  apifirst-server-jpa:
+    protocol: "http"
+    host: "localhost"
+    port: "8085"
+    context: "/"
