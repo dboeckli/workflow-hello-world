@@ -12,8 +12,12 @@ Write your own description here
 
 ### URLS
 
-- Camunda: http://localhost:8081/bpm/camunda/app/welcome/default/#!/welcome
-- Actuator: http://localhost:8081/bpm/actuator
+- Camunda: 
+  - http://localhost:8081/bpm/camunda/app/welcome/default/#!/welcome
+  - http://localhost:30081/bpm/camunda/app/welcome/default/#!/welcome
+- Actuator: 
+  - http://localhost:8081/bpm/actuator
+  - http://localhost:30081/bpm/actuator
 - Openapi:
   - http://localhost:8081/bpm/swagger/v3/api-docs
   - http://localhost:8081/bpm/swagger/v3/api-docs.yaml
@@ -32,18 +36,92 @@ Write your own description here
 ## Prerequisites
 
 - Java 21
-- Camunda 7.21
-- Spring Boot 3.3.1
+- Camunda 7.23
+- Spring Boot 3.4.6
 - Maven 3.6.3 (Older versions might cause build problems)
 - *_/home/$username/.m2/settings.xml_* is set
   up [Help](https://swp-confluence.atlassian.net/wiki/spaces/SWPIT/pages/411173348/How+to+Install+and+setup+maven#Setting-up-the-maven-settings)
 - there are two run configs which requires passwords (ldap, postgres). therefore you need to edit/rename in the src/main/conf folder the changeme-local.conf and changeme-ci.conf to ci.conf and local.conf.
 
-## Build
+## Kubernetes
 
-| Usage         | Action      |
-|---------------|-------------|
-| Clean project | mvn clean   |
-| Build project | mvn package |
-| Test project  | mvn test    |
+To run maven filtering for destination target/k8s and destination target/helm run:
+```bash
+mvn clean install -DskipTests 
+```
 
+### Deployment with Kubernetes
+
+Deployment goes into the default namespace.
+
+To deploy all resources:
+```bash
+kubectl apply -f target/k8s/
+```
+
+To remove all resources:
+```bash
+kubectl delete -f target/k8s/
+```
+
+Check
+```bash
+kubectl get deployments -o wide
+kubectl get pods -o wide
+```
+
+You can use the actuator rest call to verify via port 30081
+
+### Deployment with Helm
+
+To run maven filtering for destination target/helm run:
+```bash
+mvn clean install -DskipTests 
+```
+
+Be aware that we are using a different namespace here (not default).
+
+Go to the directory where the tgz file has been created after 'mvn install'
+```powershell
+cd target/helm/repo
+```
+
+unpack
+```powershell
+$file = Get-ChildItem -Filter workflow-cib7-hello-world-v*.tgz | Select-Object -First 1
+tar -xvf $file.Name
+```
+
+install
+```powershell
+$APPLICATION_NAME = Get-ChildItem -Directory | Where-Object { $_.LastWriteTime -ge $file.LastWriteTime } | Select-Object -ExpandProperty Name
+helm upgrade --install $APPLICATION_NAME ./$APPLICATION_NAME --namespace workflow-cib7-hello-world --create-namespace --wait --timeout 5m --debug
+```
+
+show logs and show event
+```powershell
+kubectl get pods -n workflow-cib7-hello-world
+```
+replace $POD with pods from the command above
+```powershell
+kubectl logs $POD -n workflow-cib7-hello-world --all-containers
+```
+
+Show Details and Event
+
+$POD_NAME can be: workflow-cib7-hello-world-mongodb, workflow-cib7-hello-world
+```powershell
+kubectl describe pod $POD_NAME -n workflow-cib7-hello-world
+```
+
+Show Endpoints
+```powershell
+kubectl get endpoints -n workflow-cib7-hello-world
+```
+
+uninstall
+```powershell
+helm uninstall $APPLICATION_NAME --namespace workflow-cib7-hello-world
+```
+
+You can use the actuator rest call to verify via port 30081
