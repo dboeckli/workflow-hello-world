@@ -194,6 +194,13 @@ jobs:
             echo "::error::Helm test failed with exit code $TEST_EXIT_CODE"
             exit $TEST_EXIT_CODE
           fi
+          
+          if echo "$TEST_OUTPUT" | grep -q "Phase:.*Failed"; then
+            echo "::error::Helm test failed. See raw output for details."
+            exit 1
+          else
+            echo "Helm tests passed successfully."
+          fi
 
       - name: Display Deployment Information
         env:
