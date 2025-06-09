@@ -186,6 +186,7 @@ jobs:
           TEST_EXIT_CODE=$?
           
           echo "::group::Helm Test Raw Output"
+          echo "Exit Code: $TEST_EXIT_CODE"
           echo "$TEST_OUTPUT"
           echo "::endgroup::"
           
