@@ -9,7 +9,7 @@ metadata:
     "helm.sh/hook": test
 spec:
   containers:
-    - name: wget
+    - name: test-actuator-health
       image: busybox:1.37.0
       command: [ '/bin/sh', '-c' ]
       args:
