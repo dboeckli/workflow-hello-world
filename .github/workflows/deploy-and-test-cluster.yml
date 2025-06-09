@@ -182,7 +182,7 @@ jobs:
           NAMESPACE: ${{ inputs.namespace }}
         run: |
           echo "Testing Application $APPLICATION_NAME: $APP_VERSION"
-          helm test $APPLICATION_NAME --namespace ${NAMESPACE --logs
+          helm test $APPLICATION_NAME --namespace ${NAMESPACE} --logs
 
       - name: Display Deployment Information
         env:
