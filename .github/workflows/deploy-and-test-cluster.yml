@@ -182,7 +182,17 @@ jobs:
           NAMESPACE: ${{ inputs.namespace }}
         run: |
           echo "Testing Application $APPLICATION_NAME: $APP_VERSION"
-          helm test $APPLICATION_NAME --namespace ${NAMESPACE} --logs
+          TEST_OUTPUT=$(helm test $APPLICATION_NAME --namespace ${NAMESPACE} --logs)
+          TEST_EXIT_CODE=$?
+          
+          echo "::group::Helm Test Raw Output"
+          echo "$TEST_OUTPUT"
+          echo "::endgroup::"
+          
+          if [ $TEST_EXIT_CODE -ne 0 ]; then
+            echo "::error::Helm test failed with exit code $TEST_EXIT_CODE"
+            exit $TEST_EXIT_CODE
+          fi
 
       - name: Display Deployment Information
         env:
