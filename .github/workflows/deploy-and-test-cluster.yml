@@ -190,16 +190,15 @@ jobs:
           echo "$TEST_OUTPUT"
           echo "::endgroup::"
           
-          if [ $TEST_EXIT_CODE -ne 0 ]; then
-            echo "::error::Helm test failed with exit code $TEST_EXIT_CODE"
-            exit $TEST_EXIT_CODE
-          fi
-          
-          if echo "$TEST_OUTPUT" | grep -q "Phase:.*Failed"; then
-            echo "::error::Helm test failed. See raw output for details."
+          # Check all test exit codes
+          if echo "$TEST_OUTPUT" | grep -q "Exit code: [^0]"; then
+            echo "::error::One or more Helm tests failed. See details below:"
             exit 1
+          elif [ $TEST_EXIT_CODE -ne 0 ]; then
+            echo "::error::Helm test command failed with exit code $TEST_EXIT_CODE"
+            exit $TEST_EXIT_CODE
           else
-            echo "Helm tests passed successfully."
+            echo "All Helm tests passed successfully."
           fi
 
       - name: Display Deployment Information
