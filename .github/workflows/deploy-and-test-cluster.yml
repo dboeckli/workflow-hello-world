@@ -120,7 +120,6 @@ jobs:
 
   deploy-app-with-helm:
     runs-on: ubuntu-latest
-    if: false # TODO ENABLE ME AS SOON HELM IS IMPLEMENTED
     needs: deploy-app-with-kubectl
 
     steps:
@@ -175,6 +174,15 @@ jobs:
           BUILD_LINK="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ inputs.deployed-by-build }}"
           echo "::notice:: ### Helm Deployed Version: ${{ inputs.version }}"
           echo "::notice:: ### Deployment triggered by workflow ${{ inputs.deployed-by-workflow }}. Run number: ${{ inputs.deployed-by-build }}: $BUILD_LINK"
+
+      - name: Test Application
+        env:
+          APP_VERSION: ${{ inputs.version }}
+          APPLICATION_NAME: ${{ inputs.application-name }}
+          NAMESPACE: ${{ inputs.namespace }}
+        run: |
+          echo "Testing Application $APPLICATION_NAME: $APP_VERSION"
+          helm test $APPLICATION_NAME --namespace ${NAMESPACE --logs
 
       - name: Display Deployment Information
         env:

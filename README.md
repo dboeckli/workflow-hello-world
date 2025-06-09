@@ -88,40 +88,45 @@ cd target/helm/repo
 
 unpack
 ```powershell
-$file = Get-ChildItem -Filter workflow-cib7-hello-world-v*.tgz | Select-Object -First 1
+$file = Get-ChildItem -Filter workflow-hello-world-v*.tgz | Select-Object -First 1
 tar -xvf $file.Name
 ```
 
 install
 ```powershell
 $APPLICATION_NAME = Get-ChildItem -Directory | Where-Object { $_.LastWriteTime -ge $file.LastWriteTime } | Select-Object -ExpandProperty Name
-helm upgrade --install $APPLICATION_NAME ./$APPLICATION_NAME --namespace workflow-cib7-hello-world --create-namespace --wait --timeout 5m --debug
+helm upgrade --install $APPLICATION_NAME ./$APPLICATION_NAME --namespace workflow-hello-world --create-namespace --wait --timeout 5m --debug
 ```
 
 show logs and show event
 ```powershell
-kubectl get pods -n workflow-cib7-hello-world
+kubectl get pods -n workflow-hello-world
 ```
 replace $POD with pods from the command above
 ```powershell
-kubectl logs $POD -n workflow-cib7-hello-world --all-containers
+kubectl logs $POD -n workflow-hello-world --all-containers
 ```
 
 Show Details and Event
 
-$POD_NAME can be: workflow-cib7-hello-world-mongodb, workflow-cib7-hello-world
+$POD_NAME can be: workflow-hello-world-mongodb, workflow-hello-world
 ```powershell
-kubectl describe pod $POD_NAME -n workflow-cib7-hello-world
+kubectl describe pod $POD_NAME -n workflow-hello-world
 ```
 
 Show Endpoints
 ```powershell
-kubectl get endpoints -n workflow-cib7-hello-world
+kubectl get endpoints -n workflow-hello-world
+```
+
+test
+```powershell
+helm test $APPLICATION_NAME --namespace workflow-hello-world --logs
 ```
 
 uninstall
 ```powershell
-helm uninstall $APPLICATION_NAME --namespace workflow-cib7-hello-world
+helm uninstall $APPLICATION_NAME --namespace workflow-hello-world
 ```
 
 You can use the actuator rest call to verify via port 30081

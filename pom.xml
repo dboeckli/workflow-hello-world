@@ -527,7 +527,6 @@
                         <exclude>.idea/**</exclude>
                         <exclude>**/banner.txt</exclude>
                         <exclude>*.bpmn</exclude>
-                        <exclude>**/cibseven-webclient.properties</exclude>
                         <exclude>mvn</exclude>
                         <exclude>mvn.cmd</exclude>
                         <exclude>mvnw</exclude>
