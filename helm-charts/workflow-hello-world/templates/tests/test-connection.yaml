@@ -26,4 +26,17 @@ spec:
           wget -O- -q {{ include "apifirst-server-jpa.serviceFQDN" . }}:{{ .Values.service.port }}/actuator/health
           echo "Exit code: $?"
 
+          # Print DNS configuration
+          echo "### DNS Configuration:"
+          cat /etc/resolv.conf
+
+          # Test DNS resolution
+          echo "### Testing DNS resolution:"
+          LDAP_FQDN="{{ include "workflow-hello-world-ldap.serviceFQDN" . }}"
+          APIFIRST_FQDN="{{ include "apifirst-server-jpa.serviceFQDN" . }}"
+          echo "LDAP FQDN: $LDAP_FQDN"
+          nslookup $LDAP_FQDN
+          echo "APIFIRST_FQDN: $APIFIRST_FQDN"
+          nslookup $APIFIRST_FQDN
+
   restartPolicy: Never
