@@ -44,6 +44,10 @@ spec:
               value: local
             - name: CAMUNDA_LDAP_PLUGIN_URL
               value: ldap://ldap:389
+            - name: SPRING_LDAP_URL
+              value: ldap://ldap:389
+            - name: APPLICATION_APIFIRST_SERVER_JPA_HOST
+              value: apifirst-server-jpa
 
             - name: SPRING_APPLICATION_JSON
               value: |
