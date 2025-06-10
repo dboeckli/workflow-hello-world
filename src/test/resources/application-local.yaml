@@ -8,6 +8,12 @@ spring:
       settings:
         web-allow-others: true
 
+  ldap:
+    url: ldap://localhost:389
+    base-dn: dc=example,dc=ch
+    manager-dn: cn=admin,dc=example,dc=ch
+    manager-password: password
+
   jpa:
     defer-datasource-initialization: true
   datasource:
@@ -122,5 +128,5 @@ application:
   apifirst-server-jpa:
     protocol: "http"
     host: "localhost"
-    port: "8085"
+    port: "8082"
     context: "/"

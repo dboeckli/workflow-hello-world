@@ -2,6 +2,12 @@ spring:
   application:
     name: workflow-hello-world
 
+  ldap:
+    embedded:
+      ldif: "classpath:test-embedded.ldif"
+      base-dn: "dc=example,dc=ch"
+      port: 0
+
   docker:
     compose:
       enabled: false
@@ -55,5 +61,5 @@ application:
   apifirst-server-jpa:
     protocol: "http"
     host: "localhost"
-    port: "8085"
+    port: "8082"
     context: "/"

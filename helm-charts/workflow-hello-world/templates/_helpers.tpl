@@ -57,3 +57,21 @@ Create the FQDN for the service
 {{- $fullname := include "application-template.fullname" . -}}
 {{- printf "%s.%s.svc.cluster.local" $fullname .Release.Namespace }}
 {{- end }}
+
+
+{{/*
+Use the apifirst-server-jpa service FQDN
+*/}}
+{{- define "apifirst-server-jpa.serviceFQDN" -}}
+{{- $fullname := include "application-template.fullname" . -}}
+{{- printf "%s-%s.%s.svc.cluster.local" $fullname "apifirst-server-jpa" .Release.Namespace }}
+{{- end -}}
+
+
+{{/*
+Use the workflow-hello-world-ldap service FQDN
+*/}}
+{{- define "workflow-hello-world-ldap.serviceFQDN" -}}
+{{- $fullname := include "workflow-hello-world-ldap.fullname" . -}}
+{{- printf "%s-%s.%s.svc.cluster.local" $fullname "workflow-hello-world-ldap" .Release.Namespace }}
+{{- end -}}

@@ -22,6 +22,12 @@ spring:
     hikari:
       jdbc-url: jdbc:h2:mem:workflow-hello-world
 
+  ldap:
+    url: ldap://localhost:389
+    base-dn: dc=example,dc=ch
+    manager-dn: cn=admin,dc=example,dc=ch
+    manager-password: password
+
   docker:
     compose:
       enabled: true
@@ -79,10 +85,13 @@ camunda-authorization-plugin:
   admin-user: "camunda-admin"
 
 management:
+  health:
+    ldap:
+      enabled: true
   endpoints:
     web:
       exposure:
-        include: "*,prometheus"
+        include: "*"
   endpoint:
     health:
       show-details: always
@@ -146,5 +155,5 @@ application:
   apifirst-server-jpa:
     protocol: "http"
     host: "localhost"
-    port: "8085"
+    port: "8082"
     context: "/"

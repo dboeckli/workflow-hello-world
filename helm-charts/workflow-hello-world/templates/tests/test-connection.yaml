@@ -17,7 +17,13 @@ spec:
           echo "### Test 1: Checking health endpoint using service short name: {{ include "application-template.fullname" . }}"
           wget -O- -q {{ include "application-template.fullname" . }}:{{ .Values.service.port }}/bpm/actuator/health
           echo "Exit code: $?"
+
           echo "### Test 2: Checking health endpoint using fully qualified domain name (FQDN): {{ include "application-template.serviceFQDN" . }}"
           wget -O- -q {{ include "application-template.serviceFQDN" . }}:{{ .Values.service.port }}/bpm/actuator/health
           echo "Exit code: $?"
+
+          echo "### Test 3: Checking health apifirst using fully qualified domain name (FQDN): {{ include "apifirst-server-jpa.serviceFQDN" . }}"
+          wget -O- -q {{ include "apifirst-server-jpa.serviceFQDN" . }}:{{ .Values.service.port }}/actuator/health
+          echo "Exit code: $?"
+
   restartPolicy: Never

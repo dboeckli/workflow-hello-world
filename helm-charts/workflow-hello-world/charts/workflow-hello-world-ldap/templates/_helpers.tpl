@@ -54,6 +54,6 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 Create the FQDN for the service
 */}}
 {{- define "workflow-hello-world-ldap.serviceFQDN" -}}
-{{- $fullname := include "application-template.fullname" . -}}
+{{- $fullname := include "workflow-hello-world-ldap.fullname" . -}}
 {{- printf "%s.%s.svc.cluster.local" $fullname .Release.Namespace }}
 {{- end }}
