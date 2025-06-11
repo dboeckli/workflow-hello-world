@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/restapi/camunda", produces = "application/json")
+@RequestMapping(value = CamundaOpenApiRestController.CAMUNDA_OPENAPI_CONTEXT, produces = "application/json")
 public class CamundaOpenApiRestController {
+
+    public static final String CAMUNDA_OPENAPI_CONTEXT = "/restapi/camunda";
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public String getFile() {

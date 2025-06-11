@@ -1,3 +1,11 @@
+server:
+  servlet:
+    context-path: /bpm
+  port: 8081
+  error:
+    include-message: always
+    include-binding-errors: always
+
 spring:
   application:
     name: workflow-hello-world
@@ -27,14 +35,6 @@ spring:
         command: down
       skip:
         in-tests: false
-
-server:
-  servlet:
-    context-path: /bpm
-  port: 8081
-  error:
-    include-message: always
-    include-binding-errors: always
 
 camunda:
   bpm:

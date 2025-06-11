@@ -27,6 +27,20 @@ Write your own description here
   - http://localhost:8081/bpm/restapi/camunda
   - http://localhost:8081/bpm/restapi/ping
   - http://localhost:8081/bpm/restapi/workflow
+- Openapi:
+    - http://localhost:8081/bpm/swagger/v3/api-docs
+    - http://localhost:8081/bpm/swagger/v3/api-docs.yaml
+
+    - http://localhost:8081/bpm/swagger/v3/api-docs/camunda-engine-rest-api
+    - http://localhost:8081/bpm/swagger/v3/api-docs/camunda-engine-rest-api.yaml
+
+    - http://localhost:8081/bpm/swagger/v3/api-docs/actuator
+    - http://localhost:8081/bpm/swagger/v3/api-docs/actuator.yaml
+
+    - http://localhost:8081/bpm/swagger/v3/api-docs/restapi
+    - http://localhost:8081/bpm/swagger/v3/api-docs/restapi.yaml
+
+    - http://localhost:8081/bpm/swagger-ui/index.html
 
 ### Servers
 
