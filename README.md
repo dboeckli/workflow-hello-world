@@ -1,11 +1,5 @@
 # Camunda Hello World Template
 
-- [Description](#description)
-- [Prerequisites](#prerequisites)
-    - [Eclipse specific](#eclipse-specific)
-- [Build](#build)
-- [Usage](#usage)
-
 ## Description
 
 Write your own description here
