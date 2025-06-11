@@ -18,29 +18,42 @@ Write your own description here
 - Actuator: 
   - http://localhost:8081/bpm/actuator
   - http://localhost:30081/bpm/actuator
-- Openapi:
-  - http://localhost:8081/bpm/swagger/v3/api-docs
-  - http://localhost:8081/bpm/swagger/v3/api-docs.yaml
-  - http://localhost:8081/bpm/swagger-ui/index.html
-- H2 Console: http://localhost:8081/bpm/h2-console (in the connection jdbc url use: jdbc:h2:mem:workflow-hello-world)
+- H2 Console: 
+  - http://localhost:8081/bpm/h2-console (in the connection jdbc url use: jdbc:h2:mem:workflow-hello-world)
+  - http://localhost:30081/bpm/h2-console 
 - Rest Api:
   - http://localhost:8081/bpm/restapi/camunda
   - http://localhost:8081/bpm/restapi/ping
   - http://localhost:8081/bpm/restapi/workflow
+  
+  - http://localhost:30081/bpm/restapi/camunda
+  - http://localhost:30081/bpm/restapi/ping
+  - http://localhost:30081/bpm/restapi/workflow
 - Openapi:
+  - apidocs
     - http://localhost:8081/bpm/swagger/v3/api-docs
     - http://localhost:8081/bpm/swagger/v3/api-docs.yaml
-
+  
+    - http://localhost:30081/bpm/swagger/v3/api-docs
+    - http://localhost:30081/bpm/swagger/v3/api-docs.yaml
+  - camunda-engine-restapi
     - http://localhost:8081/bpm/swagger/v3/api-docs/camunda-engine-rest-api
     - http://localhost:8081/bpm/swagger/v3/api-docs/camunda-engine-rest-api.yaml
-
-    - http://localhost:8081/bpm/swagger/v3/api-docs/actuator
-    - http://localhost:8081/bpm/swagger/v3/api-docs/actuator.yaml
-
+  - actuator  
+    - http://localhost:30081/bpm/swagger/v3/api-docs/actuator
+    - http://localhost:30081/bpm/swagger/v3/api-docs/actuator.yaml
+    
+    - http://localhost:30081/bpm/swagger/v3/api-docs/actuator
+    - http://localhost:30081/bpm/swagger/v3/api-docs/actuator.yaml
+  - restapi
     - http://localhost:8081/bpm/swagger/v3/api-docs/restapi
     - http://localhost:8081/bpm/swagger/v3/api-docs/restapi.yaml
-
+    
+    - http://localhost:30081/bpm/swagger/v3/api-docs/restapi
+    - http://localhost:30081/bpm/swagger/v3/api-docs/restapi.yaml
+  - swagger-ui
     - http://localhost:8081/bpm/swagger-ui/index.html
+    - http://localhost:30081/bpm/swagger-ui/index.html
 
 ### Servers
 
