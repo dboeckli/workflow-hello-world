@@ -1,0 +1,64 @@
+global:
+  timezone: Europe/Zurich
+  timezonePath: /etc/localtime
+  springDebug: false
+  namespace: workflow-hello-world
+
+spring:
+  profiles:
+    active: local
+
+ldap:
+  enabled: true
+
+  protocol: ldap
+  port: 389
+
+  baseDN: "dc=example,dc=ch"
+  adminUsername: "cn=admin,dc=example,dc=ch"
+  adminPassword: "password"
+
+apifirstServerJpa:
+  port: 8082
+  targetPort: 8082
+  nodePort: 30082
+
+ingress:
+  enabled: false
+
+replicaCount: 1
+
+image:
+  repository: @docker.repo@/@project.artifactId@
+  tag: @project.version@
+
+service:
+  type: NodePort
+  port: 8081
+  targetPort: 8081
+  nodePort: 30081
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 1Gi
+  requests:
+    cpu: 250m
+    memory: 512Mi
+
+probes:
+  startup:
+    initialDelaySeconds: 30
+    failureThreshold: 15
+    periodSeconds: 10
+    timeoutSeconds: 5
+  readiness:
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  liveness:
+    initialDelaySeconds: 60
+    periodSeconds: 20
+    timeoutSeconds: 10
+    failureThreshold: 5

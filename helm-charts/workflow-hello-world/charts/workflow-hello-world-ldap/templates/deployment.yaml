@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "workflow-hello-world-ldap.fullname" . }}
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "workflow-hello-world-ldap.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "workflow-hello-world-ldap.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: database
+  template:
+    metadata:
+      labels:
+        {{- include "workflow-hello-world-ldap.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: database
+    spec:
+      containers:
+        - name: ldap
+          image: bitnami/openldap:2.6.9
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: {{ .Values.service.targetPort }}
+          env:
+            - name: BITNAMI_DEBUG
+              value: "true"
+            - name: LDAP_LOGLEVEL
+              value: "stats"
+            - name: LDAP_CONFIG_ADMIN_ENABLED
+              value: "true"
+            - name: LDAP_CONFIG_ADMIN_USERNAME
+              value: "config-admin"
+            - name: LDAP_CONFIG_ADMIN_PASSWORD
+              value: "config-password"
+            - name: LDAP_ROOT
+              value: "dc=example,dc=ch"
+            - name: LDAP_ADMIN_USERNAME
+              value: "admin"
+            - name: LDAP_ADMIN_PASSWORD
+              value: "password"
+            - name: LDAP_PORT_NUMBER
+              value: "{{ .Values.service.targetPort }}"
+            - name: LDAP_CUSTOM_LDIF_DIR
+              value: "/ldifs"
+          volumeMounts:
+            - name: ldifs
+              mountPath: /ldifs
+          readinessProbe:
+            exec:
+              command:
+                - ldapsearch
+                - -x
+                - -H
+                - ldap://localhost
+                - p
+                - "{{ .Values.service.targetPort }}"
+                - -D
+                - cn=admin,dc=example,dc=ch
+                - -w
+                - password
+                - -b
+                - dc=example,dc=ch
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 5
+          livenessProbe:
+            exec:
+              command:
+                - ldapsearch
+                - -x
+                - -H
+                - ldap://localhost
+                - p
+                - "{{ .Values.service.targetPort }}"
+                - -D
+                - cn=admin,dc=example,dc=ch
+                - -w
+                - password
+                - -b
+                - dc=example,dc=ch
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 5
+      volumes:
+        - name: ldifs
+          configMap:
+            name: {{ include "workflow-hello-world-ldap.fullname" . }}-config-map

@@ -18,4 +18,4 @@
      |_____|
 
 :: Built with Spring Boot :: ${spring-boot.version}
-:: Canunda: ${camunda.bpm.formatted-version}
+:: Camunda: ${camunda.bpm.formatted-version}

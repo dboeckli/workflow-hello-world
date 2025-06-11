@@ -1,3 +1,11 @@
+server:
+  servlet:
+    context-path: /bpm
+  port: 8081
+  error:
+    include-message: always
+    include-binding-errors: always
+
 spring:
   application:
     name: workflow-hello-world
@@ -7,6 +15,12 @@ spring:
       enabled: true
       settings:
         web-allow-others: true
+
+  ldap:
+    url: ldap://localhost:389
+    base-dn: dc=example,dc=ch
+    manager-dn: cn=admin,dc=example,dc=ch
+    manager-password: password
 
   jpa:
     defer-datasource-initialization: true
@@ -21,14 +35,6 @@ spring:
         command: down
       skip:
         in-tests: false
-
-server:
-  servlet:
-    context-path: /bpm
-  port: 8081
-  error:
-    include-message: always
-    include-binding-errors: always
 
 camunda:
   bpm:
@@ -122,5 +128,5 @@ application:
   apifirst-server-jpa:
     protocol: "http"
     host: "localhost"
-    port: "8085"
+    port: "8082"
     context: "/"

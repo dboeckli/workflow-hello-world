@@ -1,3 +1,11 @@
+server:
+  servlet:
+    context-path: /bpm
+  port: 8081
+  error:
+    include-message: always
+    include-binding-errors: always
+
 spring:
   application:
     name: workflow-hello-world
@@ -14,6 +22,12 @@ spring:
     hikari:
       jdbc-url: jdbc:h2:mem:workflow-hello-world
 
+  ldap:
+    url: ldap://localhost:389
+    base-dn: dc=example,dc=ch
+    manager-dn: cn=admin,dc=example,dc=ch
+    manager-password: password
+
   docker:
     compose:
       enabled: true
@@ -21,14 +35,6 @@ spring:
         command: down
       skip:
         in-tests: false
-
-server:
-  servlet:
-    context-path: /bpm
-  port: 8081
-  error:
-    include-message: always
-    include-binding-errors: always
 
 camunda:
   bpm:
@@ -79,10 +85,13 @@ camunda-authorization-plugin:
   admin-user: "camunda-admin"
 
 management:
+  health:
+    ldap:
+      enabled: true
   endpoints:
     web:
       exposure:
-        include: "*,prometheus"
+        include: "*"
   endpoint:
     health:
       show-details: always
@@ -98,9 +107,10 @@ springdoc:
   swagger-ui:
     show-extensions: true
 
+# logbook does not work with camunda
 logging:
   level:
-    org.zalando.logbook: INFO
+    org.zalando.logbook: TRACE
 
 logbook:
   filter:
@@ -116,11 +126,34 @@ logbook:
       - password
   predicate:
     exclude:
-      - path: /actuator/health/**
+      # Exclude HTML-related calls and specific endpoints that Logbook doesn't handle correctly
+      #- path: ${server.servlet.context-path}/actuator/health/**
+      - path: ${server.servlet.context-path/h2-console/**  # Exclude H2 console
+      - path: ${server.servlet.context-path/swagger-ui/**  # Exclude Swagger UI if used
+      - path: ${server.servlet.context-path/v3/api-docs/** # Exclude OpenAPI docs if used
+      - path: ${server.servlet.context-path/favicon.ico
+      # Exclude HTML-related calls and web resources
+      - path: ${server.servlet.context-path/**/*.html
+      - path: ${server.servlet.context-path/**/*.css
+      - path: ${server.servlet.context-path/**/*.js
+      - path: ${server.servlet.context-path/**/*.png
+      - path: ${server.servlet.context-path/**/*.jpg
+      - path: ${server.servlet.context-path/**/*.jpeg
+      - path: ${server.servlet.context-path/**/*.gif
+      - path: ${server.servlet.context-path/**/*.ico
+      - path: ${server.servlet.context-path/**/favicon.ico
+      - path: ${server.servlet.context-path/**/webjars/**
+      # Exclude other common web resources
+      - path: ${server.servlet.context-path/**/assets/**
+      - path: ${server.servlet.context-path/**/static/**
+      - path: ${server.servlet.context-path/**/public/**
+      - path: ${server.servlet.context-path/**/resources/**
+      - path: ${server.servlet.context-path/webjars/**
+      # Add more exclusions as needed
 
 application:
   apifirst-server-jpa:
     protocol: "http"
     host: "localhost"
-    port: "8085"
+    port: "8082"
     context: "/"
