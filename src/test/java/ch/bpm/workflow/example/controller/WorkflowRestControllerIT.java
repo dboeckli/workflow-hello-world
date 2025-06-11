@@ -23,6 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @SpringBootTest
 @TestPropertySource(properties = {
     "camunda.bpm.job-execution.enabled=false",
+    "camunda.bpm.client.disable-auto-fetching=true",
     "spring.datasource.generate-unique-name=true",
     "spring.datasource.hikari.jdbc-url=jdbc:h2:mem:WorkflowRestControllerIT;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"
 })
@@ -45,9 +46,7 @@ class WorkflowRestControllerIT {
                         .with(httpBasic("camunda-admin", "camunda-admin-password"))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andDo(result -> {
-                    log.info("Response: {}", result.getResponse().getContentAsString());
-                });
+                .andDo(result -> log.info("Response: {}", result.getResponse().getContentAsString()));
     }
 
     @Test
@@ -61,9 +60,7 @@ class WorkflowRestControllerIT {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andDo(result -> {
-                    log.info("Response: {}", result.getResponse().getContentAsString());
-                });
+                .andDo(result -> log.info("Response: {}", result.getResponse().getContentAsString()));
     }
 
     @Test
