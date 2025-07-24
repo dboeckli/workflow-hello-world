@@ -150,4 +150,14 @@ uninstall
 helm uninstall $APPLICATION_NAME --namespace workflow-hello-world
 ```
 
+delete all
+```powershell
+kubectl delete all --all -n workflow-hello-world
+```
+
+create busybox sidecar
+```powershell
+kubectl run busybox-test --rm -it --image=busybox:1.36 --namespace=workflow-hello-world --command -- sh
+```
+
 You can use the actuator rest call to verify via port 30081
