@@ -61,6 +61,20 @@ logbook:
       - path: /actuator/health/**
 
 management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+  health:
+    readinessstate:
+      enabled: true
+    livenessstate:
+      enabled: true
   info:
     build:
       enabled: true
