@@ -42,7 +42,7 @@
         <spring.boot.version>3.4.10</spring.boot.version>
         <camunda.spring.boot.starter.version>7.23.0</camunda.spring.boot.starter.version>
         <springdoc-openapi-starter-webmvc-ui.version>2.8.13</springdoc-openapi-starter-webmvc-ui.version>
-        <swagger-parser.version>2.1.34</swagger-parser.version>
+        <swagger-parser.version>2.1.35</swagger-parser.version>
 
         <apifirst.version>0.0.1-SNAPSHOT</apifirst.version>
         <nashorn-core.version>15.7</nashorn-core.version>
