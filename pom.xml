@@ -41,7 +41,7 @@
         -->
         <spring.boot.version>3.5.8</spring.boot.version>
         <camunda.spring.boot.starter.version>7.24.0</camunda.spring.boot.starter.version>
-        <springdoc-openapi-starter-webmvc-ui.version>2.8.14</springdoc-openapi-starter-webmvc-ui.version>
+        <springdoc-openapi-starter-webmvc-ui.version>3.0.0</springdoc-openapi-starter-webmvc-ui.version>
         <swagger-parser.version>2.1.36</swagger-parser.version>
 
         <apifirst.version>0.0.1-SNAPSHOT</apifirst.version>
