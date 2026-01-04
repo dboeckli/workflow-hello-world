@@ -10,6 +10,9 @@ spring:
   application:
     name: workflow-hello-world
 
+  main:
+    allow-bean-definition-overriding: false
+
   h2:
     console:
       enabled: true
@@ -122,50 +125,6 @@ springdoc:
       enabled: true
   swagger-ui:
     show-extensions: true
-
-# logbook does not work with camunda
-logging:
-  level:
-    org.zalando.logbook: TRACE
-
-logbook:
-  filter:
-    enabled: true
-  format:
-    style: http
-  obfuscate:
-    headers:
-      - Authorization
-      - X-Secret
-    parameters:
-      - access_token
-      - password
-  predicate:
-    exclude:
-      # Exclude HTML-related calls and specific endpoints that Logbook doesn't handle correctly
-      #- path: ${server.servlet.context-path}/actuator/health/**
-      - path: ${server.servlet.context-path/h2-console/**  # Exclude H2 console
-      - path: ${server.servlet.context-path/swagger-ui/**  # Exclude Swagger UI if used
-      - path: ${server.servlet.context-path/v3/api-docs/** # Exclude OpenAPI docs if used
-      - path: ${server.servlet.context-path/favicon.ico
-      # Exclude HTML-related calls and web resources
-      - path: ${server.servlet.context-path/**/*.html
-      - path: ${server.servlet.context-path/**/*.css
-      - path: ${server.servlet.context-path/**/*.js
-      - path: ${server.servlet.context-path/**/*.png
-      - path: ${server.servlet.context-path/**/*.jpg
-      - path: ${server.servlet.context-path/**/*.jpeg
-      - path: ${server.servlet.context-path/**/*.gif
-      - path: ${server.servlet.context-path/**/*.ico
-      - path: ${server.servlet.context-path/**/favicon.ico
-      - path: ${server.servlet.context-path/**/webjars/**
-      # Exclude other common web resources
-      - path: ${server.servlet.context-path/**/assets/**
-      - path: ${server.servlet.context-path/**/static/**
-      - path: ${server.servlet.context-path/**/public/**
-      - path: ${server.servlet.context-path/**/resources/**
-      - path: ${server.servlet.context-path/webjars/**
-      # Add more exclusions as needed
 
 application:
   apifirst-server-jpa:

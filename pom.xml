@@ -39,7 +39,7 @@
         Spring Boot Version Compatibility
         https://docs.camunda.org/manual/latest/user-guide/spring-boot-integration/version-compatibility/
         -->
-        <spring.boot.version>3.5.8</spring.boot.version>
+        <spring.boot.version>3.5.9</spring.boot.version>
         <camunda.spring.boot.starter.version>7.24.0</camunda.spring.boot.starter.version>
         <springdoc-openapi-starter-webmvc-ui.version>2.8.14</springdoc-openapi-starter-webmvc-ui.version>
         <swagger-parser.version>2.1.37</swagger-parser.version>
@@ -47,7 +47,6 @@
         <apifirst.version>0.0.1-SNAPSHOT</apifirst.version>
         <nashorn-core.version>15.7</nashorn-core.version>
 
-        <logbook.version>3.12.3</logbook.version>
         <logstash-logback.version>9.0</logstash-logback.version>
         <editorconfig-maven-plugin.version>0.2.0</editorconfig-maven-plugin.version>
         <properties-maven-plugin.version>1.2.1</properties-maven-plugin.version>
@@ -142,19 +141,19 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring.boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <dependency>
                 <groupId>org.camunda.bpm</groupId>
                 <artifactId>camunda-bom</artifactId>
                 <version>${camunda.spring.boot.starter.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -170,6 +169,17 @@
             <groupId>ch.guru.springframework.apifirst</groupId>
             <artifactId>apifirst-client</artifactId>
             <version>${apifirst.version}</version>
+            <!--
+                  apifirst-client currently brings Spring Boot 4.x (transitively), but this application uses Spring Boot 3.5.x.
+                  Mixing Boot 3 and Boot 4 artifacts causes duplicate auto-configurations / bean definition overriding.
+                  TODO: Replace apifirst-client by a locally generated client from the OpenAPI YAML (no Spring Boot starter dependencies).
+            -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-webmvc</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -277,16 +287,6 @@
             <artifactId>jakarta.annotation-api</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.zalando</groupId>
-            <artifactId>logbook-spring-boot-starter</artifactId>
-            <version>${logbook.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.zalando</groupId>
-            <artifactId>logbook-logstash</artifactId>
-            <version>${logbook.version}</version>
-        </dependency>
         <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>

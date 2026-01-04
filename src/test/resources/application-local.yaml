@@ -116,26 +116,6 @@ springdoc:
   swagger-ui:
     show-extensions: true
 
-logging:
-  level:
-    org.zalando.logbook: INFO
-
-logbook:
-  filter:
-    enabled: true
-  format:
-    style: http
-  obfuscate:
-    headers:
-      - Authorization
-      - X-Secret
-    parameters:
-      - access_token
-      - password
-  predicate:
-    exclude:
-      - path: /actuator/health/**
-
 application:
   apifirst-server-jpa:
     protocol: "http"
