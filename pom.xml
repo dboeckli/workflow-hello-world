@@ -43,6 +43,7 @@
         <camunda.spring.boot.starter.version>7.24.0</camunda.spring.boot.starter.version>
         <springdoc-openapi-starter-webmvc-ui.version>2.8.14</springdoc-openapi-starter-webmvc-ui.version>
         <swagger-parser.version>2.1.37</swagger-parser.version>
+        <openapi-generator-maven-plugin.version>7.18.0</openapi-generator-maven-plugin.version>
 
         <apifirst.version>0.0.1-SNAPSHOT</apifirst.version>
         <nashorn-core.version>15.7</nashorn-core.version>
@@ -160,6 +161,7 @@
 
     <dependencies>
 
+        <!--
         <dependency>
             <groupId>ch.guru.springframework.apifirst</groupId>
             <artifactId>apifirst-api</artifactId>
@@ -169,11 +171,6 @@
             <groupId>ch.guru.springframework.apifirst</groupId>
             <artifactId>apifirst-client</artifactId>
             <version>${apifirst.version}</version>
-            <!--
-                  apifirst-client currently brings Spring Boot 4.x (transitively), but this application uses Spring Boot 3.5.x.
-                  Mixing Boot 3 and Boot 4 artifacts causes duplicate auto-configurations / bean definition overriding.
-                  TODO: Replace apifirst-client by a locally generated client from the OpenAPI YAML (no Spring Boot starter dependencies).
-            -->
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
@@ -181,6 +178,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        -->
 
         <dependency>
             <groupId>org.camunda.bpm.springboot</groupId>
@@ -597,6 +595,27 @@
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>get-apifirst-client-yaml</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>ch.guru.springframework.apifirst</groupId>
+                                    <artifactId>apifirst-client</artifactId>
+                                    <version>${apifirst.version}</version>
+                                    <classifier>yaml</classifier>
+                                    <type>yaml</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/apifirst-client/</outputDirectory>
+                                    <destFileName>openapi.yaml</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>get-camunda-openapi-definition</id>
                         <phase>generate-resources</phase>
                         <goals>
@@ -634,6 +653,47 @@
                                     <includes>**/*</includes>
                                 </artifactItem>
                             </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>${openapi-generator-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <inputSpec>${project.build.directory}/apifirst-client/openapi.yaml</inputSpec>
+                            <generatorName>java</generatorName>
+                            <library>resttemplate</library>
+
+                            <generateApis>true</generateApis>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <generateApiTests>false</generateApiTests>
+
+                            <generateModels>true</generateModels>
+                            <generateModelTests>false</generateModelTests>
+                            <generateAliasAsModel>false</generateAliasAsModel>
+
+                            <generateSupportingFiles>true</generateSupportingFiles>
+
+                            <apiPackage>ch.guru.springframework.apifirst.client</apiPackage>
+                            <modelPackage>ch.guru.springframework.apifirst.model</modelPackage>
+                            <modelNameSuffix>Dto</modelNameSuffix>
+
+                            <configOptions>
+                                <sourceFolder>src/gen/java/main</sourceFolder>
+                                <useJakartaEe>true</useJakartaEe>
+                                <useBeanValidation>true</useBeanValidation>
+                                <openApiNullable>false</openApiNullable>
+                                <additionalModelTypeAnnotations>@lombok.Builder @lombok.AllArgsConstructor</additionalModelTypeAnnotations>
+                            </configOptions>
                         </configuration>
                     </execution>
                 </executions>
