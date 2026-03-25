@@ -39,6 +39,15 @@ jobs:
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml.
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
+      - name: Add repsy server to settings.xml
+        run: |
+          sed -i '/<\/servers>/i \
+          <server>\
+            <id>repsy</id>\
+            <username>${env.REPSY_USERNAME}</username>\
+            <password>${env.REPSY_TOKEN}</password>\
+          </server>' $GITHUB_WORKSPACE/settings.xml
+
       - name: Verify Variables and Secrets
         env:
           DOCKER_USER: ${{ vars.DOCKER_USER }}
@@ -202,6 +211,8 @@ jobs:
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ github.token }}
+          REPSY_USERNAME: ${{ secrets.REPSY_USERNAME }}
+          REPSY_TOKEN: ${{ secrets.REPSY_TOKEN }}
           BRANCH_MVN_VERSION: ${{needs.setup.outputs.BRANCH_MVN_VERSION}}
           BRANCH_NAME: ${{needs.setup.outputs.BRANCH_NAME}}
           DOCKER_USER: ${{ vars.DOCKER_USER }}
