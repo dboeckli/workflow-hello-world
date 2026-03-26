@@ -36,7 +36,7 @@ ORGANIZATION=$(mvn help:evaluate -Dexpression="project.organization.name" -q -e 
 
 echo "### ORGANIZATION is: $ORGANIZATION"
 
-# Log to GitHub Actions output
+# Log to GitHub Actions output.
 echo "MVN_VERSION=$MVN_VERSION" >>"$GITHUB_OUTPUT"
 echo "ARTIFACT_ID=$ARTIFACT_ID" >>"$GITHUB_OUTPUT"
 echo "GROUP_ID=$GROUP_ID" >>"$GITHUB_OUTPUT"
