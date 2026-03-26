@@ -34,6 +34,8 @@ ARTIFACT_ID=$(mvn help:evaluate -Dexpression=project.artifactId -q -e -DforceStd
 GROUP_ID=$(mvn help:evaluate -Dexpression=project.groupId -q -e -DforceStdout 2>&1) || { error_output=$GROUP_ID; error_exit "Failed to evaluate Maven group ID. Error: $error_output"; }
 ORGANIZATION=$(mvn help:evaluate -Dexpression=project.organization.name -q -e -DforceStdout 2>&1) || { error_output=$ORGANIZATION; error_exit "Failed to evaluate ORGANIZATION. Error: $error_output"; }
 
+echo "### ORGANIZATION is: $ORGANIZATION"
+
 # Log to GitHub Actions output
 echo "MVN_VERSION=$MVN_VERSION" >>"$GITHUB_OUTPUT"
 echo "ARTIFACT_ID=$ARTIFACT_ID" >>"$GITHUB_OUTPUT"
