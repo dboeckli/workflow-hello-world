@@ -57,7 +57,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           TRIGGER_WORKFLOW_TOKEN: ${{ secrets.TRIGGER_WORKFLOW_TOKEN }}
           RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-          REPSY_USERNAME: ${{ secrets.REPSY_USERNAME }}
+          REPSY_USERNAME: ${{ vars.REPSY_USERNAME }}
           REPSY_TOKEN: ${{ secrets.REPSY_TOKEN }}
         run: |
           required_vars=("DOCKER_USER" "CI_USER" "CI_USER_EMAIL")
@@ -222,7 +222,7 @@ jobs:
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ github.token }}
-          REPSY_USERNAME: ${{ secrets.REPSY_USERNAME }}
+          REPSY_USERNAME: ${{ vars.REPSY_USERNAME }}
           REPSY_TOKEN: ${{ secrets.REPSY_TOKEN }}
           BRANCH_MVN_VERSION: ${{needs.setup.outputs.BRANCH_MVN_VERSION}}
           BRANCH_NAME: ${{needs.setup.outputs.BRANCH_NAME}}
@@ -331,7 +331,7 @@ jobs:
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ github.token }}
-          REPSY_USERNAME: ${{ secrets.REPSY_USERNAME }}
+          REPSY_USERNAME: ${{ vars.REPSY_USERNAME }}
           REPSY_TOKEN: ${{ secrets.REPSY_TOKEN }}
           BRANCH_MVN_VERSION: ${{needs.setup.outputs.BRANCH_MVN_VERSION}}
           BRANCH_NAME: ${{needs.setup.outputs.BRANCH_NAME}}
