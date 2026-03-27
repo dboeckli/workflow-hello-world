@@ -384,13 +384,15 @@ jobs:
           set -o nounset     # abort on unbound variable
           set -o errexit     # abort on nonzero exit status
           
+          echo "### ORGANIZATION: ${ORGANIZATION}"
+          
           if [[ "${BRANCH_NAME}" == "master" ||  "${BRANCH_NAME}" == "main" ]]; then
             mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
                   -s $GITHUB_WORKSPACE/settings.xml \
                   -Dsonar.token=${SONAR_TOKEN} \
                   -Dsonar.host.url=https://sonarcloud.io \
                   -Dsonar.sourceEncoding=UTF-8 \
-                  -Dsonar.organization=${ORGANIZATION} \
+                  -Dsonar.organization="${ORGANIZATION}" \
                   -Dsonar.projectKey="${ORGANIZATION}_${ARTIFACT_ID}" \
                   -Dsonar.branch.name=master
           else
@@ -400,9 +402,9 @@ jobs:
                   -Dsonar.token=${SONAR_TOKEN} \
                   -Dsonar.host.url=https://sonarcloud.io \
                   -Dsonar.sourceEncoding=UTF-8 \
-                  -Dsonar.organization=${ORGANIZATION} \
+                  -Dsonar.organization="${ORGANIZATION} \
                   -Dsonar.projectKey="${ORGANIZATION}_${ARTIFACT_ID}" \
-                  -Dsonar.branch.name=${BRANCH_NAME} \
+                  -Dsonar.branch.name="${BRANCH_NAME}" \
                   -Dsonar.branch.target=master
           fi 
 
