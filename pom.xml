@@ -129,9 +129,20 @@
             <id>camunda</id>
             <url>https://artifacts.camunda.com/artifactory/public/</url>
         </repository>
+        <repository>
+            <id>repsy</id>
+            <url>https://repo.repsy.io/mvn/user08694146/maven-dboeckli/</url>
+        </repository>
     </repositories>
 
     <distributionManagement>
+        <!--
+        <repository>
+            <id>repsy</id>
+            <name>dboeckli Repository on Repsy</name>
+            <url>https://repo.repsy.io/mvn/user08694146/maven-dboeckli</url>
+        </repository>
+        -->
         <repository>
             <id>github</id>
             <name>GitHub dboeckli Apache Maven Packages</name>
