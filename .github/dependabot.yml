@@ -1,5 +1,5 @@
 # To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
+# package ecosystems to update and where the package manifests are located
 # Please see the documentation for all configuration options:
 # https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 
@@ -10,9 +10,6 @@ registries:
     url: https://maven.pkg.github.com/dboeckli
     username: dboeckli@gmail.com
     password: ${{secrets.DBOECKLI_GITHUB_ACCESS_TOKEN}}
-  camunda:
-    type: maven-repository
-    url: https://artifacts.camunda.com/artifactory/private/
 updates:
   - package-ecosystem: maven
     directory: "/"
@@ -20,9 +17,14 @@ updates:
       interval: daily
     registries:
       - maven-dboeckli
-      - camunda
     ignore:
       - dependency-name: org.apache.maven:*
+      - dependency-name: org.springframework.boot:spring-boot-starter-parent
+        update-types:
+          - version-update:semver-major
+      - dependency-name: org.springframework.boot:*
+        update-types:
+          - version-update:semver-major
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
