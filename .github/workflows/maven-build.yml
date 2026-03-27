@@ -405,7 +405,7 @@ jobs:
                   -Dsonar.token=${SONAR_TOKEN} \
                   -Dsonar.host.url=https://sonarcloud.io \
                   -Dsonar.sourceEncoding=UTF-8 \
-                  -Dsonar.organization="${ORGANIZATION} \
+                  -Dsonar.organization="${ORGANIZATION}" \
                   -Dsonar.projectKey="${ORGANIZATION}_${ARTIFACT_ID}" \
                   -Dsonar.branch.name="${BRANCH_NAME}" \
                   -Dsonar.branch.target=master
