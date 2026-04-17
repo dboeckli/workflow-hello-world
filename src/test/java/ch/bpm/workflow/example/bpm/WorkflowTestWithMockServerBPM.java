@@ -51,20 +51,18 @@ import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-//@DirtiesContext
-@TestPropertySource(properties = {
-    "camunda.bpm.job-execution.enabled=false",
-    "camunda.bpm.generate-unique-process-engine-name=true",
-    "camunda.bpm.generate-unique-process-application-name=true",
-    "spring.datasource.generate-unique-name=true",
-    "spring.datasource.hikari.jdbc-url=jdbc:h2:mem:WorkflowTestWithMockServerBPM;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"
-})
+// @DirtiesContext
+@TestPropertySource(properties = { "camunda.bpm.job-execution.enabled=false",
+        "camunda.bpm.generate-unique-process-engine-name=true",
+        "camunda.bpm.generate-unique-process-application-name=true", "spring.datasource.generate-unique-name=true",
+        "spring.datasource.hikari.jdbc-url=jdbc:h2:mem:WorkflowTestWithMockServerBPM;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE" })
 @Testcontainers
 @Deployment(resources = "process.bpmn")
 @Slf4j
 @ActiveProfiles(value = "local")
 @Import(TestCamundaClientConfiguration.class)
-@SuppressWarnings("java:S3577") // Suppress "Test class names should end with 'Test' or 'Tests'"
+@SuppressWarnings("java:S3577") // Suppress "Test class names should end with 'Test' or
+                                // 'Tests'"
 class WorkflowTestWithMockServerBPM {
 
     @LocalServerPort
@@ -73,7 +71,8 @@ class WorkflowTestWithMockServerBPM {
     @Autowired
     public RuntimeService runtimeService;
 
-    // See https://docs.camunda.org/manual/latest/user-guide/spring-boot-integration/develop-and-test/#using-assertions-with-context-caching
+    // See
+    // https://docs.camunda.org/manual/latest/user-guide/spring-boot-integration/develop-and-test/#using-assertions-with-context-caching
     @Autowired
     ProcessEngine processEngine;
 
@@ -82,7 +81,8 @@ class WorkflowTestWithMockServerBPM {
 
     // this version should correspond to the client version defined int the pom.xml
     @Container
-    public MockServerContainer mockServer = new MockServerContainer(DockerImageName.parse("mockserver/mockserver:5.15.0"));
+    public MockServerContainer mockServer = new MockServerContainer(
+            DockerImageName.parse("mockserver/mockserver:5.15.0"));
 
     @Autowired
     CustomerApi customerApi;
@@ -95,7 +95,6 @@ class WorkflowTestWithMockServerBPM {
 
     private MockServerClient mockServerClient;
 
-
     @BeforeEach
     void setup() {
         init(processEngine);
@@ -103,10 +102,8 @@ class WorkflowTestWithMockServerBPM {
 
         mockServerClient = new MockServerClient(mockServer.getHost(), mockServer.getServerPort());
         customerApi.getApiClient()
-                  .setBasePath(restApiConfiguration.getProtocol() + "://" +
-                          mockServer.getHost() + ":" +
-                          mockServer.getServerPort() + "/" +
-                          restApiConfiguration.getContext());
+            .setBasePath(restApiConfiguration.getProtocol() + "://" + mockServer.getHost() + ":"
+                    + mockServer.getServerPort() + "/" + restApiConfiguration.getContext());
     }
 
     @AfterEach
@@ -127,14 +124,20 @@ class WorkflowTestWithMockServerBPM {
         createExpectedMockserverResponse();
 
         // when
-        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(PROCESS_DEFINITION_KEY, BUSINESS_KEY, Map.of(INPUT_VARIABLE_NAME, "hello-variable"));
+        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(PROCESS_DEFINITION_KEY, BUSINESS_KEY,
+                Map.of(INPUT_VARIABLE_NAME, "hello-variable"));
 
         // then
-        assertThat(processInstance).isStarted().hasBusinessKey(BUSINESS_KEY).hasVariables(INPUT_VARIABLE_NAME).variables().contains(entry(INPUT_VARIABLE_NAME, "hello-variable"));
+        assertThat(processInstance).isStarted()
+            .hasBusinessKey(BUSINESS_KEY)
+            .hasVariables(INPUT_VARIABLE_NAME)
+            .variables()
+            .contains(entry(INPUT_VARIABLE_NAME, "hello-variable"));
         assertEquals("hello-variable", this.getTokenVariable(processInstance).getInput().getInputVariable());
         assertEquals(STARTED, this.getTokenVariable(processInstance).getStatus());
 
-        // token is wating at the end of the validate input activity because of the Asynchronous continuations After flag
+        // token is wating at the end of the validate input activity because of the
+        // Asynchronous continuations After flag
         assertThat(processInstance).hasPassed("Activity_validate_input");
         assertThat(processInstance).isWaitingAt("Activity_validate_input");
         execute(job()); // push forward
@@ -147,13 +150,11 @@ class WorkflowTestWithMockServerBPM {
         assertThat(processInstance).isWaitingAt("External_Task");
         execute(job());
         assertThat(processInstance).isWaitingAt("External_Task").externalTask().hasTopicName("sayHelloTopic");
-        await().atMost(20, SECONDS)
-            .pollInterval(500, MILLISECONDS)
-            .until(() -> {
-                TokenVariable currentTokenVariable = this.getTokenVariable(processInstance);
-                log.info("Current status: {}", currentTokenVariable.getStatus());
-                return currentTokenVariable.getStatus() == RUNNING;
-            });
+        await().atMost(20, SECONDS).pollInterval(500, MILLISECONDS).until(() -> {
+            TokenVariable currentTokenVariable = this.getTokenVariable(processInstance);
+            log.info("Current status: {}", currentTokenVariable.getStatus());
+            return currentTokenVariable.getStatus() == RUNNING;
+        });
         assertThat(processInstance).hasPassed("External_Task");
         execute(job());
 
@@ -181,25 +182,36 @@ class WorkflowTestWithMockServerBPM {
     private void createExpectedMockserverResponse() {
         List<CustomerDto> customers = new ArrayList<>();
         CustomerDto customer1 = CustomerDto.builder()
-                .id(UUID.randomUUID())
-                .name(NameDto.builder().firstName("John").lastName("Doe").build())
-                .shipToAddress(AddressDto.builder().addressLine1("123 Main St").city("New York").city("NY").state("NY").zip("10001").build())
-                .billToAddress(AddressDto.builder().addressLine1("456 Elm St").city("Los Angeles").city("CA").state("CA").zip("90001").build())
-                .build();
+            .id(UUID.randomUUID())
+            .name(NameDto.builder().firstName("John").lastName("Doe").build())
+            .shipToAddress(AddressDto.builder()
+                .addressLine1("123 Main St")
+                .city("New York")
+                .city("NY")
+                .state("NY")
+                .zip("10001")
+                .build())
+            .billToAddress(AddressDto.builder()
+                .addressLine1("456 Elm St")
+                .city("Los Angeles")
+                .city("CA")
+                .state("CA")
+                .zip("90001")
+                .build())
+            .build();
         customers.add(customer1);
 
         String customersJson;
         try {
             customersJson = objectMapper.writeValueAsString(customers);
-        } catch (JsonProcessingException e) {
+        }
+        catch (JsonProcessingException e) {
             throw new RuntimeException("Failed to convert customers to JSON", e);
         }
-        mockServerClient
-                .when(request().withMethod("GET").withPath("/v1/customers"))
-                .respond(response()
-                        .withStatusCode(200)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(customersJson));
+        mockServerClient.when(request().withMethod("GET").withPath("/v1/customers"))
+            .respond(response().withStatusCode(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(customersJson));
     }
 
     private TokenVariable getTokenVariable(ProcessInstance processInstance) {

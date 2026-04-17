@@ -27,8 +27,8 @@ spec:
 
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.registry }}/@project.artifactId@:{{ .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: {{ .Values.image.registry }}{{ .Values.image.separator }}{{ .Values.image.name }}:{{ .Chart.AppVersion }}
+          imagePullPolicy: IfNotPresent
           env:
             - name: JAVA_TIMEZONE
               value: "{{ .Values.global.timezone }}"

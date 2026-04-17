@@ -22,13 +22,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestPropertySource(properties = {
-    "camunda.bpm.job-execution.enabled=false",
-    "camunda.bpm.client.disable-auto-fetching=true",
-    "spring.datasource.generate-unique-name=true",
-    "spring.datasource.hikari.jdbc-url=jdbc:h2:mem:CamundaRestApiIT;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"
-})
-//@DirtiesContext(classMode = BEFORE_CLASS)
+@TestPropertySource(properties = { "camunda.bpm.job-execution.enabled=false",
+        "camunda.bpm.client.disable-auto-fetching=true", "spring.datasource.generate-unique-name=true",
+        "spring.datasource.hikari.jdbc-url=jdbc:h2:mem:CamundaRestApiIT;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE" })
+// @DirtiesContext(classMode = BEFORE_CLASS)
 @ActiveProfiles(value = "local")
 @Deployment(resources = "process.bpmn")
 @Slf4j
@@ -48,8 +45,7 @@ class CamundaRestApiIT {
 
     @Test
     void getEngineInfo() throws JSONException {
-        ResponseEntity<String> response = restTemplate
-            .getForEntity("/engine-rest/engine", String.class);
+        ResponseEntity<String> response = restTemplate.getForEntity("/engine-rest/engine", String.class);
 
         log.info("######### Engine info: {}", response.getBody());
 
@@ -69,4 +65,5 @@ class CamundaRestApiIT {
         }
         assertThat("Expected engine name not found: " + expectedEngineName, expectedEngineFound, is(true));
     }
+
 }

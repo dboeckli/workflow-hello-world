@@ -13,19 +13,21 @@ import org.springframework.web.client.RestTemplate;
 public class ApifirstJpaHealthIndicator implements HealthIndicator {
 
     private final RestTemplate restTemplate;
+
     private final String authServerUrl;
 
     public ApifirstJpaHealthIndicator(@Value("${application.apifirst-server-jpa.protocol}") String protocol,
-                                      @Value("${application.apifirst-server-jpa.host}") String host,
-                                      @Value("${application.apifirst-server-jpa.port}") String port,
-                                      @Value("${application.apifirst-server-jpa.context}") String context) {
+            @Value("${application.apifirst-server-jpa.host}") String host,
+            @Value("${application.apifirst-server-jpa.port}") String port,
+            @Value("${application.apifirst-server-jpa.context}") String context) {
 
         this.restTemplate = new RestTemplateBuilder().build();
 
         String url = protocol + "://" + host + ":" + port;
         if (context.equals("/") || context.isEmpty()) {
             this.authServerUrl = url;
-        } else {
+        }
+        else {
             this.authServerUrl = url + "/" + context;
         }
     }
@@ -36,11 +38,13 @@ public class ApifirstJpaHealthIndicator implements HealthIndicator {
             String response = restTemplate.getForObject(authServerUrl + "/actuator/health", String.class);
             if (response != null && response.contains("\"status\":\"UP\"")) {
                 return Health.up().build();
-            } else {
+            }
+            else {
                 log.warn("ApiFirst-Jpa server is not reporting UP status at {}", authServerUrl);
                 return Health.down().build();
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             log.warn("ApiFirst-Jpa is not reachable at {}", authServerUrl, e);
             return Health.down(e).build();
         }

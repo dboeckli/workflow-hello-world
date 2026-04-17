@@ -23,13 +23,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles(value = "local")
-@TestPropertySource(properties = {
-    "camunda.bpm.job-execution.enabled=false",
-    "camunda.bpm.client.disable-auto-fetching=true",
-    "spring.datasource.generate-unique-name=true",
-    "spring.datasource.hikari.jdbc-url=jdbc:h2:mem:CamundaOpenApiRestControllerIT;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"
-})
-//@DirtiesContext(classMode = BEFORE_CLASS)
+@TestPropertySource(properties = { "camunda.bpm.job-execution.enabled=false",
+        "camunda.bpm.client.disable-auto-fetching=true", "spring.datasource.generate-unique-name=true",
+        "spring.datasource.hikari.jdbc-url=jdbc:h2:mem:CamundaOpenApiRestControllerIT;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE" })
+// @DirtiesContext(classMode = BEFORE_CLASS)
 @Deployment(resources = "process.bpmn")
 @Slf4j
 class CamundaOpenApiRestControllerIT {
@@ -39,15 +36,14 @@ class CamundaOpenApiRestControllerIT {
 
     @Test
     void getOpenApiFile() throws Exception {
-        this.mockMvc.perform(get("/restapi/camunda")
-            .with(httpBasic("camunda-admin", "camunda-admin-password")))
-            .andExpect(status().isOk()).andExpect(content().json(createResponse()));
+        this.mockMvc.perform(get("/restapi/camunda").with(httpBasic("camunda-admin", "camunda-admin-password")))
+            .andExpect(status().isOk())
+            .andExpect(content().json(createResponse()));
     }
 
     @Test
     void getOpenApiUnauthorized() throws Exception {
-        this.mockMvc.perform(get("/restapi/camunda"))
-            .andExpect(status().isUnauthorized());
+        this.mockMvc.perform(get("/restapi/camunda")).andExpect(status().isUnauthorized());
     }
 
     private String createResponse() throws IOException {

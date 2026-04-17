@@ -20,8 +20,9 @@ import static org.camunda.bpm.engine.rest.security.auth.ProcessEngineAuthenticat
 
 @Configuration
 @Slf4j
-@Profile({"local", "ci"})
+@Profile({ "local", "ci" })
 public class CamundaLdapConfiguration {
+
     @Value("${camunda-ldap-plugin.url}")
     private String ldapUrl;
 
@@ -112,7 +113,7 @@ public class CamundaLdapConfiguration {
     }
 
     @Bean
-    public AdministratorAuthorizationPlugin administratorAuthorizationPlugin(){
+    public AdministratorAuthorizationPlugin administratorAuthorizationPlugin() {
         AdministratorAuthorizationPlugin plugin = new AdministratorAuthorizationPlugin();
 
         plugin.setAdministratorGroupName(adminGroup);
@@ -142,8 +143,8 @@ public class CamundaLdapConfiguration {
     }
 
     public static String printLdapIdentityProviderPlugin(LdapIdentityProviderPlugin ldapIdentityProviderPlugin) {
-        ReflectionToStringBuilder builder = new ReflectionToStringBuilder(
-                ldapIdentityProviderPlugin, ToStringStyle.MULTI_LINE_STYLE) {
+        ReflectionToStringBuilder builder = new ReflectionToStringBuilder(ldapIdentityProviderPlugin,
+                ToStringStyle.MULTI_LINE_STYLE) {
             @Override
             protected boolean accept(Field field) {
                 return !field.getName().equals("managerPassword");
@@ -151,4 +152,5 @@ public class CamundaLdapConfiguration {
         };
         return builder.toString();
     }
+
 }
