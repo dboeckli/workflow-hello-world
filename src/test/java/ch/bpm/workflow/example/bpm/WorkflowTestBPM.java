@@ -35,21 +35,18 @@ import static org.awaitility.Awaitility.await;
 import static org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-//@DirtiesContext
-@TestPropertySource(properties = {
-        "camunda.bpm.job-execution.enabled=false",
+// @DirtiesContext
+@TestPropertySource(properties = { "camunda.bpm.job-execution.enabled=false",
         "camunda.bpm.generate-unique-process-engine-name=true",
-        "camunda.bpm.generate-unique-process-application-name=true",
-        "spring.datasource.generate-unique-name=true",
-        "spring.datasource.hikari.jdbc-url=jdbc:h2:mem:WorkflowTestBPM;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"
-})
+        "camunda.bpm.generate-unique-process-application-name=true", "spring.datasource.generate-unique-name=true",
+        "spring.datasource.hikari.jdbc-url=jdbc:h2:mem:WorkflowTestBPM;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE" })
 @Deployment(resources = "process.bpmn")
 @Slf4j
 @ActiveProfiles(value = "local")
 @Import(TestCamundaClientConfiguration.class)
-@SuppressWarnings("java:S3577") // Suppress "Test class names should end with 'Test' or 'Tests'"
+@SuppressWarnings("java:S3577") // Suppress "Test class names should end with 'Test' or
+                                // 'Tests'"
 class WorkflowTestBPM {
 
     @LocalServerPort
@@ -58,7 +55,8 @@ class WorkflowTestBPM {
     @Autowired
     public RuntimeService runtimeService;
 
-    // See https://docs.camunda.org/manual/latest/user-guide/spring-boot-integration/develop-and-test/#using-assertions-with-context-caching
+    // See
+    // https://docs.camunda.org/manual/latest/user-guide/spring-boot-integration/develop-and-test/#using-assertions-with-context-caching
     @Autowired
     ProcessEngine processEngine;
 
@@ -85,16 +83,22 @@ class WorkflowTestBPM {
     }
 
     @Test
-    void test_shouldExecuteHappyPath()  {
+    void test_shouldExecuteHappyPath() {
         // when
-        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(PROCESS_DEFINITION_KEY, BUSINESS_KEY, Map.of(INPUT_VARIABLE_NAME, "hello-variable"));
+        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(PROCESS_DEFINITION_KEY, BUSINESS_KEY,
+                Map.of(INPUT_VARIABLE_NAME, "hello-variable"));
 
         // then
-        assertThat(processInstance).isStarted().hasBusinessKey(BUSINESS_KEY).hasVariables(INPUT_VARIABLE_NAME).variables().contains(entry(INPUT_VARIABLE_NAME, "hello-variable"));
+        assertThat(processInstance).isStarted()
+            .hasBusinessKey(BUSINESS_KEY)
+            .hasVariables(INPUT_VARIABLE_NAME)
+            .variables()
+            .contains(entry(INPUT_VARIABLE_NAME, "hello-variable"));
         assertEquals("hello-variable", this.getTokenVariable(processInstance).getInput().getInputVariable());
         assertEquals(STARTED, this.getTokenVariable(processInstance).getStatus());
 
-        // token is wating at the end of the validate input activity because of the Asynchronous continuations After flag
+        // token is wating at the end of the validate input activity because of the
+        // Asynchronous continuations After flag
         assertThat(processInstance).hasPassed("Activity_validate_input");
         assertThat(processInstance).isWaitingAt("Activity_validate_input");
         execute(job()); // push forward
@@ -107,13 +111,11 @@ class WorkflowTestBPM {
         assertThat(processInstance).isWaitingAt("External_Task");
         execute(job());
         assertThat(processInstance).isWaitingAt("External_Task").externalTask().hasTopicName("sayHelloTopic");
-        await().atMost(5, SECONDS)
-            .pollInterval(500, MILLISECONDS)
-            .until(() -> {
-                TokenVariable currentTokenVariable = this.getTokenVariable(processInstance);
-                log.info("Current status: {}", currentTokenVariable.getStatus());
-                return currentTokenVariable.getStatus() == RUNNING;
-            });
+        await().atMost(5, SECONDS).pollInterval(500, MILLISECONDS).until(() -> {
+            TokenVariable currentTokenVariable = this.getTokenVariable(processInstance);
+            log.info("Current status: {}", currentTokenVariable.getStatus());
+            return currentTokenVariable.getStatus() == RUNNING;
+        });
         assertThat(processInstance).hasPassed("External_Task");
         execute(job());
 
@@ -139,16 +141,22 @@ class WorkflowTestBPM {
     }
 
     @Test
-    void test_shouldExecuteHappyPathWithFail()  {
+    void test_shouldExecuteHappyPathWithFail() {
         // when
-        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(PROCESS_DEFINITION_KEY, BUSINESS_KEY, Map.of(INPUT_VARIABLE_NAME, "fail"));
+        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(PROCESS_DEFINITION_KEY, BUSINESS_KEY,
+                Map.of(INPUT_VARIABLE_NAME, "fail"));
 
         // then
-        assertThat(processInstance).isStarted().hasBusinessKey(BUSINESS_KEY).hasVariables(INPUT_VARIABLE_NAME).variables().contains(entry(INPUT_VARIABLE_NAME, "fail"));
+        assertThat(processInstance).isStarted()
+            .hasBusinessKey(BUSINESS_KEY)
+            .hasVariables(INPUT_VARIABLE_NAME)
+            .variables()
+            .contains(entry(INPUT_VARIABLE_NAME, "fail"));
         assertEquals("fail", this.getTokenVariable(processInstance).getInput().getInputVariable());
         assertEquals(STARTED, this.getTokenVariable(processInstance).getStatus());
 
-        // token is wating at the end of the validate input activity because of the Asynchronous continuations After flag
+        // token is wating at the end of the validate input activity because of the
+        // Asynchronous continuations After flag
         assertThat(processInstance).hasPassed("Activity_validate_input");
         assertThat(processInstance).isWaitingAt("Activity_validate_input");
         execute(job()); // push forward
@@ -161,13 +169,11 @@ class WorkflowTestBPM {
         assertThat(processInstance).isWaitingAt("External_Task");
         execute(job());
         assertThat(processInstance).isWaitingAt("External_Task").externalTask().hasTopicName("sayHelloTopic");
-        await().atMost(5, SECONDS)
-            .pollInterval(500, MILLISECONDS)
-            .until(() -> {
-                TokenVariable currentTokenVariable = this.getTokenVariable(processInstance);
-                log.info("Current status: {}", currentTokenVariable.getStatus());
-                return currentTokenVariable.getStatus() == RUNNING;
-            });
+        await().atMost(5, SECONDS).pollInterval(500, MILLISECONDS).until(() -> {
+            TokenVariable currentTokenVariable = this.getTokenVariable(processInstance);
+            log.info("Current status: {}", currentTokenVariable.getStatus());
+            return currentTokenVariable.getStatus() == RUNNING;
+        });
         assertThat(processInstance).hasPassed("External_Task");
         execute(job());
 
@@ -210,7 +216,8 @@ class WorkflowTestBPM {
     @Test
     void test_invalidInput_shoudFail() {
         // when
-        WorkflowException thrown = Assertions.assertThrows(WorkflowException.class, () -> runtimeService.startProcessInstanceByKey(PROCESS_DEFINITION_KEY, BUSINESS_KEY));
+        WorkflowException thrown = Assertions.assertThrows(WorkflowException.class,
+                () -> runtimeService.startProcessInstanceByKey(PROCESS_DEFINITION_KEY, BUSINESS_KEY));
 
         Assertions.assertEquals("Variable " + INPUT_VARIABLE_NAME + " not found or empty", thrown.getMessage());
     }
@@ -218,7 +225,8 @@ class WorkflowTestBPM {
     @Test
     void test_emptyInput_shoudFail() {
         // when
-        WorkflowException thrown = Assertions.assertThrows(WorkflowException.class, () -> runtimeService.startProcessInstanceByKey(PROCESS_DEFINITION_KEY, BUSINESS_KEY, Map.of(INPUT_VARIABLE_NAME, "")));
+        WorkflowException thrown = Assertions.assertThrows(WorkflowException.class, () -> runtimeService
+            .startProcessInstanceByKey(PROCESS_DEFINITION_KEY, BUSINESS_KEY, Map.of(INPUT_VARIABLE_NAME, "")));
 
         Assertions.assertEquals("Variable " + INPUT_VARIABLE_NAME + " not found or empty", thrown.getMessage());
     }

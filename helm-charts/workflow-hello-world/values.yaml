@@ -32,6 +32,8 @@ image:
   # Those values are set by Maven filtering
   # and will be replaced with a valid version number during the build process.
   registry: @docker.repo@
+  separator: /
+  name: @project.artifactId@
 
 service:
   type: NodePort
