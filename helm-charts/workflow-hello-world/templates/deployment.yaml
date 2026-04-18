@@ -20,6 +20,7 @@ spec:
           image: {{.Values.busyboxImage.repository }}:{{.Values.busyboxImage.tag }}
           imagePullPolicy: {{.Values.busyboxImage.pullPolicy }}
           command: [ 'sh', '-c', 'until nc -z {{ include "workflow-hello-world-ldap.serviceFQDN" . }} {{ .Values.ldap.port }}; do echo "[busybox: wait-for-ldap] waiting for ldap"; sleep 2; done; echo "[busybox: wait-for-ldap] ldap is available"' ]
+
         - name: wait-for-apifirst-server-jpa
           image: {{.Values.busyboxImage.repository }}:{{.Values.busyboxImage.tag }}
           imagePullPolicy: {{.Values.busyboxImage.pullPolicy }}
@@ -27,8 +28,8 @@ spec:
 
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.registry }}/@project.artifactId@:{{ .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: {{ .Values.image.registry }}{{ .Values.image.separator }}{{ .Values.image.name }}:{{ .Chart.AppVersion }}
+          imagePullPolicy: IfNotPresent
           env:
             - name: JAVA_TIMEZONE
               value: "{{ .Values.global.timezone }}"

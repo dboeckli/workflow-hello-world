@@ -32,15 +32,18 @@ public class WorkflowRestController {
 
     private final RuntimeService runtimeService;
 
-    @PostMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(produces = { MediaType.APPLICATION_JSON_VALUE })
     public ResponseEntity<HelloWorldWorklfowResponse> startProcess(@RequestBody @Valid InfoRequest infoRequest) {
         try {
-            ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(PROCESS_DEFINITION_KEY, BUSINESS_KEY, Map.of(INPUT_VARIABLE_NAME, infoRequest.input));
+            ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(PROCESS_DEFINITION_KEY,
+                    BUSINESS_KEY, Map.of(INPUT_VARIABLE_NAME, infoRequest.input));
             return ResponseEntity.ok().body(createResponse(processInstance));
-        } catch (AuthorizationException ex) {
+        }
+        catch (AuthorizationException ex) {
             log.error("Failed to authorize user: {}", ex.getMessage());
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, ex.getMessage(), ex);
-        } catch (WorkflowException ex) {
+        }
+        catch (WorkflowException ex) {
             log.error("Failed to process request: {}", infoRequest, ex);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
         }
@@ -48,22 +51,23 @@ public class WorkflowRestController {
 
     private HelloWorldWorklfowResponse createResponse(ProcessInstance processInstance) {
         return HelloWorldWorklfowResponse.builder()
-                                         .caseInstanceId(processInstance.getCaseInstanceId())
-                                         .processInstanceId(processInstance.getProcessInstanceId())
-                                         .id(processInstance.getId())
-                                         .rootProcessInstanceId(processInstance.getRootProcessInstanceId())
-                                         .processDefinitionId(processInstance.getProcessDefinitionId())
-                                         .build();
+            .caseInstanceId(processInstance.getCaseInstanceId())
+            .processInstanceId(processInstance.getProcessInstanceId())
+            .id(processInstance.getId())
+            .rootProcessInstanceId(processInstance.getRootProcessInstanceId())
+            .processDefinitionId(processInstance.getProcessDefinitionId())
+            .build();
     }
 
     @Builder
-    public record HelloWorldWorklfowResponse(String caseInstanceId, String processDefinitionId, String rootProcessInstanceId, String id, String processInstanceId) {
+    public record HelloWorldWorklfowResponse(String caseInstanceId, String processDefinitionId,
+            String rootProcessInstanceId, String id, String processInstanceId) {
     }
 
     @Builder
-    public record InfoRequest(
-        @NotNull(message = "Input must not be null")
-        @JsonProperty(required = true)
-        String input
-    ) implements Serializable {}
+    public record InfoRequest(@NotNull(message = "Input must not be null") @JsonProperty(required = true) String input)
+            implements
+                Serializable {
+    }
+
 }

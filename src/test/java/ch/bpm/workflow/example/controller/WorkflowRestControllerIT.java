@@ -21,12 +21,9 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @SpringBootTest
-@TestPropertySource(properties = {
-    "camunda.bpm.job-execution.enabled=false",
-    "camunda.bpm.client.disable-auto-fetching=true",
-    "spring.datasource.generate-unique-name=true",
-    "spring.datasource.hikari.jdbc-url=jdbc:h2:mem:WorkflowRestControllerIT;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"
-})
+@TestPropertySource(properties = { "camunda.bpm.job-execution.enabled=false",
+        "camunda.bpm.client.disable-auto-fetching=true", "spring.datasource.generate-unique-name=true",
+        "spring.datasource.hikari.jdbc-url=jdbc:h2:mem:WorkflowRestControllerIT;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE" })
 @AutoConfigureMockMvc
 @ActiveProfiles(value = "local")
 @Deployment(resources = "process.bpmn")
@@ -42,11 +39,10 @@ class WorkflowRestControllerIT {
     @Test
     void startProcessWithoutInput() throws Exception {
         this.mockMvc
-                .perform(post("/restapi/workflow")
-                        .with(httpBasic("camunda-admin", "camunda-admin-password"))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andDo(result -> log.info("Response: {}", result.getResponse().getContentAsString()));
+            .perform(post("/restapi/workflow").with(httpBasic("camunda-admin", "camunda-admin-password"))
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andDo(result -> log.info("Response: {}", result.getResponse().getContentAsString()));
     }
 
     @Test
@@ -55,12 +51,11 @@ class WorkflowRestControllerIT {
         String jsonRequest = objectMapper.writeValueAsString(infoRequest);
 
         this.mockMvc
-                .perform(post("/restapi/workflow")
-                        .with(httpBasic("camunda-admin", "camunda-admin-password"))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonRequest))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andDo(result -> log.info("Response: {}", result.getResponse().getContentAsString()));
+            .perform(post("/restapi/workflow").with(httpBasic("camunda-admin", "camunda-admin-password"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonRequest))
+            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andDo(result -> log.info("Response: {}", result.getResponse().getContentAsString()));
     }
 
     @Test
@@ -69,12 +64,11 @@ class WorkflowRestControllerIT {
         String jsonRequest = objectMapper.writeValueAsString(infoRequest);
 
         MvcResult result = this.mockMvc
-                .perform(post("/restapi/workflow")
-                        .with(httpBasic("camunda-admin", "camunda-admin-password1"))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonRequest)
-                )
-                .andExpect(MockMvcResultMatchers.status().isUnauthorized()).andReturn();
+            .perform(post("/restapi/workflow").with(httpBasic("camunda-admin", "camunda-admin-password1"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonRequest))
+            .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+            .andReturn();
         log.info("Response: {}", result.getResponse().getContentAsString());
     }
 
@@ -84,14 +78,14 @@ class WorkflowRestControllerIT {
         String jsonRequest = objectMapper.writeValueAsString(infoRequest);
 
         MvcResult result = this.mockMvc
-                .perform(post("/restapi/workflow")
-                        .with(httpBasic("user02", "user02-password"))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonRequest)
-                )
-                .andExpect(MockMvcResultMatchers.status().isForbidden())
-                .andReturn();
-        assertEquals("403 FORBIDDEN \"The user with id 'user02' does not have 'CREATE' permission on resource 'ProcessInstance'.\"", result.getResolvedException().getMessage());
+            .perform(post("/restapi/workflow").with(httpBasic("user02", "user02-password"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonRequest))
+            .andExpect(MockMvcResultMatchers.status().isForbidden())
+            .andReturn();
+        assertEquals(
+                "403 FORBIDDEN \"The user with id 'user02' does not have 'CREATE' permission on resource 'ProcessInstance'.\"",
+                result.getResolvedException().getMessage());
     }
 
     @Test
@@ -100,17 +94,17 @@ class WorkflowRestControllerIT {
         String jsonRequest = objectMapper.writeValueAsString(infoRequest);
 
         MvcResult result = this.mockMvc
-                .perform(post("/restapi/workflow")
-                        .with(httpBasic("camunda-admin", "camunda-admin-password"))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonRequest))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.caseInstanceId").value(nullValue()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.processDefinitionId").value(matchesPattern("hello-world-process:1:[a-f0-9-]+")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.rootProcessInstanceId").value(matchesPattern("[a-f0-9-]+")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(matchesPattern("[a-f0-9-]+")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.processInstanceId").value(matchesPattern("[a-f0-9-]+")))
-                .andReturn();
+            .perform(post("/restapi/workflow").with(httpBasic("camunda-admin", "camunda-admin-password"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonRequest))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.caseInstanceId").value(nullValue()))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.processDefinitionId")
+                .value(matchesPattern("hello-world-process:1:[a-f0-9-]+")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.rootProcessInstanceId").value(matchesPattern("[a-f0-9-]+")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(matchesPattern("[a-f0-9-]+")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.processInstanceId").value(matchesPattern("[a-f0-9-]+")))
+            .andReturn();
         log.info("Response: {}", result.getResponse().getContentAsString());
     }
 
@@ -120,17 +114,18 @@ class WorkflowRestControllerIT {
         String jsonRequest = objectMapper.writeValueAsString(infoRequest);
 
         MvcResult result = this.mockMvc
-            .perform(post("/restapi/workflow")
-                    .with(httpBasic("camunda-admin", "camunda-admin-password"))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(jsonRequest))
+            .perform(post("/restapi/workflow").with(httpBasic("camunda-admin", "camunda-admin-password"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonRequest))
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.jsonPath("$.caseInstanceId").value(nullValue()))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.processDefinitionId").value(matchesPattern("hello-world-process:1:[a-f0-9-]+")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.processDefinitionId")
+                .value(matchesPattern("hello-world-process:1:[a-f0-9-]+")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.rootProcessInstanceId").value(matchesPattern("[a-f0-9-]+")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(matchesPattern("[a-f0-9-]+")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.processInstanceId").value(matchesPattern("[a-f0-9-]+")))
             .andReturn();
         log.info("Response: {}", result.getResponse().getContentAsString());
     }
+
 }

@@ -19,24 +19,38 @@ spec:
 
           echo "### Test 1: Checking health endpoint using service short name: {{ include "application-template.fullname" . }}"
           wget -O- -q {{ include "application-template.fullname" . }}:{{ .Values.service.port }}/bpm/actuator/health
-          echo "Exit code: $?"
-          if [ $? -ne 0 ]; then
+          WGET_RC=$?
+          if [ $WGET_RC -ne 0 ]; then
             ERROR_OCCURED=1
           fi
+          echo "Exit code: $WGET_RC"
 
           echo "### Test 2: Checking health endpoint using fully qualified domain name (FQDN): {{ include "application-template.serviceFQDN" . }}"
-          wget -O- -q {{ include "application-template.serviceFQDN" . }}:{{ .Values.service.port }}/bpm/actuator/health
-          echo "Exit code: $?"
-          if [ $? -ne 0 ]; then
+          RETRY=0
+          MAX_RETRIES=5
+          while [ $RETRY -lt $MAX_RETRIES ]; do
+            wget -O- -q {{ include "application-template.serviceFQDN" . }}:{{ .Values.service.port }}/bpm/actuator/health
+            WGET_RC=$?
+            if [ $WGET_RC -eq 0 ]; then
+              echo "--- Retry $RETRY/$MAX_RETRIES successfull"
+              break
+            fi
+            RETRY=$((RETRY + 1))
+            echo "--- Retry $RETRY/$MAX_RETRIES in 3s..."
+            sleep 3
+          done
+          if [ $WGET_RC -ne 0 ]; then
             ERROR_OCCURED=1
           fi
+          echo "Exit code: $WGET_RC"
 
           echo "### Test 3: Checking health apifirst using fully qualified domain name (FQDN): {{ include "apifirst-server-jpa.serviceFQDN" . }}"
           wget -O- -q {{ include "apifirst-server-jpa.serviceFQDN" . }}:{{ .Values.apifirstServerJpa.port }}/actuator/health
-          echo "Exit code: $?"
-          if [ $? -ne 0 ]; then
+          WGET_RC=$?
+          if [ $WGET_RC -ne 0 ]; then
             ERROR_OCCURED=1
           fi
+          echo "Exit code: $WGET_RC"
 
           if [ $ERROR_OCCURED -ne 0 ]; then
             # Print DNS configuration

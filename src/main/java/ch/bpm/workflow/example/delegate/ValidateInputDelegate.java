@@ -23,19 +23,22 @@ public class ValidateInputDelegate implements JavaDelegate {
         log.info("executing ValidateInputDelegate: {}", delegateExecution);
         log.info("executing ValidateInputDelegate. business key: {}", delegateExecution.getProcessBusinessKey());
         log.info("executing ValidateInputDelegate. variables: {}", delegateExecution.getVariables());
-        if (!delegateExecution.getVariables().containsKey(INPUT_VARIABLE_NAME) || delegateExecution.getVariables().get(INPUT_VARIABLE_NAME).toString().isEmpty()) {
+        if (!delegateExecution.getVariables().containsKey(INPUT_VARIABLE_NAME)
+                || delegateExecution.getVariables().get(INPUT_VARIABLE_NAME).toString().isEmpty()) {
             throw new WorkflowException("Variable " + INPUT_VARIABLE_NAME + " not found or empty");
-        } else {
-            TokenVariable tokenVariable = new TokenVariable(new Input(delegateExecution.getVariables().get(INPUT_VARIABLE_NAME).toString()));
+        }
+        else {
+            TokenVariable tokenVariable = new TokenVariable(
+                    new Input(delegateExecution.getVariables().get(INPUT_VARIABLE_NAME).toString()));
             tokenVariable.setStatus(STARTED);
 
-            ObjectValue tokenVariableValue = Variables
-                .objectValue(tokenVariable)
+            ObjectValue tokenVariableValue = Variables.objectValue(tokenVariable)
                 .serializationDataFormat(Variables.SerializationDataFormats.JAVA)
-                //.serializationDataFormat(Variables.SerializationDataFormats.JSON)
+                // .serializationDataFormat(Variables.SerializationDataFormats.JSON)
                 .create();
 
             delegateExecution.setVariable(TOKEN_VARIABLE_NAME, tokenVariableValue);
         }
     }
+
 }
