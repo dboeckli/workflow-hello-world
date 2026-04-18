@@ -35,7 +35,7 @@ spec:
               break
             fi
             RETRY=$((RETRY + 1))
-            echo "  Retry $RETRY/$MAX_RETRIES in 3s..."
+            echo "--- Retry $RETRY/$MAX_RETRIES in 3s..."
             sleep 3
           done
           if [ $WGET_RC -ne 0 ]; then
