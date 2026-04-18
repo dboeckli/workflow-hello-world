@@ -20,6 +20,7 @@ spec:
           image: {{.Values.busyboxImage.repository }}:{{.Values.busyboxImage.tag }}
           imagePullPolicy: {{.Values.busyboxImage.pullPolicy }}
           command: [ 'sh', '-c', 'until nc -z {{ include "workflow-hello-world-ldap.serviceFQDN" . }} {{ .Values.ldap.port }}; do echo "[busybox: wait-for-ldap] waiting for ldap"; sleep 2; done; echo "[busybox: wait-for-ldap] ldap is available"' ]
+
         - name: wait-for-apifirst-server-jpa
           image: {{.Values.busyboxImage.repository }}:{{.Values.busyboxImage.tag }}
           imagePullPolicy: {{.Values.busyboxImage.pullPolicy }}

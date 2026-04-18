@@ -69,8 +69,11 @@ jobs:
           --set image.tag=${APP_VERSION} \
           --namespace ${NAMESPACE} \
           --create-namespace \
-          --wait --timeout 5m \
-          --debug
+          --cleanup-on-fail \
+          --atomic \
+          --wait --timeout 10m \
+          --debug \
+          --render-subchart-notes
 
       - name: Wait for Pods to be ready
         env:
@@ -131,9 +134,10 @@ jobs:
           echo "--- Show Events in $NAMESPACE namespace:"
           kubectl get events --sort-by=.metadata.creationTimestamp -n $NAMESPACE
           
-          echo "--- Show FQDN:"
+          echo "--- Show FQDN ---"
           helm template $APPLICATION_NAME ./$APPLICATION_NAME \
             --namespace ${NAMESPACE} | grep "svc.cluster.local"
+          echo "--- Show FQDN End ---"
           
           echo "--- Show Logs (if pods exist)"
           PODS=$(kubectl get pods -o jsonpath="{.items[*].metadata.name}" -n $NAMESPACE)
