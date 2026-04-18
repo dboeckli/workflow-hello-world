@@ -26,8 +26,18 @@ spec:
           echo "Exit code: $WGET_RC"
 
           echo "### Test 2: Checking health endpoint using fully qualified domain name (FQDN): {{ include "application-template.serviceFQDN" . }}"
-          wget -O- -q {{ include "application-template.serviceFQDN" . }}:{{ .Values.service.port }}/bpm/actuator/health
-          WGET_RC=$?
+          RETRY=0
+          MAX_RETRIES=5
+          while [ $RETRY -lt $MAX_RETRIES ]; do
+            wget -O- -q {{ include "application-template.serviceFQDN" . }}:{{ .Values.service.port }}/bpm/actuator/health
+            WGET_RC=$?
+            if [ $WGET_RC -eq 0 ]; then
+              break
+            fi
+            RETRY=$((RETRY + 1))
+            echo "  Retry $RETRY/$MAX_RETRIES in 3s..."
+            sleep 3
+          done
           if [ $WGET_RC -ne 0 ]; then
             ERROR_OCCURED=1
           fi
