@@ -69,8 +69,11 @@ jobs:
           --set image.tag=${APP_VERSION} \
           --namespace ${NAMESPACE} \
           --create-namespace \
-          --wait --timeout 5m \
-          --debug
+          --cleanup-on-fail \
+          --atomic \
+          --wait --timeout 10m \
+          --debug \
+          --render-subchart-notes
 
       - name: Wait for Pods to be ready
         env:
