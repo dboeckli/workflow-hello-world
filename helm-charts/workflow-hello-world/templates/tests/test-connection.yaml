@@ -32,6 +32,7 @@ spec:
             wget -O- -q {{ include "application-template.serviceFQDN" . }}:{{ .Values.service.port }}/bpm/actuator/health
             WGET_RC=$?
             if [ $WGET_RC -eq 0 ]; then
+              echo "--- Retry $RETRY/$MAX_RETRIES successfull"
               break
             fi
             RETRY=$((RETRY + 1))
