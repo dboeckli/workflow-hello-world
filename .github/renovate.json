@@ -144,9 +144,9 @@
                 "/src/test/java/.+\\.java$/"
             ],
             "matchStrings": [
-                "DockerImageName\\.parse\\(\"mockserver/mockserver:(?<currentValue>[^\"]+)\"\\)"
+                "\"mockserver/mockserver:(?<currentValue>[^\"]+)\""
             ],
-            "autoReplaceStringTemplate": "DockerImageName.parse(\"mockserver/mockserver:{{{newValue}}}\")"
+            "autoReplaceStringTemplate": "\"mockserver/mockserver:{{{newValue}}}\""
         }
     ],
     "platformAutomerge": false,
