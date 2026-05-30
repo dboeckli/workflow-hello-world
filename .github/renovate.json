@@ -141,7 +141,7 @@
             "datasourceTemplate": "docker",
             "depNameTemplate": "mockserver/mockserver",
             "managerFilePatterns": [
-                "**/*.java"
+                "/\\.java$/"
             ],
             "matchStrings": [
                 "\"mockserver/mockserver:(?<currentValue>[^\"]+)\""
