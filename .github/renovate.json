@@ -24,6 +24,7 @@
         "helmv3",
         "custom.regex"
     ],
+
     "maven-wrapper": {
         "managerFilePatterns": [
             "/(^|/)mvnw$/",
@@ -84,6 +85,14 @@
             "automerge": false,
             "automergeType": "pr",
             "ignoreTests": true
+        },
+        {
+            "matchDatasources": ["maven", "docker"],
+            "matchPackageNames": [
+                "org.mock-server:mockserver-junit-jupiter-no-dependencies",
+                "mockserver/mockserver"
+            ],
+            "groupName": "mockserver"
         }
     ],
     "customManagers": [
@@ -112,6 +121,32 @@
                 "  JAVA_VERSION:[\\t ]*(?<currentValue>\\d+)"
             ],
             "autoReplaceStringTemplate": "  JAVA_VERSION: {{{newValue}}}"
+        },
+        {
+            "description": "Parse and update MockServer version in pom.xml",
+            "customType": "regex",
+            "datasourceTemplate": "maven",
+            "depNameTemplate": "org.mock-server:mockserver-junit-jupiter-no-dependencies",
+            "managerFilePatterns": [
+                "/(^|\\/)pom\\.xml$/"
+            ],
+            "matchStrings": [
+                "<mock-server\\.version>(?<currentValue>[^<]+)</mock-server\\.version>"
+            ],
+            "autoReplaceStringTemplate": "<mock-server.version>{{{newValue}}}</mock-server.version>"
+        },
+        {
+            "description": "Parse and update MockServer Docker image version in Java test files",
+            "customType": "regex",
+            "datasourceTemplate": "docker",
+            "depNameTemplate": "mockserver/mockserver",
+            "managerFilePatterns": [
+                "/src/test/java/.+\\.java$/"
+            ],
+            "matchStrings": [
+                "DockerImageName\\.parse\\(\"mockserver/mockserver:(?<currentValue>[^\"]+)\"\\)"
+            ],
+            "autoReplaceStringTemplate": "DockerImageName.parse(\"mockserver/mockserver:{{{newValue}}}\")"
         }
     ],
     "platformAutomerge": false,
