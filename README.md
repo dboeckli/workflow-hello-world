@@ -1,9 +1,5 @@
 # Camunda Hello World Template
 
-## Description
-
-Write your own description here
-
 ### URLS
 
 - Camunda:
