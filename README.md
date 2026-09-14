@@ -199,7 +199,7 @@ Environments (`host`, `context`, credentials) are configured in `httprequest/htt
 Deployment is Helm-only and goes into the **`workflow-hello-world`** namespace.
 
 After `./mvnw clean install`, the packaged charts are placed in `target/helm/repo/`
-(`workflow-hello-world-chart-*.tgz` and the local subchart `workflow-hello-world-ldap-*.tgz`).
+(`workflow-hello-world-chart-*.tgz` and the local subchart `workflow-hello-world-ldap-chart-*.tgz`).
 
 ```powershell
 cd target/helm/repo
@@ -207,13 +207,16 @@ cd target/helm/repo
 $file = Get-ChildItem -Filter workflow-hello-world-chart-*.tgz | Select-Object -First 1
 tar -xvf $file.Name
 
-helm upgrade --install workflow-hello-world ./workflow-hello-world-chart `
+$APPLICATION_NAME = Get-ChildItem -Directory |
+  Where-Object { $_.LastWriteTime -ge $file.LastWriteTime } |
+  Select-Object -ExpandProperty Name
+helm upgrade --install $APPLICATION_NAME ./$APPLICATION_NAME `
   --namespace workflow-hello-world --create-namespace `
   --wait --timeout 8m --debug --render-subchart-notes
 ```
 
-> The release name must be `workflow-hello-world` (not the chart directory name), otherwise the
-> `wait-for-ldap` init container cannot resolve the LDAP service name.
+> The local subchart sets `fullnameOverride`, so the LDAP service name is
+> `workflow-hello-world-ldap` independent of the release name.
 
 ### Helm Operations
 
@@ -224,7 +227,7 @@ kubectl get pods -n workflow-hello-world
 # Logs (replace $POD with a pod name from the command above)
 kubectl logs $POD -n workflow-hello-world --all-containers
 
-# Describe a pod (e.g. workflow-hello-world, workflow-hello-world-workflow-hello-world-ldap,
+# Describe a pod (e.g. workflow-hello-world, workflow-hello-world-ldap,
 # workflow-hello-world-apifirst-server-jpa)
 kubectl describe pod $POD_NAME -n workflow-hello-world
 

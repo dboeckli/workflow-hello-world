@@ -34,7 +34,7 @@ is needed here. On a normal host (Windows/CI) this does not apply either.
 ## Deployment
 
 - Helm-only: chart in `helm-charts/`, packaged to `target/helm/repo/`, release name = artifactId,
-  namespace `workflow-hello-world`, NodePort `30081`. Subchart `workflow-hello-world-ldap`.
+  namespace `workflow-hello-world`, NodePort `30081`. Subchart `workflow-hello-world-ldap-chart`.
 - CI (`.github/workflows/`): `maven-build.yml` builds + deploys snapshots and triggers
   `deploy-and-test-cluster.yml`; `release.yml` runs the Maven release.
 - Dependency updates are managed via `.github/dependabot.yml` and `.github/renovate.json`; validate

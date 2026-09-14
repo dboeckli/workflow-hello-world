@@ -546,6 +546,7 @@
               <exclude>CLAUDE.md</exclude>
               <exclude>target/**</exclude>
               <exclude>**/node_modules/**</exclude>
+              <exclude>**/*.bpmn</exclude>
             </excludes>
             <flexmark/>
           </markdown>
@@ -557,6 +558,7 @@
               <exclude>target/**</exclude>
               <exclude>**/node_modules/**</exclude>
               <exclude>.github/**</exclude>
+              <exclude>**/*.bpmn</exclude>
             </excludes>
             <jackson>
               <version>2.21.2</version>
@@ -578,6 +580,7 @@
             <excludes>
               <exclude>target/**</exclude>
               <exclude>**/node_modules/**</exclude>
+              <exclude>**/*.bpmn</exclude>
             </excludes>
             <shfmt>
               <version>3.14.1</version>
@@ -1282,7 +1285,7 @@
               <arguments>
                 <argument>push</argument>
                 <!--suppress UnresolvedMavenProperty: helm.chart.version is set by maven antrun plugin -->
-                <argument>${project.build.directory}/helm/repo/${project.artifactId}-ldap-${helm.chart.version}.tgz</argument>
+                <argument>${project.build.directory}/helm/repo/${project.artifactId}-ldap-chart-${helm.chart.version}.tgz</argument>
                 <argument>--username</argument>
                 <!--suppress UnresolvedMavenProperty: DOCKER_USER is set by GitHub Actions -->
                 <argument>${env.DOCKER_USER}</argument>

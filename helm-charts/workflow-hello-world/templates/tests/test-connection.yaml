@@ -59,7 +59,7 @@ spec:
 
             # Test DNS resolution
             echo "### Testing DNS resolution:"
-            LDAP_FQDN="{{ include "workflow-hello-world-ldap.serviceFQDN" . }}"
+            LDAP_FQDN="{{ .Values.ldap.serviceFQDN }}"
             APIFIRST_FQDN="{{ include "apifirst-server-jpa.serviceFQDN" . }}"
             echo "nslookup LDAP FQDN: $LDAP_FQDN"
             nslookup $LDAP_FQDN
