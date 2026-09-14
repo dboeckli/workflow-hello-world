@@ -1,4 +1,87 @@
-# Camunda Hello World Template
+# Camunda BPM Hello World
+
+Camunda BPM **7.24** Hello World application (Java 25): a Spring Boot app that embeds the Camunda BPM
+engine. Under the context path `/bpm` it serves the Camunda webapp, a REST API and the actuator
+endpoints, authenticates users against LDAP (local OpenLDAP or Active Directory), calls the
+downstream `apifirst-server-jpa` service from the BPMN process, and is deployed to Kubernetes with
+Helm.
+
+## Architecture Overview
+
+```mermaid
+graph LR
+    Client(["💻 Client / Browser"])
+
+    subgraph App ["workflow-hello-world"]
+        BPM["Camunda BPM Webapp + REST API + Actuator\n:8081 · /bpm · NodePort 30081"]
+    end
+
+    subgraph Dependencies ["Dependencies"]
+        LDAP[("OpenLDAP\nworkflow-hello-world-ldap\n:389 · NodePort 30389")]
+        APIFIRST["apifirst-server-jpa\n:8082 · NodePort 30082"]
+    end
+
+    H2[("H2\nIn-Memory")]
+
+    Client <-->|"HTTP"| BPM
+    BPM -->|"LDAP authentication"| LDAP
+    BPM <-->|"REST (CustomerApi)"| APIFIRST
+    BPM <--> H2
+```
+
+## BPMN Process
+
+The executable process definition `hello-world-process` ("Hello World Process") is embedded in the
+application: [`src/main/resources/process.bpmn`](src/main/resources/process.bpmn). Open that file in
+the [Camunda Modeler](https://camunda.com/download/modeler/) to view or edit the diagram; at runtime
+the diagram is also shown in the Camunda webapp (Cockpit).
+
+Flow: `Receive Input Message` → `Activity Validate Input` → `Service-For-Script` → `External Task`
+(topic `sayHelloTopic`) → `Say hello to admin` (user task) → `Service-For-Delegate` → end, with a
+boundary error event attached to the delegate.
+
+## Prerequisites
+
+|   Requirement   |                   Version / Note                    |
+|-----------------|-----------------------------------------------------|
+| Java            | 25                                                  |
+| Maven Wrapper   | included (`./mvnw`)                                 |
+| Camunda BPM     | 7.24 (embedded, `camunda-bpm-spring-boot-starter`)  |
+| Spring Boot     | 3.5.16                                              |
+| Docker          | for `compose.yaml` (OpenLDAP + apifirst-server-jpa) |
+| Kubernetes/Helm | optional (deployment)                               |
+
+The `local` profile uses `compose.yaml`; Spring Boot Docker Compose starts the services
+automatically when the app boots.
+
+## Profiles
+
+|         Profile          |    Database    |       LDAP       |                Notes                |
+|--------------------------|----------------|------------------|-------------------------------------|
+| `local`                  | H2 (in-memory) | local OpenLDAP   | default; Docker Compose auto-start  |
+| `local_active_directory` | H2 (in-memory) | Active Directory | requires `src/main/conf/local.conf` |
+| `ci`                     | PostgreSQL     | LDAP             | requires `src/main/conf/ci.conf`    |
+| `ci_active_directory`    | PostgreSQL     | Active Directory | requires `src/main/conf/ci.conf`    |
+
+The run configurations in `.run/` read their secrets from `src/main/conf/`: rename
+`changeme-local.conf` to `local.conf` and `changeme-ci.conf` to `ci.conf`, then fill in the passwords
+(`local.conf` needs `ldap.password`; `ci.conf` needs `camunda.db.password` and `ldap.password`).
+
+## Build & Test
+
+```bash
+./mvnw clean verify          # full build: format check, unit + integration tests, Helm lint/template
+./mvnw clean install         # verify + build local Docker image + package Helm chart
+./mvnw test                  # unit tests only (*Test)
+./mvnw test -Dtest=ActuatorInfoTest              # single test class
+./mvnw test -Dtest=ActuatorInfoTest#methodName   # single test method
+./mvnw spring-boot:run       # start locally on port 8081 (context path /bpm)
+./mvnw spotless:apply        # auto-fix pom/markdown/json/yaml/shell formatting
+./mvnw spring-javaformat:apply                   # auto-fix Java code style
+```
+
+> Formatting is enforced at build time. Run both `spotless:apply` and `spring-javaformat:apply`
+> before committing if the build fails at the `validate` phase.
 
 ## Sandbox (local dev environment)
 
@@ -67,172 +150,101 @@ sbx kit add <sandbox-name> "git+https://github.com/dboeckli/opencode-sandbox-kit
 > **Sandbox quirk:** Before any `./mvnw` in the sandbox run `export npm_config_bin_links=false`
 > (Spotless/prettier otherwise fails with EPERM on the mounted workspace).
 
-### URLS
+## Running Locally
 
-- Camunda:
-  - http://localhost:8081/bpm/camunda/app/welcome/default/#!/welcome
-  - http://localhost:30081/bpm/camunda/app/welcome/default/#!/welcome
-- Actuator:
-  - http://localhost:8081/bpm/actuator
-  - http://localhost:30081/bpm/actuator
-- H2 Console:
-  - http://localhost:8081/bpm/h2-console (in the connection jdbc url use: jdbc:h2:mem:workflow-hello-world)
-  - http://localhost:30081/bpm/h2-console
-- Rest Api:
-  - http://localhost:8081/bpm/restapi/camunda
-  - http://localhost:8081/bpm/restapi/ping
-  - http://localhost:8081/bpm/restapi/workflow
-  - http://localhost:30081/bpm/restapi/camunda
-  - http://localhost:30081/bpm/restapi/ping
-  - http://localhost:30081/bpm/restapi/workflow
-- Openapi:
-  - apidocs
-    - http://localhost:8081/bpm/swagger/v3/api-docs
-    - http://localhost:8081/bpm/swagger/v3/api-docs.yaml
-    - http://localhost:30081/bpm/swagger/v3/api-docs
-    - http://localhost:30081/bpm/swagger/v3/api-docs.yaml
-  - camunda-engine-restapi
-    - http://localhost:8081/bpm/swagger/v3/api-docs/camunda-engine-rest-api
-    - http://localhost:8081/bpm/swagger/v3/api-docs/camunda-engine-rest-api.yaml
-  - actuator
-    - http://localhost:30081/bpm/swagger/v3/api-docs/actuator
-    - http://localhost:30081/bpm/swagger/v3/api-docs/actuator.yaml
-    - http://localhost:30081/bpm/swagger/v3/api-docs/actuator
-    - http://localhost:30081/bpm/swagger/v3/api-docs/actuator.yaml
-  - restapi
-    - http://localhost:8081/bpm/swagger/v3/api-docs/restapi
-    - http://localhost:8081/bpm/swagger/v3/api-docs/restapi.yaml
-    - http://localhost:30081/bpm/swagger/v3/api-docs/restapi
-    - http://localhost:30081/bpm/swagger/v3/api-docs/restapi.yaml
-  - swagger-ui
-    - http://localhost:8081/bpm/swagger-ui/index.html
-    - http://localhost:30081/bpm/swagger-ui/index.html
+Start the application with `./mvnw spring-boot:run` or the `Application` run configuration in
+IntelliJ (profile `local`, main class `ch.bpm.workflow.example.Application`). Spring Boot Docker
+Compose auto-starts `compose.yaml` (OpenLDAP + apifirst-server-jpa) on startup.
 
-### Servers
+### Endpoints
 
-- local: localhost, database on h2 locally
+|    Resource    |                      Local                      |               Kubernetes (NodePort)                |
+|----------------|-------------------------------------------------|----------------------------------------------------|
+| Camunda Webapp | http://localhost:8081/bpm/camunda/app/welcome   | http://\<node-ip\>:30081/bpm/camunda/app/welcome   |
+| REST API       | http://localhost:8081/bpm/restapi               | http://\<node-ip\>:30081/bpm/restapi               |
+| Actuator       | http://localhost:8081/bpm/actuator              | http://\<node-ip\>:30081/bpm/actuator              |
+| Swagger UI     | http://localhost:8081/bpm/swagger-ui/index.html | http://\<node-ip\>:30081/bpm/swagger-ui/index.html |
+| OpenAPI JSON   | http://localhost:8081/bpm/swagger/v3/api-docs   | http://\<node-ip\>:30081/bpm/swagger/v3/api-docs   |
+| H2 Console     | http://localhost:8081/bpm/h2-console            | http://\<node-ip\>:30081/bpm/h2-console            |
 
-## Prerequisites
+H2 connection URL for the console: `jdbc:h2:mem:workflow-hello-world`.
 
-- Java 21
-- Camunda 7.23
-- Spring Boot 3.4.6
-- Maven 3.6.3 (Older versions might cause build problems)
-- *_/home/$username/.m2/settings.xml_* is set
-  up [Help](https://swp-confluence.atlassian.net/wiki/spaces/SWPIT/pages/411173348/How+to+Install+and+setup+maven#Setting-up-the-maven-settings)
-- there are two run configs which requires passwords (ldap, postgres). therefore you need to edit/rename in the src/main/conf folder the changeme-local.conf and changeme-ci.conf to ci.conf and local.conf.
+The REST API exposes `ping`, `camunda` and `workflow` resources, e.g.:
 
-## Kubernetes
+- http://localhost:8081/bpm/restapi/ping
+- http://localhost:8081/bpm/restapi/camunda
+- http://localhost:8081/bpm/restapi/workflow
 
-To run maven filtering for destination target/k8s and destination target/helm run:
+### IntelliJ HTTP Client
 
-```bash
-mvn clean install -DskipTests 
-```
+The `httprequest/` folder contains IntelliJ HTTP request files for manual testing:
 
-### Deployment with Kubernetes
+|      File       |                Coverage                |
+|-----------------|----------------------------------------|
+| `rest.http`     | REST API (`ping`/`camunda`/`workflow`) |
+| `camunda.http`  | Camunda engine REST API                |
+| `actuator.http` | Actuator/health endpoints              |
+| `apifirst.http` | apifirst-server-jpa endpoints          |
 
-Deployment goes into the default namespace
+Requests include W3C trace context via `httprequest/scripts/traceparent.js` (`traceparent` and
+`baggage: testBaggage=workflow-hello-world` headers) so the tracing setup can be exercised manually.
+Environments (`host`, `context`, credentials) are configured in `httprequest/http-client.env.json`.
 
-To deploy all resources:
+## Kubernetes (Helm)
 
-```bash
-kubectl apply -f target/k8s/
-```
+Deployment is Helm-only and goes into the **`workflow-hello-world`** namespace.
 
-To remove all resources:
-
-```bash
-kubectl delete -f target/k8s/
-```
-
-Check
-
-```bash
-kubectl get deployments -o wide
-kubectl get pods -o wide
-```
-
-You can use the actuator rest call to verify via port 30081
-
-### Deployment with Helm
-
-To run maven filtering for destination target/helm run:
-
-```bash
-mvn clean install -DskipTests 
-```
-
-Be aware that we are using a different namespace here (not default).
-
-Go to the directory where the tgz file has been created after 'mvn install'
+After `./mvnw clean install`, the packaged charts are placed in `target/helm/repo/`
+(`workflow-hello-world-chart-*.tgz` and the local subchart `workflow-hello-world-ldap-*.tgz`).
 
 ```powershell
 cd target/helm/repo
-```
 
-unpack
-
-```powershell
-$file = Get-ChildItem -Filter workflow-hello-world-v*.tgz | Select-Object -First 1
+$file = Get-ChildItem -Filter workflow-hello-world-chart-*.tgz | Select-Object -First 1
 tar -xvf $file.Name
+
+helm upgrade --install workflow-hello-world ./workflow-hello-world-chart `
+  --namespace workflow-hello-world --create-namespace `
+  --wait --timeout 8m --debug --render-subchart-notes
 ```
 
-install
+> The release name must be `workflow-hello-world` (not the chart directory name), otherwise the
+> `wait-for-ldap` init container cannot resolve the LDAP service name.
+
+### Helm Operations
 
 ```powershell
-$APPLICATION_NAME = Get-ChildItem -Directory | Where-Object { $_.LastWriteTime -ge $file.LastWriteTime } | Select-Object -ExpandProperty Name
-helm upgrade --install $APPLICATION_NAME ./$APPLICATION_NAME --namespace workflow-hello-world --create-namespace --wait --timeout 5m --debug
-```
-
-show logs and show event
-
-```powershell
+# List pods
 kubectl get pods -n workflow-hello-world
-```
 
-replace $POD with pods from the command above
-
-```powershell
+# Logs (replace $POD with a pod name from the command above)
 kubectl logs $POD -n workflow-hello-world --all-containers
-```
 
-Show Details and Event
-
-$POD_NAME can be: workflow-hello-world-mongodb, workflow-hello-world
-
-```powershell
+# Describe a pod (e.g. workflow-hello-world, workflow-hello-world-workflow-hello-world-ldap,
+# workflow-hello-world-apifirst-server-jpa)
 kubectl describe pod $POD_NAME -n workflow-hello-world
-```
 
-Show Endpoints
-
-```powershell
+# Show endpoints
 kubectl get endpoints -n workflow-hello-world
-```
 
-test
+# Helm status / test / uninstall
+helm status workflow-hello-world --namespace workflow-hello-world
+helm test   workflow-hello-world --namespace workflow-hello-world --logs
+helm uninstall workflow-hello-world --namespace workflow-hello-world
 
-```powershell
-helm test $APPLICATION_NAME --namespace workflow-hello-world --logs
-```
-
-uninstall
-
-```powershell
-helm uninstall $APPLICATION_NAME --namespace workflow-hello-world
-```
-
-delete all
-
-```powershell
+# Remove all resources in the namespace
 kubectl delete all --all -n workflow-hello-world
 ```
 
-create busybox sidecar
+### Debugging in Kubernetes
+
+Spawn a temporary BusyBox shell for in-cluster diagnostics:
 
 ```powershell
-kubectl run busybox-test --rm -it --image=busybox:1.36 --namespace=workflow-hello-world --command -- sh
+kubectl run busybox-test --rm -it `
+  --image=busybox:1.38.0 `
+  --namespace=workflow-hello-world `
+  --command -- sh
 ```
 
-You can use the actuator rest call to verify via port 30081
+Use the actuator endpoint to verify the application is healthy via NodePort **30081**.
