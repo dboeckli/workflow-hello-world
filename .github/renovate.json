@@ -67,6 +67,18 @@
             "enabled": false
         },
         {
+            "description": "Resolve ch.guru.springframework.apifirst Maven packages on GitHub Packages",
+            "matchDatasources": [
+                "maven"
+            ],
+            "matchPackageNames": [
+                "ch.guru.springframework.apifirst:apifirst-client"
+            ],
+            "registryUrls": [
+                "https://maven.pkg.github.com/dboeckli/workflow-hello-world"
+            ]
+        },
+        {
             "description": "Stay on Spring Boot 3.x - ignore major version updates",
             "matchDatasources": [
                 "maven"
@@ -174,6 +186,21 @@
                 "\"mockserver/mockserver:(?<currentValue>[^\"]+)\""
             ],
             "autoReplaceStringTemplate": "\"mockserver/mockserver:{{{newValue}}}\""
+        },
+        {
+            "description": "Update shfmt version pinned in pom.xml (spotless shfmt formatter) and GitHub workflows (mfinelli/setup-shfmt)",
+            "customType": "regex",
+            "datasourceTemplate": "github-tags",
+            "depNameTemplate": "mvdan/sh",
+            "extractVersionTemplate": "^v?(?<version>.*)$",
+            "managerFilePatterns": [
+                "/(^|\\/)pom\\.xml$/",
+                "/^\\.github\\/workflows\\/(maven-build|release)\\.ya?ml$/"
+            ],
+            "matchStrings": [
+                "<shfmt>\\s*<version>(?<currentValue>\\d+\\.\\d+\\.\\d+)</version>",
+                "shfmt-version:[\\t ]*(?<currentValue>\\d+\\.\\d+\\.\\d+)"
+            ]
         }
     ],
     "platformAutomerge": false,

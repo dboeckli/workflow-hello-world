@@ -1,3 +1,6 @@
+nameOverride: "workflow-hello-world"
+fullnameOverride: "workflow-hello-world"
+
 global:
   timezone: Europe/Zurich
   timezonePath: /etc/localtime
@@ -11,6 +14,9 @@ spring:
 ldap:
   enabled: true
 
+  fullnameOverride: "workflow-hello-world-ldap"
+  serviceFQDN: "workflow-hello-world-ldap.workflow-hello-world.svc.cluster.local"
+
   protocol: ldap
   port: 389
 
@@ -19,6 +25,8 @@ ldap:
   adminPassword: "password"
 
 apifirstServerJpa:
+  serviceFQDN: "apifirst-server-jpa.workflow-hello-world.svc.cluster.local"
+
   port: 8082
   targetPort: 8082
   nodePort: 30082

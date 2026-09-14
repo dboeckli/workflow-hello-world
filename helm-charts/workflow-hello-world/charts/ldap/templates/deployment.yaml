@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "workflow-hello-world-ldap.fullname" . }}
+  name: {{ include "workflow-hello-world-ldap-chart.fullname" . }}
   namespace: {{ .Values.global.namespace }}
   labels:
-    {{- include "workflow-hello-world-ldap.labels" . | nindent 4 }}
+    {{- include "workflow-hello-world-ldap-chart.labels" . | nindent 4 }}
     app.kubernetes.io/component: database
 spec:
   replicas: 1
   selector:
     matchLabels:
-      {{- include "workflow-hello-world-ldap.selectorLabels" . | nindent 6 }}
+      {{- include "workflow-hello-world-ldap-chart.selectorLabels" . | nindent 6 }}
       app.kubernetes.io/component: database
   template:
     metadata:
       labels:
-        {{- include "workflow-hello-world-ldap.selectorLabels" . | nindent 8 }}
+        {{- include "workflow-hello-world-ldap-chart.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: database
     spec:
       containers:
@@ -89,4 +89,4 @@ spec:
       volumes:
         - name: ldifs
           configMap:
-            name: {{ include "workflow-hello-world-ldap.fullname" . }}-config-map
+            name: {{ include "workflow-hello-world-ldap-chart.fullname" . }}-config-map
