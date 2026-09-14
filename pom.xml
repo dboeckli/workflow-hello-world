@@ -210,6 +210,21 @@
     </dependency>
 
     <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-tracing</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-tracing-bridge-brave</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-aop</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-jdbc</artifactId>
     </dependency>
@@ -257,6 +272,12 @@
     <dependency>
       <groupId>org.camunda.bpm.springboot</groupId>
       <artifactId>camunda-bpm-spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-tracing-test</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -1137,7 +1158,7 @@
               <arguments>
                 <argument>dependency</argument>
                 <argument>build</argument>
-                <argument>${project.build.directory}/helm-charts/workflow-hello-world/</argument>
+                <argument>${project.build.directory}/helm-charts/${project.artifactId}/</argument>
               </arguments>
             </configuration>
           </execution>
@@ -1151,7 +1172,7 @@
               <executable>${helm.executable}</executable>
               <arguments>
                 <argument>lint</argument>
-                <argument>${project.build.directory}/helm-charts/workflow-hello-world/</argument>
+                <argument>${project.build.directory}/helm-charts/${project.artifactId}/</argument>
               </arguments>
             </configuration>
           </execution>
@@ -1165,7 +1186,7 @@
               <executable>${helm.executable}</executable>
               <arguments>
                 <argument>template</argument>
-                <argument>${project.build.directory}/helm-charts/workflow-hello-world/</argument>
+                <argument>${project.build.directory}/helm-charts/${project.artifactId}/</argument>
                 <argument>--output-dir</argument>
                 <argument>${project.build.directory}/helm-templated</argument>
               </arguments>
@@ -1181,7 +1202,7 @@
               <executable>${helm.executable}</executable>
               <arguments>
                 <argument>install</argument>
-                <argument>${project.build.directory}/helm-charts/workflow-hello-world/</argument>
+                <argument>${project.build.directory}/helm-charts/${project.artifactId}/</argument>
                 <argument>--dry-run</argument>
                 <argument>--generate-name</argument>
               </arguments>
@@ -1197,7 +1218,8 @@
               <executable>${helm.executable}</executable>
               <arguments>
                 <argument>package</argument>
-                <argument>${project.build.directory}/helm-charts/workflow-hello-world/</argument>
+                <argument>${project.build.directory}/helm-charts/${project.artifactId}/</argument>
+                <argument>${project.build.directory}/helm-charts/${project.artifactId}/charts/ldap/</argument>
                 <argument>--destination</argument>
                 <argument>${project.build.directory}/helm/repo</argument>
                 <argument>--version</argument>
@@ -1239,6 +1261,28 @@
                 <argument>push</argument>
                 <!--suppress UnresolvedMavenProperty: helm.chart.version is set by maven antrun plugin -->
                 <argument>${project.build.directory}/helm/repo/${project.artifactId}-chart-${helm.chart.version}.tgz</argument>
+                <argument>--username</argument>
+                <!--suppress UnresolvedMavenProperty: DOCKER_USER is set by GitHub Actions -->
+                <argument>${env.DOCKER_USER}</argument>
+                <argument>--password</argument>
+                <!--suppress UnresolvedMavenProperty: DOCKER_TOKEN is set by GitHub Actions -->
+                <argument>${env.DOCKER_TOKEN}</argument>
+                <argument>oci://registry-1.docker.io/${env.DOCKER_USER}</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>helm-push-ldap</id>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <phase>deploy</phase>
+            <configuration>
+              <executable>${helm.executable}</executable>
+              <arguments>
+                <argument>push</argument>
+                <!--suppress UnresolvedMavenProperty: helm.chart.version is set by maven antrun plugin -->
+                <argument>${project.build.directory}/helm/repo/${project.artifactId}-ldap-${helm.chart.version}.tgz</argument>
                 <argument>--username</argument>
                 <!--suppress UnresolvedMavenProperty: DOCKER_USER is set by GitHub Actions -->
                 <argument>${env.DOCKER_USER}</argument>
