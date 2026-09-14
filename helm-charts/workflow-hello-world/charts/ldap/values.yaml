@@ -12,10 +12,24 @@ ldap:
   adminUsername: "cn=admin,dc=example,dc=ch"
   adminPassword: "password"
 
-bitnamiOpenldapImage:
-  repository: bitnamilegacy/openldap
+openldapImage:
+  repository: vegardit/openldap
   tag: "2.6.10"
   pullPolicy: IfNotPresent
+
+ldapUi:
+  enabled: true
+  image:
+    repository: dnknth/ldap-ui
+    tag: "0.15.3"
+    pullPolicy: IfNotPresent
+  service:
+    type: NodePort
+    port: 5000
+    targetPort: 5000
+    nodePort: 30500
+  # %s = login with the full bind DN (e.g. cn=admin,dc=example,dc=ch)
+  bindPattern: "%s"
 
 alpineImage:
   repository: alpine

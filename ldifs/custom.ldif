@@ -1,13 +1,7 @@
-dn: dc=example,dc=ch
-dc: example
-objectClass: dcObject
-objectClass: organization
-o: Example, Inc
-
-# groups
-dn: ou=groups,dc=example,dc=ch
-objectClass: organizationalUnit
-ou: groups
+# Directory data for the workflow-hello-world LDAP.
+# The base tree (organization + ou=Users/ou=Groups) is created by the image from LDAP_INIT_ORG_DN,
+# so only the application groups and users are defined here.
+# Mounted into vegardit/openldap at /opt/ldifs/custom (loaded after the built-in tree/entries).
 
 # group: camunda-admins
 dn: cn=camunda-admins,ou=groups,dc=example,dc=ch
@@ -26,11 +20,6 @@ dn: cn=editors,ou=groups,dc=example,dc=ch
 objectClass: groupOfNames
 cn: editors
 member: cn=user02,ou=users,dc=example,dc=ch
-
-# users
-dn: ou=users,dc=example,dc=ch
-ou: users
-objectClass: organizationalunit
 
 # camunda admin
 dn: cn=camunda-admin,ou=users,dc=example,dc=ch

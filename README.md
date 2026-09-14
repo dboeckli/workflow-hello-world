@@ -18,13 +18,16 @@ graph LR
 
     subgraph Dependencies ["Dependencies"]
         LDAP[("OpenLDAP\nworkflow-hello-world-ldap\n:389 · NodePort 30389")]
+        LDAPUI["ldap-ui\n:5000 · NodePort 30500"]
         APIFIRST["apifirst-server-jpa\n:8082 · NodePort 30082"]
     end
 
     H2[("H2\nIn-Memory")]
 
     Client <-->|"HTTP"| BPM
+    Client <-->|"LDAP browse"| LDAPUI
     BPM -->|"LDAP authentication"| LDAP
+    LDAPUI -->|"LDAP"| LDAP
     BPM <-->|"REST (CustomerApi)"| APIFIRST
     BPM <--> H2
 ```
@@ -158,7 +161,7 @@ sbx kit add <sandbox-name> "git+https://github.com/dboeckli/opencode-sandbox-kit
 
 Start the application with `./mvnw spring-boot:run` or the `Application` run configuration in
 IntelliJ (profile `local`, main class `ch.bpm.workflow.example.Application`). Spring Boot Docker
-Compose auto-starts `compose.yaml` (OpenLDAP + apifirst-server-jpa) on startup.
+Compose auto-starts `compose.yaml` (OpenLDAP + ldap-ui + apifirst-server-jpa) on startup.
 
 ### Endpoints
 
@@ -170,8 +173,12 @@ Compose auto-starts `compose.yaml` (OpenLDAP + apifirst-server-jpa) on startup.
 | Swagger UI     | http://localhost:8081/bpm/swagger-ui/index.html | http://\<node-ip\>:30081/bpm/swagger-ui/index.html |
 | OpenAPI JSON   | http://localhost:8081/bpm/swagger/v3/api-docs   | http://\<node-ip\>:30081/bpm/swagger/v3/api-docs   |
 | H2 Console     | http://localhost:8081/bpm/h2-console            | http://\<node-ip\>:30081/bpm/h2-console            |
+| LDAP UI        | http://localhost:5000                           | http://\<node-ip\>:30500                           |
 
 H2 connection URL for the console: `jdbc:h2:mem:workflow-hello-world`.
+
+The LDAP browser (`dnknth/ldap-ui`) logs in with the full bind DN, e.g.
+`cn=admin,dc=example,dc=ch` / `password`.
 
 The REST API exposes `ping`, `camunda` and `workflow` resources, e.g.:
 
