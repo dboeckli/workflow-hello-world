@@ -25,6 +25,8 @@ ldap:
   adminPassword: "password"
 
 apifirstServerJpa:
+  serviceFQDN: "apifirst-server-jpa.workflow-hello-world.svc.cluster.local"
+
   port: 8082
   targetPort: 8082
   nodePort: 30082

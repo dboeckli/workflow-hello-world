@@ -24,7 +24,7 @@ spec:
         - name: wait-for-apifirst-server-jpa
           image: {{.Values.busyboxImage.repository }}:{{.Values.busyboxImage.tag }}
           imagePullPolicy: {{.Values.busyboxImage.pullPolicy }}
-          command: [ 'sh', '-c', 'until nc -z {{ include "apifirst-server-jpa.serviceFQDN" . }} {{ .Values.apifirstServerJpa.port }}; do echo "[busybox: wait-for-apifirst-server-jpa] waiting for apifirst-server-jpa"; sleep 2; done; echo "[busybox: wait-for-apifirst-server-jpa] apifirst-server-jpa is available"' ]
+          command: [ 'sh', '-c', 'until nc -z {{ .Values.apifirstServerJpa.serviceFQDN }} {{ .Values.apifirstServerJpa.port }}; do echo "[busybox: wait-for-apifirst-server-jpa] waiting for apifirst-server-jpa"; sleep 2; done; echo "[busybox: wait-for-apifirst-server-jpa] apifirst-server-jpa is available"' ]
 
       containers:
         - name: @project.artifactId@
@@ -44,7 +44,7 @@ spec:
             - name: SPRING_LDAP_URL
               value: "{{ .Values.ldap.protocol }}://{{ .Values.ldap.serviceFQDN }}:{{ .Values.ldap.port }}"
             - name: APPLICATION_APIFIRST_SERVER_JPA_HOST
-              value: "{{ include "apifirst-server-jpa.serviceFQDN" . }}"
+              value: "{{ .Values.apifirstServerJpa.serviceFQDN }}"
             - name: CAMUNDA_BPM_CLIENT_BASE_URL
               value: "http://localhost:{{ .Values.service.port }}/bpm/engine-rest"
           ports:

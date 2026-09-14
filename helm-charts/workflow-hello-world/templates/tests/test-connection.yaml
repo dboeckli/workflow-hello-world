@@ -44,8 +44,8 @@ spec:
           fi
           echo "Exit code: $WGET_RC"
 
-          echo "### Test 3: Checking health apifirst using fully qualified domain name (FQDN): {{ include "apifirst-server-jpa.serviceFQDN" . }}"
-          wget -O- -q {{ include "apifirst-server-jpa.serviceFQDN" . }}:{{ .Values.apifirstServerJpa.port }}/actuator/health
+          echo "### Test 3: Checking health apifirst using fully qualified domain name (FQDN): {{ .Values.apifirstServerJpa.serviceFQDN }}"
+          wget -O- -q {{ .Values.apifirstServerJpa.serviceFQDN }}:{{ .Values.apifirstServerJpa.port }}/actuator/health
           WGET_RC=$?
           if [ $WGET_RC -ne 0 ]; then
             ERROR_OCCURED=1
@@ -60,7 +60,7 @@ spec:
             # Test DNS resolution
             echo "### Testing DNS resolution:"
             LDAP_FQDN="{{ .Values.ldap.serviceFQDN }}"
-            APIFIRST_FQDN="{{ include "apifirst-server-jpa.serviceFQDN" . }}"
+            APIFIRST_FQDN="{{ .Values.apifirstServerJpa.serviceFQDN }}"
             echo "nslookup LDAP FQDN: $LDAP_FQDN"
             nslookup $LDAP_FQDN
             echo "nslookup APIFIRST_FQDN: $APIFIRST_FQDN"

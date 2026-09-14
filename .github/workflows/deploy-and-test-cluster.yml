@@ -134,7 +134,7 @@ jobs:
           kubectl get events --sort-by=.metadata.creationTimestamp -n $NAMESPACE
           
           echo "--- Show FQDN:"
-          helm template $APPLICATION_NAME ./$APPLICATION_NAME \
+          helm template $APPLICATION_NAME ./$APPLICATION_NAME-chart \
             --namespace ${NAMESPACE} | grep "svc.cluster.local"
           
           echo "--- Show Logs (if pods exist)"
