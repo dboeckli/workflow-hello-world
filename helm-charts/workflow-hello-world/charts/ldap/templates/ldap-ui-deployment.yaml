@@ -30,8 +30,6 @@ spec:
               value: "ldap://{{ include "workflow-hello-world-ldap-chart.fullname" . }}:{{ .Values.service.port }}/"
             - name: BASE_DN
               value: {{ .Values.ldap.baseDN | quote }}
-            - name: BIND_PATTERN
-              value: {{ .Values.ldapUi.bindPattern | quote }}
           readinessProbe:
             httpGet:
               path: /

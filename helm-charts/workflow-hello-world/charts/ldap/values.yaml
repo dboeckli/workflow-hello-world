@@ -9,6 +9,7 @@ service:
 
 ldap:
   baseDN: "dc=example,dc=ch"
+  orgName: "Example, Inc"
   adminUsername: "cn=admin,dc=example,dc=ch"
   adminPassword: "password"
 
@@ -28,8 +29,6 @@ ldapUi:
     port: 5000
     targetPort: 5000
     nodePort: 30500
-  # login with the short user id (maps to cn=<id>,ou=users,dc=example,dc=ch)
-  bindPattern: "cn=%s,ou=users,dc=example,dc=ch"
 
 alpineImage:
   repository: alpine

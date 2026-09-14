@@ -28,16 +28,21 @@ spec:
             - name: LDAP_INIT_ORG_DN
               value: {{ .Values.ldap.baseDN | quote }}
             - name: LDAP_INIT_ORG_NAME
-              value: "Example, Inc"
+              value: {{ .Values.ldap.orgName | quote }}
             - name: LDAP_INIT_ROOT_USER_DN
               value: {{ .Values.ldap.adminUsername | quote }}
             - name: LDAP_INIT_ROOT_USER_PW
               value: {{ .Values.ldap.adminPassword | quote }}
-            - name: LDAP_INIT_ALLOW_CONFIG_ACCESS
-              value: "true"
           volumeMounts:
             - name: ldifs
-              mountPath: /opt/ldifs/custom
+              mountPath: /opt/ldifs/init_org_tree.ldif
+              subPath: init_org_tree.ldif
+            - name: ldifs
+              mountPath: /opt/ldifs/init_org_entries.ldif
+              subPath: init_org_entries.ldif
+            - name: ldifs
+              mountPath: /opt/ldifs/init_mdb_acls.ldif
+              subPath: init_mdb_acls.ldif
           readinessProbe:
             exec:
               command:
@@ -76,3 +81,10 @@ spec:
         - name: ldifs
           configMap:
             name: {{ include "workflow-hello-world-ldap-chart.fullname" . }}-config-map
+            items:
+              - key: init_org_tree.ldif
+                path: init_org_tree.ldif
+              - key: init_org_entries.ldif
+                path: init_org_entries.ldif
+              - key: init_mdb_acls.ldif
+                path: init_mdb_acls.ldif
