@@ -10,6 +10,7 @@ import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.stereotype.Component;
+import org.springframework.util.PlaceholderResolutionException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +36,16 @@ public class ConfigChangeListener {
             .flatMap(Arrays::stream)
             .distinct()
             .forEach(prop -> {
-                String propertyValue = env.getProperty(prop);
+                String propertyValue;
+                try {
+                    propertyValue = env.getProperty(prop);
+                }
+                catch (PlaceholderResolutionException ex) {
+                    // e.g. git.commit.message.full can contain a literal "${...}" (commit
+                    // message)
+                    log.warn("Skipping property '{}': {}", prop, ex.getMessage());
+                    return;
+                }
                 if (propertyValue != null) {
 
                     if (PASSWORD_KEY_LIST.stream().anyMatch(prop.toLowerCase()::contains)
