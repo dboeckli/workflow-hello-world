@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.env.AbstractEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 
@@ -66,6 +67,18 @@ class ConfigChangeListenerTest {
             .noneMatch(msg -> msg.contains("value-1"))
             .noneMatch(msg -> msg.contains("value-2"))
             .noneMatch(msg -> msg.contains("value-3"));
+    }
+
+    @Test
+    void skipsPropertyWithUnresolvablePlaceholder() {
+        GenericApplicationContext context = contextWithProperties(
+                Map.of("git.commit.message.full", "message containing ${project.artifactId} placeholder"));
+        ((AbstractEnvironment) context.getEnvironment()).setIgnoreUnresolvableNestedPlaceholders(false);
+
+        listener.handleContextRefresh(new ContextRefreshedEvent(context));
+
+        assertThat(messages()).anyMatch(msg -> msg.contains("Skipping property 'git.commit.message.full'"))
+            .noneMatch(msg -> msg.startsWith("git.commit.message.full: "));
     }
 
     @Test

@@ -76,7 +76,8 @@
             ],
             "registryUrls": [
                 "https://maven.pkg.github.com/dboeckli/workflow-hello-world"
-            ]
+            ],
+            "allowedVersions": "/^[0-9]+\\.[0-9]+\\.[0-9]+(-SNAPSHOT)?$/"
         },
         {
             "description": "Stay on Spring Boot 3.x - ignore major version updates",

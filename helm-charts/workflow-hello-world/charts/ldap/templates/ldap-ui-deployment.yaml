@@ -1,0 +1,49 @@
+{{- if .Values.ldapUi.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "workflow-hello-world-ldap-chart.fullname" . }}-ui
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "workflow-hello-world-ldap-chart.labels" . | nindent 4 }}
+    app.kubernetes.io/component: ldap-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "workflow-hello-world-ldap-chart.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: ldap-ui
+  template:
+    metadata:
+      labels:
+        {{- include "workflow-hello-world-ldap-chart.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: ldap-ui
+    spec:
+      containers:
+        - name: ldap-ui
+          image: {{ .Values.ldapUi.image.repository }}:{{ .Values.ldapUi.image.tag }}
+          imagePullPolicy: {{ .Values.ldapUi.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.ldapUi.service.targetPort }}
+          env:
+            - name: LDAP_URL
+              value: "ldap://{{ include "workflow-hello-world-ldap-chart.fullname" . }}:{{ .Values.service.port }}/"
+            - name: BASE_DN
+              value: {{ .Values.ldap.baseDN | quote }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.ldapUi.service.targetPort }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.ldapUi.service.targetPort }}
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 5
+{{- end }}
