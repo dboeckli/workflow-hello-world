@@ -19,15 +19,15 @@ spec:
         - name: wait-for-ldap
           image: {{.Values.busyboxImage.repository }}:{{.Values.busyboxImage.tag }}
           imagePullPolicy: {{.Values.busyboxImage.pullPolicy }}
-          command: [ 'sh', '-c', 'until nc -z {{ include "workflow-hello-world-ldap.serviceFQDN" . }} {{ .Values.ldap.port }}; do echo "[busybox: wait-for-ldap] waiting for ldap"; sleep 2; done; echo "[busybox: wait-for-ldap] ldap is available"' ]
+          command: [ 'sh', '-c', 'until nc -z {{ .Values.ldap.serviceFQDN }} {{ .Values.ldap.port }}; do echo "[busybox: wait-for-ldap] waiting for ldap"; sleep 2; done; echo "[busybox: wait-for-ldap] ldap is available"' ]
 
         - name: wait-for-apifirst-server-jpa
           image: {{.Values.busyboxImage.repository }}:{{.Values.busyboxImage.tag }}
           imagePullPolicy: {{.Values.busyboxImage.pullPolicy }}
-          command: [ 'sh', '-c', 'until nc -z {{ include "apifirst-server-jpa.serviceFQDN" . }} {{ .Values.apifirstServerJpa.port }}; do echo "[busybox: wait-for-apifirst-server-jpa] waiting for apifirst-server-jpa"; sleep 2; done; echo "[busybox: wait-for-apifirst-server-jpa] apifirst-server-jpa is available"' ]
+          command: [ 'sh', '-c', 'until nc -z {{ .Values.apifirstServerJpa.serviceFQDN }} {{ .Values.apifirstServerJpa.port }}; do echo "[busybox: wait-for-apifirst-server-jpa] waiting for apifirst-server-jpa"; sleep 2; done; echo "[busybox: wait-for-apifirst-server-jpa] apifirst-server-jpa is available"' ]
 
       containers:
-        - name: {{ .Chart.Name }}
+        - name: @project.artifactId@
           image: {{ .Values.image.registry }}{{ .Values.image.separator }}{{ .Values.image.name }}:{{ .Chart.AppVersion }}
           imagePullPolicy: IfNotPresent
           env:
@@ -40,11 +40,11 @@ spec:
             - name: SPRING_PROFILES_ACTIVE
               value: {{ .Values.spring.profiles.active }}
             - name: CAMUNDA_LDAP_PLUGIN_URL
-              value: "{{ .Values.ldap.protocol }}://{{ include "workflow-hello-world-ldap.serviceFQDN" . }}:{{ .Values.ldap.port }}"
+              value: "{{ .Values.ldap.protocol }}://{{ .Values.ldap.serviceFQDN }}:{{ .Values.ldap.port }}"
             - name: SPRING_LDAP_URL
-              value: "{{ .Values.ldap.protocol }}://{{ include "workflow-hello-world-ldap.serviceFQDN" . }}:{{ .Values.ldap.port }}"
+              value: "{{ .Values.ldap.protocol }}://{{ .Values.ldap.serviceFQDN }}:{{ .Values.ldap.port }}"
             - name: APPLICATION_APIFIRST_SERVER_JPA_HOST
-              value: "{{ include "apifirst-server-jpa.serviceFQDN" . }}"
+              value: "{{ .Values.apifirstServerJpa.serviceFQDN }}"
             - name: CAMUNDA_BPM_CLIENT_BASE_URL
               value: "http://localhost:{{ .Values.service.port }}/bpm/engine-rest"
           ports:

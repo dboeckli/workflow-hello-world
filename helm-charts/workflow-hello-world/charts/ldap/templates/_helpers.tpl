@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "workflow-hello-world-ldap.name" -}}
+{{- define "workflow-hello-world-ldap-chart.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "workflow-hello-world-ldap.fullname" -}}
+{{- define "workflow-hello-world-ldap-chart.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "workflow-hello-world-ldap.chart" -}}
+{{- define "workflow-hello-world-ldap-chart.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "workflow-hello-world-ldap.labels" -}}
-helm.sh/chart: {{ include "workflow-hello-world-ldap.chart" . }}
-{{ include "workflow-hello-world-ldap.selectorLabels" . }}
+{{- define "workflow-hello-world-ldap-chart.labels" -}}
+helm.sh/chart: {{ include "workflow-hello-world-ldap-chart.chart" . }}
+{{ include "workflow-hello-world-ldap-chart.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,15 +45,15 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "workflow-hello-world-ldap.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "workflow-hello-world-ldap.name" . }}
+{{- define "workflow-hello-world-ldap-chart.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "workflow-hello-world-ldap-chart.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the FQDN for the service
 */}}
-{{- define "workflow-hello-world-ldap.serviceFQDN" -}}
-{{- $fullname := include "workflow-hello-world-ldap.fullname" . -}}
+{{- define "workflow-hello-world-ldap-chart.serviceFQDN" -}}
+{{- $fullname := include "workflow-hello-world-ldap-chart.fullname" . -}}
 {{- printf "%s.%s.svc.cluster.local" $fullname .Release.Namespace }}
 {{- end }}

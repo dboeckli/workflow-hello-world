@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: "{{ include "workflow-hello-world-ldap.fullname" . }}-test"
+  name: "{{ include "workflow-hello-world-ldap-chart.fullname" . }}-test"
   namespace: {{ .Values.global.namespace }}
   labels:
-    {{- include "workflow-hello-world-ldap.labels" . | nindent 4 }}
+    {{- include "workflow-hello-world-ldap-chart.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": test
 spec:
@@ -18,8 +18,8 @@ spec:
           # Install LDAP client tools
           apk add --no-cache openldap-clients
 
-          echo "### Test: LDAP Connection and Search using service short name: {{ include "workflow-hello-world-ldap.fullname" . }}"
-          ldapsearch -x -H ldap://{{ include "workflow-hello-world-ldap.fullname" . }}:{{ .Values.service.port }} \
+          echo "### Test: LDAP Connection and Search using service short name: {{ include "workflow-hello-world-ldap-chart.fullname" . }}"
+          ldapsearch -x -H ldap://{{ include "workflow-hello-world-ldap-chart.fullname" . }}:{{ .Values.service.port }} \
                      -b {{ .Values.ldap.baseDN }} \
                      -D "{{ .Values.ldap.adminUsername }}" \
                      -w "{{ .Values.ldap.adminPassword }}" \

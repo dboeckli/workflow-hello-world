@@ -1,0 +1,20 @@
+{{- if .Values.ldapUi.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "workflow-hello-world-ldap-chart.fullname" . }}-ui
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "workflow-hello-world-ldap-chart.labels" . | nindent 4 }}
+    app.kubernetes.io/component: ldap-ui
+spec:
+  type: {{ .Values.ldapUi.service.type }}
+  selector:
+    {{- include "workflow-hello-world-ldap-chart.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: ldap-ui
+  ports:
+    - protocol: TCP
+      port: {{ .Values.ldapUi.service.port }}
+      targetPort: {{ .Values.ldapUi.service.targetPort }}
+      nodePort: {{ .Values.ldapUi.service.nodePort }}
+{{- end }}
