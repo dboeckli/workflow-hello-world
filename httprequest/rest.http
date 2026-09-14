@@ -1,45 +1,61 @@
 ###
+< scripts/traceparent.js
 GET {{host}}/{{context}}/restapi/ping
 Authorization: Basic {{username}} {{password}}
 Accept: application/json
+traceparent: 00-{{traceId}}-{{spanId}}-03
+baggage: testBaggage=workflow-hello-world
 
 ###
+< scripts/traceparent.js
 GET {{host}}/{{context}}/restapi/camunda
 Authorization: Basic {{username}} {{password}}
 Accept: application/json
-
-
+traceparent: 00-{{traceId}}-{{spanId}}-03
+baggage: testBaggage=workflow-hello-world
 
 ### Start a new process instance
+< scripts/traceparent.js
 POST {{host}}/{{context}}/restapi/workflow
 Accept: application/json
 Authorization: Basic {{username}} {{password}}
 Content-Type: application/json
+traceparent: 00-{{traceId}}-{{spanId}}-03
+baggage: testBaggage=workflow-hello-world
 
 {
     "input": "hallo"
 }
 
 ### Start a new process instance which is failing in the delegate
+< scripts/traceparent.js
 POST {{host}}/{{context}}/restapi/workflow
 Accept: application/json
 Authorization: Basic {{username}} {{password}}
 Content-Type: application/json
+traceparent: 00-{{traceId}}-{{spanId}}-03
+baggage: testBaggage=workflow-hello-world
 
 {
     "input": "fail"
 }
 
 ### Start a new process instance. Shoud fail. no input field
+< scripts/traceparent.js
 POST {{host}}/{{context}}/restapi/workflow
 Authorization: Basic {{username}} {{password}}
 Accept: application/json
+traceparent: 00-{{traceId}}-{{spanId}}-03
+baggage: testBaggage=workflow-hello-world
 
 ### Start a new process instance. Shoud fail. empty input field
+< scripts/traceparent.js
 POST {{host}}/{{context}}/restapi/workflow
 Accept: application/json
 Authorization: Basic {{username}} {{password}}
 Content-Type: application/json
+traceparent: 00-{{traceId}}-{{spanId}}-03
+baggage: testBaggage=workflow-hello-world
 
 {
     "input": ""

@@ -1,6 +1,7 @@
 package ch.bpm.workflow.example.config;
 
 import ch.bpm.workflow.example.common.LogMessage;
+import io.micrometer.observation.annotation.Observed;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
@@ -9,6 +10,7 @@ import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.stereotype.Component;
+import org.springframework.util.PlaceholderResolutionException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,6 +24,7 @@ public class ConfigChangeListener {
             "secret");
 
     @EventListener
+    @Observed(name = "config.change.listener", contextualName = "handle-context-refresh")
     public void handleContextRefresh(ContextRefreshedEvent event) {
         final Environment env = event.getApplicationContext().getEnvironment();
         log.debug(LogMessage.RECEIVED_CONTEXT_REFRESH_EVENT.getMessage());
@@ -33,7 +36,16 @@ public class ConfigChangeListener {
             .flatMap(Arrays::stream)
             .distinct()
             .forEach(prop -> {
-                String propertyValue = env.getProperty(prop);
+                String propertyValue;
+                try {
+                    propertyValue = env.getProperty(prop);
+                }
+                catch (PlaceholderResolutionException ex) {
+                    // e.g. git.commit.message.full can contain a literal "${...}" (commit
+                    // message)
+                    log.warn("Skipping property '{}': {}", prop, ex.getMessage());
+                    return;
+                }
                 if (propertyValue != null) {
 
                     if (PASSWORD_KEY_LIST.stream().anyMatch(prop.toLowerCase()::contains)
