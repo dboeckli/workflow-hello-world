@@ -32,9 +32,13 @@ graph LR
 ## BPMN Process
 
 The executable process definition `hello-world-process` ("Hello World Process") is embedded in the
-application: [`src/main/resources/process.bpmn`](src/main/resources/process.bpmn). Open that file in
-the [Camunda Modeler](https://camunda.com/download/modeler/) to view or edit the diagram; at runtime
-the diagram is also shown in the Camunda webapp (Cockpit).
+application: [`src/main/resources/process.bpmn`](src/main/resources/process.bpmn). The rendered
+diagram is exported with [bpmn.io](https://bpmn.io) to
+[`src/main/resources/process-diagram.svg`](src/main/resources/process-diagram.svg); open the `.bpmn`
+in the [Camunda Modeler](https://camunda.com/download/modeler/) to view or edit it. At runtime the
+diagram is also shown in the Camunda webapp (Cockpit).
+
+![Hello World Process](src/main/resources/process-diagram.svg)
 
 Flow: `Receive Input Message` → `Activity Validate Input` → `Service-For-Script` → `External Task`
 (topic `sayHelloTopic`) → `Say hello to admin` (user task) → `Service-For-Delegate` → end, with a
