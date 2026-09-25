@@ -74,7 +74,7 @@
     <exec-maven-plugin.version>3.6.4</exec-maven-plugin.version>
 
     <!-- When upgrading, set version in WorkflowTestWithMockServerBPM as well -->
-    <mock-server.version>6.1.0</mock-server.version>
+    <mock-server.version>8.0.0</mock-server.version>
 
     <!-- Sonar -->
     <sonar-maven-plugin.version>5.8.0.7211</sonar-maven-plugin.version>
