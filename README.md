@@ -93,7 +93,7 @@ The run configurations in `.run/` read their secrets from `src/main/conf/`: rena
 ## Sandbox (local dev environment)
 
 The sandbox is provisioned by the opencode-sandbox-kit and runs as a Docker container. It mounts this
-repo, starts the agent, and connects the IntelliJ MCP server.
+repo, starts the agent, and connects the IntelliJ, Kubernetes and Docker MCP servers.
 
 Allow the kit source (GitHub without cloning):
 
@@ -106,57 +106,12 @@ Start a new sandbox:
 ```powershell
 sbx run opencode `
     --kit "git+https://codeberg.org/dboeckli/opencode-sandbox-kit.git#dir=opencode-agent" `
-    --template docker.cloudsmith.io/dboeckli/sbx/sbx-opencode-tooling:latest `
+    --template docker.io/domboeckli/sbx-opencode-tooling:latest `
     --skills=off `
-    --static-mcp idea `
+    --static-mcp idea,k8s,docker `
     . `
     "C:\development\maven-repo:ro"
 ```
-
-Start the sandbox with Kubernetes support:
-
-```powershell
-sbx run opencode `
-    --kit "git+https://codeberg.org/dboeckli/opencode-sandbox-kit.git#dir=opencode-agent" `
-    --template docker.cloudsmith.io/dboeckli/sbx/sbx-opencode-tooling:latest `
-    --skills=off `
-    --static-mcp idea `
-    . `
-    "C:\development\maven-repo:ro" `
-    "$env:USERPROFILE\.kube:ro"
-```
-
-Claude variant (Home):
-
-```powershell
-sbx run claude `
-    --kit "git+https://codeberg.org/dboeckli/opencode-sandbox-kit.git#dir=opencode-agent" `
-    --template docker.cloudsmith.io/dboeckli/sbx/sbx-claude-tooling:latest `
-    --skills=off `
-    --static-mcp idea `
-    . `
-    "C:\development\maven-repo:ro"
-```
-
-Mammouth (template pin lives in the spec image):
-
-```powershell
-sbx run "git+https://codeberg.org/dboeckli/opencode-sandbox-kit.git#dir=mammouth-agent" `
-    --kit-arg imageTag=latest `
-    --skills=off `
-    --static-mcp idea `
-    . `
-    "C:\development\maven-repo:ro"
-```
-
-Apply the kit to an existing sandbox (restarts the sandbox, VM state is kept):
-
-```powershell
-sbx kit add opencode-workflow-hello-world "git+https://codeberg.org/dboeckli/opencode-sandbox-kit.git#dir=opencode-agent"
-```
-
-> **Sandbox quirk:** Before any `./mvnw` in the sandbox run `export npm_config_bin_links=false`
-> (Spotless/prettier otherwise fails with EPERM on the mounted workspace).
 
 ## Running Locally
 
