@@ -58,6 +58,19 @@ boundary error event attached to the delegate.
 | Docker          | for `compose.yaml` (OpenLDAP + apifirst-server-jpa) |
 | Kubernetes/Helm | optional (deployment)                               |
 
+**Camunda 7 version pin:** 7.24 is the last Camunda 7 Community Edition release published to Maven
+Central. The upstream [camunda-bpm-platform](https://github.com/camunda/camunda-bpm-platform)
+repository is archived and Camunda 7 CE is End of Life. Because 7.24 is built against Spring Framework
+6 / Spring Boot 3.x (`camunda-engine-spring-6`), the project stays on the Spring Boot 3.5 line —
+Spring Boot 4 is not supported (also enforced by the Renovate rule "Stay on Spring Boot 3.x"). The
+Camunda artifacts are mirrored to Repsy (`https://repo.repsy.io/mvn/user08694146/maven-dboeckli`),
+see `<repositories>` in `pom.xml`.
+
+A sibling project takes a different route: it uses
+[CIB seven](https://github.com/cibseven/cibseven), an actively maintained fork of Camunda 7.24
+(coordinates `org.cibseven.bpm`), which supports Spring Boot 4. This repository deliberately stays on
+the original Camunda 7.24 artifacts and the Spring Boot 3.5 line.
+
 The `local` profile uses `compose.yaml`; Spring Boot Docker Compose starts the services
 automatically when the app boots.
 
