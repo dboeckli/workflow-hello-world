@@ -21,13 +21,6 @@
   </scm>
 
   <distributionManagement>
-    <!--
-        <repository>
-            <id>repsy</id>
-            <name>dboeckli Repository on Repsy</name>
-            <url>https://repo.repsy.io/mvn/user08694146/maven-dboeckli</url>
-        </repository>
-        -->
     <repository>
       <id>github</id>
       <name>GitHub dboeckli Apache Maven Packages</name>
@@ -109,25 +102,6 @@
   </dependencyManagement>
 
   <dependencies>
-
-    <!--
-        <dependency>
-            <groupId>ch.guru.springframework.apifirst</groupId>
-            <artifactId>apifirst-api</artifactId>
-            <version>${apifirst.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.guru.springframework.apifirst</groupId>
-            <artifactId>apifirst-client</artifactId>
-            <version>${apifirst.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-webmvc</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        -->
 
     <dependency>
       <groupId>org.camunda.bpm.springboot</groupId>

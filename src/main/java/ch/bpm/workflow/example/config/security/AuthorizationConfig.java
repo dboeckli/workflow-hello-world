@@ -17,9 +17,8 @@ import static org.camunda.bpm.engine.authorization.Authorization.AUTH_TYPE_GRANT
 @Profile({ "local", "ci" })
 @RequiredArgsConstructor
 @Slf4j
-// TODO: ADD CONFIGURABLE PERMISSIONS HERE FOR USERS (user01, user02,...) AND GROUPS
-// SEE:
-// https://docs.camunda.org/manual/latest/user-guide/process-engine/authorization-service/
+// Permissions are granted per user in setPermissions(); extend this for more
+// users/groups.
 public class AuthorizationConfig {
 
     private final AuthorizationService authorizationService;

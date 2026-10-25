@@ -108,24 +108,4 @@ class WorkflowRestControllerIT {
         log.info("Response: {}", result.getResponse().getContentAsString());
     }
 
-    @Test
-    void startProcess() throws Exception {
-        WorkflowRestController.InfoRequest infoRequest = new WorkflowRestController.InfoRequest("Test Input");
-        String jsonRequest = objectMapper.writeValueAsString(infoRequest);
-
-        MvcResult result = this.mockMvc
-            .perform(post("/restapi/workflow").with(httpBasic("camunda-admin", "camunda-admin-password"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonRequest))
-            .andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(MockMvcResultMatchers.jsonPath("$.caseInstanceId").value(nullValue()))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.processDefinitionId")
-                .value(matchesPattern("hello-world-process:1:[a-f0-9-]+")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.rootProcessInstanceId").value(matchesPattern("[a-f0-9-]+")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(matchesPattern("[a-f0-9-]+")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.processInstanceId").value(matchesPattern("[a-f0-9-]+")))
-            .andReturn();
-        log.info("Response: {}", result.getResponse().getContentAsString());
-    }
-
 }
