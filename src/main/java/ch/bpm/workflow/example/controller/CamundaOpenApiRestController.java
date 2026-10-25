@@ -19,14 +19,17 @@ public class CamundaOpenApiRestController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public String getFile() {
-        InputStream inputStream = getClass().getResourceAsStream("/openapi.json");
-        try {
+        try (InputStream inputStream = openApiStream()) {
             return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
         }
         catch (IOException ex) {
             Response response = Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
             throw new WebApplicationException(response);
         }
+    }
+
+    InputStream openApiStream() {
+        return getClass().getResourceAsStream("/openapi.json");
     }
 
 }
