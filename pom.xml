@@ -21,13 +21,6 @@
   </scm>
 
   <distributionManagement>
-    <!--
-        <repository>
-            <id>repsy</id>
-            <name>dboeckli Repository on Repsy</name>
-            <url>https://repo.repsy.io/mvn/user08694146/maven-dboeckli</url>
-        </repository>
-        -->
     <repository>
       <id>github</id>
       <name>GitHub dboeckli Apache Maven Packages</name>
@@ -46,6 +39,10 @@
     <skip.docker.publish>true</skip.docker.publish>
     <skip.start.stop.springboot>false</skip.start.stop.springboot>
 
+    <!-- TODO: remove this pin once https://github.com/paketo-buildpacks/builder-noble-java-tiny/issues/344 is fixed -->
+    <!-- :latest is arm64-only since 0.0.200; with Spring Boot 4.2.x switch to the new default paketobuildpacks/ubuntu-resolute-builder -->
+    <spring-boot.build-image.builder>paketobuildpacks/builder-noble-java-tiny:0.0.200</spring-boot.build-image.builder>
+
     <docker.image.tag>development</docker.image.tag>
     <!-- for feature branches -->
     <docker.repo>local</docker.repo>
@@ -53,8 +50,12 @@
     <helm.executable>helm</helm.executable>
 
     <!--
-        Spring Boot Version Compatibility
-        https://docs.camunda.org/manual/latest/user-guide/spring-boot-integration/version-compatibility/
+        Do not upgrade to Spring Boot 4: Camunda 7.24.0 is the last Camunda 7 Community Edition
+        release (the camunda-bpm-platform repository is archived, Camunda 7 CE is End of Life) and
+        is built against Spring Framework 6 (camunda-engine-spring-6) / Spring Boot 3.x only.
+        Renovate enforces this with the "Stay on Spring Boot 3.x" rule; Camunda artifacts are
+        mirrored to Repsy (see <repositories>). The sibling project uses CIB seven, an actively
+        maintained Camunda 7.24 fork that supports Spring Boot 4.
         -->
     <spring.boot.version>3.5.16</spring.boot.version>
     <camunda.spring.boot.starter.version>7.24.0</camunda.spring.boot.starter.version>
@@ -105,25 +106,6 @@
   </dependencyManagement>
 
   <dependencies>
-
-    <!--
-        <dependency>
-            <groupId>ch.guru.springframework.apifirst</groupId>
-            <artifactId>apifirst-api</artifactId>
-            <version>${apifirst.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.guru.springframework.apifirst</groupId>
-            <artifactId>apifirst-client</artifactId>
-            <version>${apifirst.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-webmvc</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        -->
 
     <dependency>
       <groupId>org.camunda.bpm.springboot</groupId>

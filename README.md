@@ -58,6 +58,19 @@ boundary error event attached to the delegate.
 | Docker          | for `compose.yaml` (OpenLDAP + apifirst-server-jpa) |
 | Kubernetes/Helm | optional (deployment)                               |
 
+**Camunda 7 version pin:** 7.24 is the last Camunda 7 Community Edition release published to Maven
+Central. The upstream [camunda-bpm-platform](https://github.com/camunda/camunda-bpm-platform)
+repository is archived and Camunda 7 CE is End of Life. Because 7.24 is built against Spring Framework
+6 / Spring Boot 3.x (`camunda-engine-spring-6`), the project stays on the Spring Boot 3.5 line —
+Spring Boot 4 is not supported (also enforced by the Renovate rule "Stay on Spring Boot 3.x"). The
+Camunda artifacts are mirrored to Repsy (`https://repo.repsy.io/mvn/user08694146/maven-dboeckli`),
+see `<repositories>` in `pom.xml`.
+
+A sibling project takes a different route: it uses
+[CIB seven](https://github.com/cibseven/cibseven), an actively maintained fork of Camunda 7.24
+(coordinates `org.cibseven.bpm`), which supports Spring Boot 4. This repository deliberately stays on
+the original Camunda 7.24 artifacts and the Spring Boot 3.5 line.
+
 The `local` profile uses `compose.yaml`; Spring Boot Docker Compose starts the services
 automatically when the app boots.
 
@@ -93,7 +106,7 @@ The run configurations in `.run/` read their secrets from `src/main/conf/`: rena
 ## Sandbox (local dev environment)
 
 The sandbox is provisioned by the opencode-sandbox-kit and runs as a Docker container. It mounts this
-repo, starts the agent, and connects the IntelliJ MCP server.
+repo, starts the agent, and connects the IntelliJ, Kubernetes and Docker MCP servers.
 
 Allow the kit source (GitHub without cloning):
 
@@ -106,57 +119,12 @@ Start a new sandbox:
 ```powershell
 sbx run opencode `
     --kit "git+https://codeberg.org/dboeckli/opencode-sandbox-kit.git#dir=opencode-agent" `
-    --template docker.cloudsmith.io/dboeckli/sbx/sbx-opencode-tooling:latest `
+    --template docker.io/domboeckli/sbx-opencode-tooling:latest `
     --skills=off `
-    --static-mcp idea `
+    --static-mcp idea,k8s,docker `
     . `
     "C:\development\maven-repo:ro"
 ```
-
-Start the sandbox with Kubernetes support:
-
-```powershell
-sbx run opencode `
-    --kit "git+https://codeberg.org/dboeckli/opencode-sandbox-kit.git#dir=opencode-agent" `
-    --template docker.cloudsmith.io/dboeckli/sbx/sbx-opencode-tooling:latest `
-    --skills=off `
-    --static-mcp idea `
-    . `
-    "C:\development\maven-repo:ro" `
-    "$env:USERPROFILE\.kube:ro"
-```
-
-Claude variant (Home):
-
-```powershell
-sbx run claude `
-    --kit "git+https://codeberg.org/dboeckli/opencode-sandbox-kit.git#dir=opencode-agent" `
-    --template docker.cloudsmith.io/dboeckli/sbx/sbx-claude-tooling:latest `
-    --skills=off `
-    --static-mcp idea `
-    . `
-    "C:\development\maven-repo:ro"
-```
-
-Mammouth (template pin lives in the spec image):
-
-```powershell
-sbx run "git+https://codeberg.org/dboeckli/opencode-sandbox-kit.git#dir=mammouth-agent" `
-    --kit-arg imageTag=latest `
-    --skills=off `
-    --static-mcp idea `
-    . `
-    "C:\development\maven-repo:ro"
-```
-
-Apply the kit to an existing sandbox (restarts the sandbox, VM state is kept):
-
-```powershell
-sbx kit add opencode-workflow-hello-world "git+https://codeberg.org/dboeckli/opencode-sandbox-kit.git#dir=opencode-agent"
-```
-
-> **Sandbox quirk:** Before any `./mvnw` in the sandbox run `export npm_config_bin_links=false`
-> (Spotless/prettier otherwise fails with EPERM on the mounted workspace).
 
 ## Running Locally
 

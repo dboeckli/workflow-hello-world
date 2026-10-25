@@ -1,6 +1,7 @@
 package ch.bpm.workflow.example.bpm;
 
 import ch.bpm.workflow.example.common.bpm.WorkflowException;
+import ch.bpm.workflow.example.common.bpm.variable.token.TokenStatus;
 import ch.bpm.workflow.example.common.bpm.variable.token.TokenVariable;
 import ch.bpm.workflow.example.util.config.TestCamundaClientConfiguration;
 import lombok.extern.slf4j.Slf4j;
@@ -111,11 +112,7 @@ class WorkflowTestBPM {
         assertThat(processInstance).isWaitingAt("External_Task");
         execute(job());
         assertThat(processInstance).isWaitingAt("External_Task").externalTask().hasTopicName("sayHelloTopic");
-        await().atMost(5, SECONDS).pollInterval(500, MILLISECONDS).until(() -> {
-            TokenVariable currentTokenVariable = this.getTokenVariable(processInstance);
-            log.info("Current status: {}", currentTokenVariable.getStatus());
-            return currentTokenVariable.getStatus() == RUNNING;
-        });
+        await().atMost(5, SECONDS).pollInterval(500, MILLISECONDS).until(() -> isTokenRunning(processInstance));
         assertThat(processInstance).hasPassed("External_Task");
         execute(job());
 
@@ -169,16 +166,11 @@ class WorkflowTestBPM {
         assertThat(processInstance).isWaitingAt("External_Task");
         execute(job());
         assertThat(processInstance).isWaitingAt("External_Task").externalTask().hasTopicName("sayHelloTopic");
-        await().atMost(5, SECONDS).pollInterval(500, MILLISECONDS).until(() -> {
-            TokenVariable currentTokenVariable = this.getTokenVariable(processInstance);
-            log.info("Current status: {}", currentTokenVariable.getStatus());
-            return currentTokenVariable.getStatus() == RUNNING;
-        });
+        await().atMost(5, SECONDS).pollInterval(500, MILLISECONDS).until(() -> isTokenRunning(processInstance));
         assertThat(processInstance).hasPassed("External_Task");
         execute(job());
 
-        assertThat(processInstance).isWaitingAt("say-hello");
-        assertEquals(RUNNING, this.getTokenVariable(processInstance).getStatus());
+        assertWaitingAtSayHello(processInstance);
         assertThat(processInstance).task().hasDefinitionKey("say-hello").hasCandidateUser("admin").isNotAssigned();
         claim(task(), "admin");
         assertEquals("admin", task().getAssignee());
@@ -186,28 +178,24 @@ class WorkflowTestBPM {
         execute(job());
 
         // is waiting before this activity
-        assertThat(processInstance).isWaitingAt("Activity_say_hello-via_delegate");
-        assertEquals(COMPLETED, this.getTokenVariable(processInstance).getStatus());
+        assertWaitingAtDelegate(processInstance, COMPLETED);
         execute(job());
         // Now it fails in the delegate
 
         assertThat(processInstance).hasPassed("Error_in_delegate");
 
         // is waiting again in say-hello
-        assertThat(processInstance).isWaitingAt("say-hello");
-        assertEquals(BUSINESS_EXCEPTION, this.getTokenVariable(processInstance).getStatus());
+        assertWaitingAtSayHello(processInstance, BUSINESS_EXCEPTION);
         claim(task(), "admin");
         complete(task());
         execute(job());
 
         // is waiting again in delegate
-        assertThat(processInstance).isWaitingAt("Activity_say_hello-via_delegate");
-        assertEquals(COMPLETED, this.getTokenVariable(processInstance).getStatus());
+        assertWaitingAtDelegate(processInstance, COMPLETED);
         execute(job());
         assertThat(processInstance).hasPassed("Activity_say_hello-via_delegate");
         // is waiting after this activity
-        assertThat(processInstance).isWaitingAt("Activity_say_hello-via_delegate");
-        assertEquals(FINISHED, this.getTokenVariable(processInstance).getStatus());
+        assertWaitingAtDelegate(processInstance, FINISHED);
         execute(job());
 
         assertThat(processInstance).isEnded();
@@ -229,6 +217,26 @@ class WorkflowTestBPM {
             .startProcessInstanceByKey(PROCESS_DEFINITION_KEY, BUSINESS_KEY, Map.of(INPUT_VARIABLE_NAME, "")));
 
         Assertions.assertEquals("Variable " + INPUT_VARIABLE_NAME + " not found or empty", thrown.getMessage());
+    }
+
+    private boolean isTokenRunning(ProcessInstance processInstance) {
+        TokenVariable currentTokenVariable = this.getTokenVariable(processInstance);
+        log.info("Current status: {}", currentTokenVariable.getStatus());
+        return currentTokenVariable.getStatus() == RUNNING;
+    }
+
+    private void assertWaitingAtSayHello(ProcessInstance processInstance) {
+        assertWaitingAtSayHello(processInstance, RUNNING);
+    }
+
+    private void assertWaitingAtSayHello(ProcessInstance processInstance, TokenStatus status) {
+        assertThat(processInstance).isWaitingAt("say-hello");
+        assertEquals(status, this.getTokenVariable(processInstance).getStatus());
+    }
+
+    private void assertWaitingAtDelegate(ProcessInstance processInstance, TokenStatus status) {
+        assertThat(processInstance).isWaitingAt("Activity_say_hello-via_delegate");
+        assertEquals(status, this.getTokenVariable(processInstance).getStatus());
     }
 
     private TokenVariable getTokenVariable(ProcessInstance processInstance) {
