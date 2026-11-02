@@ -58,7 +58,7 @@
 
     <swagger-parser.version>2.1.48</swagger-parser.version>
     <springdoc-openapi-starter-webmvc-ui.version>2.10.0</springdoc-openapi-starter-webmvc-ui.version>
-    <openapi-generator-maven-plugin.version>7.26.0</openapi-generator-maven-plugin.version>
+    <openapi-generator-maven-plugin.version>7.27.0</openapi-generator-maven-plugin.version>
 
     <apifirst.version>0.0.1-SNAPSHOT</apifirst.version>
     <nashorn-core.version>15.7</nashorn-core.version>
