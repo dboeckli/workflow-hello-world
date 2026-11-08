@@ -22,7 +22,7 @@ ldapUi:
   enabled: true
   image:
     repository: dnknth/ldap-ui
-    tag: "0.15.5"
+    tag: "0.15.6"
     pullPolicy: IfNotPresent
   service:
     type: NodePort
