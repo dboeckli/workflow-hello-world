@@ -57,7 +57,7 @@
     <camunda.spring.boot.starter.version>7.24.0</camunda.spring.boot.starter.version>
 
     <swagger-parser.version>2.1.49</swagger-parser.version>
-    <springdoc-openapi-starter-webmvc-ui.version>2.10.0</springdoc-openapi-starter-webmvc-ui.version>
+    <springdoc-openapi-starter-webmvc-ui.version>2.10.1</springdoc-openapi-starter-webmvc-ui.version>
     <openapi-generator-maven-plugin.version>7.27.0</openapi-generator-maven-plugin.version>
 
     <apifirst.version>0.0.1-SNAPSHOT</apifirst.version>
