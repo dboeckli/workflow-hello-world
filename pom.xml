@@ -57,7 +57,7 @@
     <camunda.spring.boot.starter.version>7.24.0</camunda.spring.boot.starter.version>
 
     <swagger-parser.version>2.1.49</swagger-parser.version>
-    <springdoc-openapi-starter-webmvc-ui.version>2.10.0</springdoc-openapi-starter-webmvc-ui.version>
+    <springdoc-openapi-starter-webmvc-ui.version>2.10.1</springdoc-openapi-starter-webmvc-ui.version>
     <openapi-generator-maven-plugin.version>7.27.0</openapi-generator-maven-plugin.version>
 
     <apifirst.version>0.0.1-SNAPSHOT</apifirst.version>
@@ -65,7 +65,7 @@
 
     <logstash-logback.version>9.0</logstash-logback.version>
     <spring-javaformat-maven-plugin.version>0.0.48</spring-javaformat-maven-plugin.version>
-    <spotless-maven-plugin.version>3.11.0</spotless-maven-plugin.version>
+    <spotless-maven-plugin.version>3.12.0</spotless-maven-plugin.version>
     <properties-maven-plugin.version>1.4.0</properties-maven-plugin.version>
     <merge-yaml-plugin.version>1.4</merge-yaml-plugin.version>
     <exec-maven-plugin.version>3.7.0</exec-maven-plugin.version>
