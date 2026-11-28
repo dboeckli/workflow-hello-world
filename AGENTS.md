@@ -37,5 +37,7 @@ is needed here. On a normal host (Windows/CI) this does not apply either.
   namespace `workflow-hello-world`, NodePort `30081`. Subchart `workflow-hello-world-ldap-chart`.
 - CI (`.github/workflows/`): `maven-build.yml` builds + deploys snapshots and triggers
   `deploy-and-test-cluster.yml`; `release.yml` runs the Maven release.
+- CI pins Helm `v4.3.2` via `azure/setup-helm@v5.1.0` before the first Helm call (runner default is
+  Helm 3). The sandbox kit ships Helm 4 as `helm`, so `-Dhelm.executable=helm4` is no longer needed.
 - Dependency updates are managed via `.github/dependabot.yml` and `.github/renovate.json`; validate
   changes with `renovate-config-validator`.
